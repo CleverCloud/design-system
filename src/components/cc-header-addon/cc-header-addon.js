@@ -88,7 +88,7 @@ export class CcHeaderAddon extends LitElement {
                 ?skeleton=${skeleton}
               ></cc-input-text>
               <cc-input-text
-                label=${i18n('cc-header-addon.id-label-alternative')}
+                .label=${i18n('cc-header-addon.id-label-alternative')}
                 hidden-label
                 readonly
                 clipboard
