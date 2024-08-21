@@ -1,8 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { iconRemixInformationFill as iconInfo } from '../../assets/cc-remix.icons.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { ccLink, linkStyles } from '../../templates/cc-link/cc-link.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-block-section/cc-block-section.js';
 import '../cc-block/cc-block.js';
 import '../cc-icon/cc-icon.js';

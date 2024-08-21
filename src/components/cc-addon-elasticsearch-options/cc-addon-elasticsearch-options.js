@@ -1,8 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { iconRemixAlertFill as iconAlert } from '../../assets/cc-remix.icons.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { ccAddonEncryptionAtRestOption } from '../../templates/cc-addon-encryption-at-rest-option/cc-addon-encryption-at-rest-option.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-addon-option-form/cc-addon-option-form.js';
 
 const KIBANA_LOGO_URL = 'https://assets.clever-cloud.com/logos/elasticsearch-kibana.svg';

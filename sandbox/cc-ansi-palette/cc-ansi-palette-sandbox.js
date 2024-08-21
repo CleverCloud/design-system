@@ -4,7 +4,7 @@ import '../../src/components/cc-select/cc-select.js';
 import '../../src/components/cc-toggle/cc-toggle.js';
 import { analyzePalette } from '../../src/lib/ansi/ansi-palette-analyser.js';
 import { hexToRgb, isDark } from '../../src/lib/color.js';
-import { i18n } from '../../src/lib/i18n/i18n.js';
+import { i18n } from '../../src/translations/translation.js';
 import { sandboxStyles } from '../sandbox-styles.js';
 import { getGoghPalettes } from './gogh-palettes.js';
 

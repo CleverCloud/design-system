@@ -6,8 +6,8 @@ import { LostFocusController } from '../../controllers/lost-focus-controller.js'
 import { dispatchCustomEvent } from '../../lib/events.js';
 import { formSubmit } from '../../lib/form/form-submit-directive.js';
 import { Validation } from '../../lib/form/validation.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-badge/cc-badge.js';
 import '../cc-block-section/cc-block-section.js';
 import '../cc-block/cc-block.js';

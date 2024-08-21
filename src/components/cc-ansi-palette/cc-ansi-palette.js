@@ -6,7 +6,7 @@ import {
 } from '../../assets/cc-remix.icons.js';
 import { analyzePalette } from '../../lib/ansi/ansi-palette-analyser.js';
 import { ansiPaletteStyle } from '../../lib/ansi/ansi-palette-style.js';
-import { i18n } from '../../lib/i18n/i18n.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-icon/cc-icon.js';
 import '../cc-input-text/cc-input-text.js';
 

@@ -4,9 +4,9 @@ import { iconRemixAlertFill as iconAlert } from '../../assets/cc-remix.icons.js'
 import { WORLD_GEOJSON } from '../../assets/world-110m.geo.js';
 import { ResizeController } from '../../controllers/resize-controller.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import * as leaflet from '../../lib/leaflet-esm.js';
 import { leafletStyles } from '../../styles/leaflet.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-icon/cc-icon.js';
 import '../cc-loader/cc-loader.js';
 

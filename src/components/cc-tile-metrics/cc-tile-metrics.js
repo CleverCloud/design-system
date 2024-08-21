@@ -13,12 +13,12 @@ import {
   iconRemixCpuLine as iconCpu,
 } from '../../assets/cc-remix.icons.js';
 import { ResizeController } from '../../controllers/resize-controller.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { isStringEmpty } from '../../lib/utils.js';
 import { accessibilityStyles } from '../../styles/accessibility.js';
 import { tileStyles } from '../../styles/info-tiles.js';
 import { skeletonStyles } from '../../styles/skeleton.js';
 import { ccLink, linkStyles } from '../../templates/cc-link/cc-link.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-button/cc-button.js';
 import '../cc-icon/cc-icon.js';
 

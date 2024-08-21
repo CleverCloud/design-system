@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { accessibilityStyles } from '../../styles/accessibility.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-badge/cc-badge.js';
 import '../cc-icon/cc-icon.js';
 import '../cc-input-text/cc-input-text.js';

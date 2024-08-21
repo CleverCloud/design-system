@@ -1,5 +1,5 @@
 import { css, html, LitElement } from 'lit';
-import { i18n } from '../../lib/i18n/i18n.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-env-var-form/cc-env-var-form.js';
 import '../cc-loader/cc-loader.js';
 import '../cc-notice/cc-notice.js';

@@ -1,8 +1,8 @@
 import { validateName } from '@clevercloud/client/esm/utils/env-vars.js';
 import { css, html, LitElement } from 'lit';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-button/cc-button.js';
 import '../cc-input-text/cc-input-text.js';
 import '../cc-notice/cc-notice.js';

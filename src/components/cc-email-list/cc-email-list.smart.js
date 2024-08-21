@@ -5,9 +5,9 @@ import {
   todo_getConfirmationEmail as sendConfirmationEmail,
 } from '@clevercloud/client/esm/api/v2/user.js';
 import { defineSmartComponent } from '../../lib/define-smart-component.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { notify, notifyError, notifySuccess } from '../../lib/notifications.js';
 import { sendToApi } from '../../lib/send-to-api.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-smart-container/cc-smart-container.js';
 import './cc-email-list.js';
 

@@ -1,8 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-button/cc-button.js';
 import '../cc-env-var-editor-expert/cc-env-var-editor-expert.js';
 import '../cc-env-var-editor-json/cc-env-var-editor-json.js';

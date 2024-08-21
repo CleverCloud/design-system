@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
-import { i18n } from '../../lib/i18n/i18n.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-badge/cc-badge.js';
 import '../cc-button/cc-button.js';
 import '../cc-img/cc-img.js';
@@ -56,7 +56,9 @@ export class CcProductCard extends LitElement {
     return html`
       <div class="wrapper ${classMap({ 'wrapper--no-keywords': !hasKeywords })}">
         <cc-img src="${this.iconUrl}"></cc-img>
-        <a class="name" href="${this.url}" title="${i18n('cc-product-card.select', this.name)}">${this.name}</a>
+        <a class="name" href="${this.url}" title="${i18n('cc-product-card.select', { name: this.name })}">
+          ${this.name}
+        </a>
         ${hasKeywords
           ? html`
               <ul class="keywords">

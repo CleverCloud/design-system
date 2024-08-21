@@ -2,9 +2,9 @@ import { css, html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { skeletonStyles } from '../../styles/skeleton.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-icon/cc-icon.js';
 
 /**

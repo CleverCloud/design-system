@@ -5,9 +5,9 @@ import {
   iconRemixLoginCircleFill as iconRedirectionOn,
 } from '../../assets/cc-remix.icons.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { skeletonStyles } from '../../styles/skeleton.js';
 import { waitingStyles } from '../../styles/waiting.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-button/cc-button.js';
 import '../cc-icon/cc-icon.js';
 import '../cc-loader/cc-loader.js';

@@ -4,7 +4,7 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
 import { CcFormControlElement } from '../../lib/form/cc-form-control-element.abstract.js';
 import { RequiredValidator } from '../../lib/form/validation.js';
-import { i18n } from '../../lib/i18n/i18n.js';
+import { i18n } from '../../translations/translation.js';
 
 const DEFAULT_ERROR_MESSAGES = {
   get empty() {

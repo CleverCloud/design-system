@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { ResizeController } from '../../controllers/resize-controller.js';
-import { i18n } from '../../lib/i18n/i18n.js';
 import { sortBy, unique } from '../../lib/utils.js';
+import { i18n } from '../../translations/translation.js';
 import '../cc-block-section/cc-block-section.js';
 import '../cc-block/cc-block.js';
 import '../cc-button/cc-button.js';
