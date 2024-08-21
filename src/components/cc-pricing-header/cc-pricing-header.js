@@ -5,7 +5,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { iconRemixArrowDownSLine as iconArrowDown } from '../../assets/cc-remix.icons.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { getCurrencySymbol } from '../../lib/utils.js';
 import { sortZones } from '../../lib/zone.js';
 import { shoelaceStyles } from '../../styles/shoelace.js';

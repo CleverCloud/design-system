@@ -1,7 +1,7 @@
 import { ERROR_TYPES, parseRawJson, toJson } from '@clevercloud/client/esm/utils/env-vars.js';
 import { LitElement, css, html } from 'lit';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
 import '../cc-input-text/cc-input-text.js';
 import '../cc-notice/cc-notice.js';

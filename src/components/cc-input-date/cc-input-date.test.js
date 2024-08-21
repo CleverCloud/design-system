@@ -6,7 +6,7 @@ import { html } from 'lit';
 import { testAccessibility } from '../../../test/helpers/accessibility.js';
 import { getElement, moveInputCaretToPosition, replaceText, typeText } from '../../../test/helpers/element-helper.js';
 import { getStories } from '../../../test/helpers/get-stories.js';
-import { addTranslations, setLanguage } from '../../lib/i18n.js';
+import { addTranslations, setLanguage } from '../../lib/i18n/i18n.js';
 import { translations } from '../../translations/translations.en.js';
 import './cc-input-date.js';
 import * as storiesModule from './cc-input-date.stories.js';

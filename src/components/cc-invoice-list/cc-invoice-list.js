@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { ResizeController } from '../../controllers/resize-controller.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { sortBy, unique } from '../../lib/utils.js';
 import '../cc-block-section/cc-block-section.js';
 import '../cc-block/cc-block.js';

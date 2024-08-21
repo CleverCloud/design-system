@@ -3,7 +3,7 @@ import '../../src/components/cc-button/cc-button.js';
 import '../../src/components/cc-input-text/cc-input-text.js';
 import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
 import { Validation } from '../../src/lib/form/validation.js';
-import { sanitize } from '../../src/lib/i18n-sanitize.js';
+import { sanitize } from '../../src/lib/i18n/i18n-sanitize.js';
 
 /**
  * @typedef {import('../../src/lib/form/validation.types.js').Validity} Validity

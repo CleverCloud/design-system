@@ -8,7 +8,7 @@ import '../cc-badge/cc-badge.js';
 import '../cc-img/cc-img.js';
 import '../cc-notice/cc-notice.js';
 
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { skeletonStyles } from '../../styles/skeleton.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
 

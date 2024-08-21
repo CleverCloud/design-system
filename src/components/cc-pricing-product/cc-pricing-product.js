@@ -3,7 +3,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { iconRemixAddLine as iconAdd } from '../../assets/cc-remix.icons.js';
 import { ResizeController } from '../../controllers/resize-controller.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { accessibilityStyles } from '../../styles/accessibility.js';
 import '../cc-icon/cc-icon.js';
 import '../cc-loader/cc-loader.js';

@@ -2,7 +2,7 @@
 import { UPDATE_GLOBALS } from '@storybook/core-events';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { addons } from '@storybook/preview-api';
-import { addTranslations, getAvailableLanguages, getLanguage, setLanguage } from '../../lib/i18n.js';
+import { addTranslations, getAvailableLanguages, getLanguage, setLanguage } from '../../lib/i18n/i18n.js';
 import * as en from '../../translations/translations.en.js';
 import * as fr from '../../translations/translations.fr.js';
 

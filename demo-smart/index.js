@@ -1,4 +1,4 @@
-import { addTranslations, setLanguage } from '../src/lib/i18n.js';
+import { addTranslations, setLanguage } from '../src/lib/i18n/i18n.js';
 import { updateRootContext } from '../src/lib/smart-manager.js';
 import { lang, translations } from '../src/translations/translations.en.js';
 import '../src/components/cc-toaster/cc-toaster.js';

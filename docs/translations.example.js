@@ -1,10 +1,10 @@
 // Use existing date helpers if you need them
-import { formatDatetime } from '../lib/i18n-date.js';
+import { formatDatetime } from '../src/lib/i18n/i18n-date.js';
 // Use HTML sanitizer tag function if you need HTML in translations
-import { sanitize } from '../lib/i18n-sanitize.js';
+import { sanitize } from '../src/lib/i18n/i18n-sanitize.js';
 // Use existing number helpers if you need them
-import { prepareNumberUnitFormatter } from '../src/lib/i18n-number.js';
-import { preparePlural } from '../src/lib/i18n-string.js';
+import { prepareNumberUnitFormatter } from '../src/lib/i18n/i18n-number.js';
+import { preparePlural } from '../src/lib/i18n/i18n-string.js';
 
 // Define language code here
 export const lang = 'example';

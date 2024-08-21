@@ -21,7 +21,7 @@ import {
 } from '../../lib/domain.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
 import { focusBySelector } from '../../lib/focus-helper.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { accessibilityStyles } from '../../styles/accessibility.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
 import '../cc-badge/cc-badge.js';

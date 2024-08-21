@@ -4,7 +4,7 @@ import {
 } from '@lit-labs/virtualizer/support/resize-observer-errors.js';
 import { elementUpdated, expect, fixture } from '@open-wc/testing';
 import { setViewport } from '@web/test-runner-commands';
-import { addTranslations } from '../../src/lib/i18n.js';
+import { addTranslations } from '../../src/lib/i18n/i18n.js';
 import * as en from '../../src/translations/translations.en.js';
 
 const viewports = {

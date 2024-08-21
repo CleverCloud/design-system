@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import '../cc-map-marker-dot/cc-map-marker-dot.js';
 import '../cc-map/cc-map.js';
 import '../cc-toggle/cc-toggle.js';

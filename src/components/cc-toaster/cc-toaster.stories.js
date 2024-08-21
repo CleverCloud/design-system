@@ -5,7 +5,7 @@ import {
   iconRemixCheckboxCircleLine as iconSuccess,
   iconRemixAlertLine as iconWarning,
 } from '../../assets/cc-remix.icons.js';
-import { sanitize } from '../../lib/i18n-sanitize.js';
+import { sanitize } from '../../lib/i18n/i18n-sanitize.js';
 import { makeStory } from '../../stories/lib/make-story.js';
 import '../cc-block/cc-block.js';
 import '../cc-button/cc-button.js';

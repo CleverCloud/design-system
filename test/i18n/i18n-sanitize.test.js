@@ -1,5 +1,5 @@
 import { expect } from '@bundled-es-modules/chai';
-import { sanitize } from '../src/lib/i18n-sanitize.js';
+import { sanitize } from '../../src/lib/i18n/i18n-sanitize.js';
 
 function compareChildNodes(domFragment, referenceChildNodes) {
   expect(domFragment.childNodes.length).to.equal(referenceChildNodes.length);

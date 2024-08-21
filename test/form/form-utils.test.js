@@ -10,7 +10,7 @@ import {
   isCcFormControlElement,
   isFormControlElementLike,
 } from '../../src/lib/form/form-utils.js';
-import { addTranslations, setLanguage } from '../../src/lib/i18n.js';
+import { addTranslations, setLanguage } from '../../src/lib/i18n/i18n.js';
 import { translations } from '../../src/translations/translations.en.js';
 import { getElement } from '../helpers/element-helper.js';
 

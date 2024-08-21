@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { getFlagUrl, getInfraProviderLogoUrl } from '../../lib/remote-assets.js';
 import { skeletonStyles } from '../../styles/skeleton.js';
 import '../cc-img/cc-img.js';

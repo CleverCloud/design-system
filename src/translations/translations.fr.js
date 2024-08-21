@@ -4,17 +4,17 @@ import {
   formatDatetime,
   formatHours,
   prepareFormatDistanceToNow,
-} from '../lib/i18n-date.js';
-import { getCountryName } from '../lib/i18n-display.js';
+} from '../lib/i18n/i18n-date.js';
+import { getCountryName } from '../lib/i18n/i18n-display.js';
 import {
   formatCurrency,
   formatNumber,
   formatPercent,
   prepareNumberBytesFormatter,
   prepareNumberUnitFormatter,
-} from '../lib/i18n-number.js';
-import { sanitize } from '../lib/i18n-sanitize.js';
-import { preparePlural } from '../lib/i18n-string.js';
+} from '../lib/i18n/i18n-number.js';
+import { sanitize } from '../lib/i18n/i18n-sanitize.js';
+import { preparePlural } from '../lib/i18n/i18n-string.js';
 
 export const lang = 'fr';
 

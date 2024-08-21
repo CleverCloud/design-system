@@ -13,7 +13,7 @@ import defaultPalette from '../../lib/ansi/palettes/default.js';
 import { copyToClipboard, prepareLinesOfCodeForClipboard } from '../../lib/clipboard.js';
 import { hasClass } from '../../lib/dom.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { notifySuccess } from '../../lib/notifications.js';
 import { isStringEmpty } from '../../lib/utils.js';
 import '../cc-badge/cc-badge.js';

@@ -1,7 +1,7 @@
 import '../src/components/cc-notice/cc-notice.js';
 import '../src/components/cc-toaster/cc-toaster.js';
 import '../src/components/cc-toggle/cc-toggle.js';
-import { addTranslations, setLanguage } from '../src/lib/i18n.js';
+import { addTranslations, setLanguage } from '../src/lib/i18n/i18n.js';
 import { updateRootContext } from '../src/lib/smart-manager.js';
 import { lang as langEn, translations as translationsEn } from '../src/translations/translations.en.js';
 import { lang as langFr, translations as translationsFr } from '../src/translations/translations.fr.js';

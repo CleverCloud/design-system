@@ -3,7 +3,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { iconCleverRunning as iconRunning, iconCleverStarting as iconStarting } from '../../assets/cc-clever.icons.js';
 import { iconRemixAlertFill as iconAlert } from '../../assets/cc-remix.icons.js';
 import { animate, QUICK_SHRINK } from '../../lib/animate.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { instanceDetailsStyles, tileStyles } from '../../styles/info-tiles.js';
 import { waitingStyles } from '../../styles/waiting.js';
 import '../cc-expand/cc-expand.js';

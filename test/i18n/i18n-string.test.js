@@ -1,5 +1,5 @@
 import { expect } from '@bundled-es-modules/chai';
-import { preparePlural } from '../src/lib/i18n-string.js';
+import { preparePlural } from '../../src/lib/i18n/i18n-string.js';
 
 describe('preparePlural', () => {
   describe('english', () => {

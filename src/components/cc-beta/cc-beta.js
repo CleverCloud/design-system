@@ -1,5 +1,5 @@
 import { css, html, LitElement } from 'lit';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 
 /**
  * @typedef {import('./cc-beta.types.js').PositionType} PositionType

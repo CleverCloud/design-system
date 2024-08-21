@@ -6,7 +6,7 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import { iconCleverInfo as iconInfo } from '../../assets/cc-clever.icons.js';
 import { iconRemixAlertFill as iconAlert, iconRemixCloseLine as iconClose } from '../../assets/cc-remix.icons.js';
 import { ResizeController } from '../../controllers/resize-controller.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { tileStyles } from '../../styles/info-tiles.js';
 import { skeletonStyles } from '../../styles/skeleton.js';
 import '../cc-button/cc-button.js';

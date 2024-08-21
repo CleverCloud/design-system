@@ -12,7 +12,7 @@ import {
 } from '../../assets/cc-clever.icons.js';
 import { iconRemixStopFill as iconStopped } from '../../assets/cc-remix.icons.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { skeletonStyles } from '../../styles/skeleton.js';
 import { waitingStyles } from '../../styles/waiting.js';
 import { ccLink, linkStyles } from '../../templates/cc-link/cc-link.js';

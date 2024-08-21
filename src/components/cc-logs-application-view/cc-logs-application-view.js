@@ -15,7 +15,7 @@ import {
   iconRemixTimeLine,
 } from '../../assets/cc-remix.icons.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
-import { i18n } from '../../lib/i18n.js';
+import { i18n } from '../../lib/i18n/i18n.js';
 import { parseRegex } from '../../lib/regex-parse.js';
 import { isStringEmpty } from '../../lib/utils.js';
 import '../cc-datetime-relative/cc-datetime-relative.js';

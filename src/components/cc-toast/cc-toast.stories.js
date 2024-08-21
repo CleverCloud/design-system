@@ -1,4 +1,4 @@
-import { sanitize } from '../../lib/i18n-sanitize.js';
+import { sanitize } from '../../lib/i18n/i18n-sanitize.js';
 import { makeStory } from '../../stories/lib/make-story.js';
 import './cc-toast.js';
 
