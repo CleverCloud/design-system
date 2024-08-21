@@ -1,1 +1,1 @@
-type PositionType = 'top-left' | 'bottom-left' | 'top-right' | 'bottom-right';
+export type PositionType = 'top-left' | 'bottom-left' | 'top-right' | 'bottom-right';
