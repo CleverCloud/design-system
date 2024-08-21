@@ -1,11 +1,16 @@
 /**
+ * @typedef {import('./i18n.types.d.ts').NumberFormatter} NumberFormatter
+ */
+
+/**
  * Format a given number
- * @param {String} lang - BCP 47 language tag
- * @param {Number} value
- * @param {Object} options
- * @param {Number} options.minimumFractionDigits
- * @param {Number} options.maximumFractionDigits
- * @returns {String}
+ *
+ * @param {string} lang - BCP 47 language tag
+ * @param {number} value - The number to format
+ * @param {Object} [options]
+ * @param {number} [options.minimumFractionDigits] - minimum fraction digits (defaults to 0)
+ * @param {number} [options.maximumFractionDigits] - maximum fraction digits (defaults to 0)
+ * @returns {string}
  */
 export function formatNumber(lang, value, options = {}) {
   const { minimumFractionDigits, maximumFractionDigits } = options;
@@ -13,18 +18,19 @@ export function formatNumber(lang, value, options = {}) {
     minimumFractionDigits,
     maximumFractionDigits,
   });
+
   return nf.format(value);
 }
 
 /**
  * Format a given number as a currency
- * @param {String} lang - BCP 47 language tag
- * @param {Number} value
- * @param {Object} options
- * @param {String} options.currency - Currency code (defaults to EUR)
- * @param {String} options.minimumFractionDigits
- * @param {String} options.maximumFractionDigits
- * @returns {String}
+ * @param {string} lang - BCP 47 language tag
+ * @param {number} value - The number to format
+ * @param {Object} [options]
+ * @param {string} [options.currency] - Currency code (defaults to EUR)
+ * @param {number} [options.minimumFractionDigits] - minimum fraction digits (defaults to 2)
+ * @param {number} [options.maximumFractionDigits] - maximum fraction digits (defaults to 2)
+ * @returns {string}
  */
 export function formatCurrency(lang, value, options = {}) {
   const { currency = 'EUR' } = options;
@@ -35,6 +41,7 @@ export function formatCurrency(lang, value, options = {}) {
     minimumFractionDigits,
     maximumFractionDigits,
   });
+
   return (
     nf
       .format(value)
@@ -45,15 +52,20 @@ export function formatCurrency(lang, value, options = {}) {
 
 /**
  * Format a given number as a percentage
- * @param {String} lang - BCP 47 language tag
- * @param {Number} value
- * @returns {String}
+ * @param {string} lang - BCP 47 language tag
+ * @param {number} value - The number to format
+ * @param {Object} [options]
+ * @param {number} [options.minimumFractionDigits] - minimum fraction digits (defaults to 1)
+ * @param {number} [options.maximumFractionDigits] - maximum fraction digits (defaults to 1)
+ * @returns {string}
  */
-export function formatPercent(lang, value) {
+export function formatPercent(lang, value, options = {}) {
+  const { minimumFractionDigits = 1, maximumFractionDigits = 1 } = options;
+
   const nf = new Intl.NumberFormat(lang, {
     style: 'percent',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
+    minimumFractionDigits,
+    maximumFractionDigits,
   });
   return nf.format(value);
 }
@@ -62,7 +74,7 @@ export function formatPercent(lang, value) {
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat
 // This is close to what we want to achieve for compact number display but:
 // * It's not supported on Safari.
-// * In english:
+// * In English:
 //   * The prefixes are K, M, B and T with no space between number and prefix (1K, 2M...) (short scale based)
 //   * K for 1 thousand (but why? the SI prefix for 1 kilo is lower case k)
 //     * https://en.wikipedia.org/wiki/1000_(number)
@@ -70,7 +82,7 @@ export function formatPercent(lang, value) {
 //   * M for 1 million (not mega)
 //   * B for 1 billion
 //   * T for 1 trillion (not tera)
-// * In french:
+// * In French:
 //   * The prefixes are k, M, Md and Bn with a space between number and prefix (1 k, 2 M...) (long scale based)
 //   * k for 1 thousand (similar to SI prefix for 1 kilo)
 //   * M for "un million" (not mega)
@@ -84,13 +96,20 @@ export function formatPercent(lang, value) {
 // https://en.wikipedia.org/wiki/Metric_prefix
 const SI_PREFIXES = ['', 'k', 'M', 'G', 'T', 'P'];
 
+/**
+ *
+ * @param {string} lang - BCP 47 language tag
+ * @param {string} symbol
+ * @param {string} separator
+ * @return {NumberFormatter}
+ */
 export function prepareNumberUnitFormatter(lang, symbol = '', separator = '') {
   const nf = new Intl.NumberFormat(lang, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
-  return (rawValue) => {
-    // Figure out the "magnitude" of the rawValue: 1000 => 1 / 1000000 => 2 / 1000000000 => 3 ...
-    const prefixIndex = rawValue > 1 ? Math.floor(Math.log10(rawValue) / 3) : 0;
-    // Use the prefixIndex to "rebase" the rawValue into the new base, 1250 => 1.25 / 1444000 => 1.444...
-    const rebasedValue = rawValue / 1000 ** prefixIndex;
+  return (value) => {
+    // Figure out the "magnitude" of the value: 1000 => 1 / 1000000 => 2 / 1000000000 => 3 ...
+    const prefixIndex = value > 1 ? Math.floor(Math.log10(value) / 3) : 0;
+    // Use the prefixIndex to "rebase" the value into the new base, 1250 => 1.25 / 1444000 => 1.444...
+    const rebasedValue = value / 1000 ** prefixIndex;
     // Use Intl/i18n aware number formatter
     const formattedValue = nf.format(rebasedValue);
     const prefix = SI_PREFIXES[prefixIndex];
@@ -109,13 +128,21 @@ export function prepareNumberUnitFormatter(lang, symbol = '', separator = '') {
 // https://en.wikipedia.org/wiki/Binary_prefix
 const IEC_PREFIXES = ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi'];
 
-// We tried an implementation with Math.log2() similar to what we do with prepareNumberUnitFormatter
-// but it gets weird around 1125899906842621 :-|
+// We tried an implementation with Math.log2() similar to what we do with prepareNumberUnitFormatter, but it gets weird around 1125899906842621 :-|
+/**
+ *
+ * @param {string} lang - BCP 47 language tag
+ * @param {string} byteSymbol - The byte symbol
+ * @param {string} separator - The separator between value and the byte symbol
+ * @return {(value: number, fractionDigits?:number, maxPrefixIndex?: number) => string}
+ */
 export function prepareNumberBytesFormatter(lang, byteSymbol, separator) {
-  return (rawValue, fractionDigits = 0, maxPrefixIndex = IEC_PREFIXES.length - 1) => {
-    // Nothing fancy to do when rawValues is under 1 kibibyte
-    if (rawValue < 1024) {
-      return new Intl.NumberFormat(lang).format(rawValue) + separator + byteSymbol;
+  const simpleNf = new Intl.NumberFormat(lang);
+
+  return (value, fractionDigits = 0, maxPrefixIndex = IEC_PREFIXES.length - 1) => {
+    // Nothing fancy to do when value is under 1 kilobyte
+    if (value < 1024) {
+      return simpleNf.format(value) + separator + byteSymbol;
     }
 
     const nf = new Intl.NumberFormat(lang, {
@@ -123,14 +150,14 @@ export function prepareNumberBytesFormatter(lang, byteSymbol, separator) {
       maximumFractionDigits: fractionDigits,
     });
 
-    // Figure out the "magnitude" of the rawValue: greater than 1024 => 1 / greater than 1024^2 => 2 / greater than 1024^3 => 3 ...
-    const prefixIndex = IEC_PREFIXES.slice(0, maxPrefixIndex + 1).findIndex((prefix, i) => {
+    // Figure out the "magnitude" of the value: greater than 1024 => 1 / greater than 1024^2 => 2 / greater than 1024^3 => 3 ...
+    const prefixIndex = IEC_PREFIXES.slice(0, maxPrefixIndex + 1).findIndex((_, i) => {
       // Return last prefix of the array if we cannot find a prefix
-      return rawValue < 1024 ** (i + 1) || i === maxPrefixIndex;
+      return value < 1024 ** (i + 1) || i === maxPrefixIndex;
     });
 
-    // Use the prefixIndex to "rebase" the rawValue into the new base, 1250 => 1.22 / 1444000 => 1.377...
-    const rebasedValue = rawValue / 1024 ** prefixIndex;
+    // Use the prefixIndex to "rebase" the value into the new base, 1250 => 1.22 / 1444000 => 1.377...
+    const rebasedValue = value / 1024 ** prefixIndex;
 
     // Truncate so the rounding applied by nf.format() does not mess with the prefix we selected
     // Ex: it prevents from returning 1,024.0 KiB if we're just under 1024^2 bytes and returns 1,023.9 KiB instead

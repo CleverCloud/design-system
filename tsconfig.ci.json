@@ -3,7 +3,9 @@
   // as opposed to the `tsconfig.json` file used for typechecking within IDEs
   // Every file passing typechecking should be added in the `include` array below
   "include": [
+    "src/lib/i18n/**/*.js",
     "src/lib/utils.js",
+    "src/translations/**/*.js",
     "tasks/typechecking-stats.js",
   ],
   "extends": "./tsconfig.json",

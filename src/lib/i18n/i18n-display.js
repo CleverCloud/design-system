@@ -1,9 +1,9 @@
 /**
  * Get the translated name of a country using its code with a fallback
- * @param lang - BCP 47 language tag
- * @param code - ISO 3166 Country code
- * @param name - Country name (fallback)
- * @returns {String}
+ * @param {string} lang - BCP 47 language tag
+ * @param {string} code - ISO 3166 Country code
+ * @param {string} name - Country name (fallback)
+ * @returns {string}
  */
 export function getCountryName(lang, code, name) {
   // try/catch with fallback on english name because the support is not great for now

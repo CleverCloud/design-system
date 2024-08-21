@@ -1,10 +1,14 @@
 // Use existing date helpers if you need them
-import { formatDatetime } from '../src/lib/i18n/i18n-date.js';
+import { prepareFormatDatetime } from '../src/lib/i18n/i18n-date.js';
 // Use HTML sanitizer tag function if you need HTML in translations
 import { sanitize } from '../src/lib/i18n/i18n-sanitize.js';
 // Use existing number helpers if you need them
 import { prepareNumberUnitFormatter } from '../src/lib/i18n/i18n-number.js';
 import { preparePlural } from '../src/lib/i18n/i18n-string.js';
+
+/**
+ * @typedef {import('../src/lib/i18n/i18n.types.d.ts').Translations} Translations
+ */
 
 // Define language code here
 export const lang = 'example';
@@ -12,6 +16,7 @@ export const lang = 'example';
 const plural = preparePlural(lang);
 
 // Prepare date and number helpers for the current language
+const formatDatetime = prepareFormatDatetime(lang);
 const formatNumberUnit = prepareNumberUnitFormatter(lang);
 
 // DELETE THIS, it's only here to demonstrate some bad examples
@@ -23,6 +28,9 @@ const unknownTagFunction = () => ``;
 //#region cc-component
 //#endregion
 
+/**
+ * @type {Translations}
+ */
 export const translations = {
   // The key must follow this pattern: 'cc-component.foo.bar'
   // Valid custom element tag name for the component,

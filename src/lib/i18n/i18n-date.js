@@ -1,3 +1,14 @@
+/**
+ *
+ * @typedef {import('./i18n.types.js').DateFormatter} DateFormatter
+ * @typedef {import('./i18n.types.js').DateUnit} DateUnit
+ * @typedef {import('./i18n.types.js').RelativeTimeFormatFunction} RelativeTimeFormatFunction
+ */
+
+/**
+ *
+ * @type {Array<{unit: DateUnit, duration: number}>}
+ */
 const UNITS = [
   { unit: 'year', duration: 1000 * 60 * 60 * 24 * 365.25 },
   { unit: 'month', duration: 1000 * 60 * 60 * 24 * (365.25 / 12) },
@@ -10,16 +21,13 @@ const UNITS = [
 
 /**
  * Create a "from now" date formatter function
- * @param {String} lang - BCP 47 language tag
- * @param {Funciton} fallback - Function used if Intl.RelativeTimeFormat is not available
- * @param {String} nowString - Fallback function (value, unit) => "x minutes ago"
- * @returns {Function}
+ * @param {string} lang - BCP 47 language tag
+ * @param {RelativeTimeFormatFunction} fallback - Function used if Intl.RelativeTimeFormat is not available
+ * @param {string} nowString - Fallback function (value, unit) => "x minutes ago"
+ * @returns {DateFormatter}
  */
 export function prepareFormatDistanceToNow(lang, fallback, nowString) {
-  const format =
-    'RelativeTimeFormat' in Intl
-      ? (value, unit) => new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(-value, unit)
-      : fallback;
+  const format = getRelativeTimeFunction(lang, fallback);
 
   return function (dateInput) {
     const date = new Date(dateInput).getTime();
@@ -39,12 +47,11 @@ export function prepareFormatDistanceToNow(lang, fallback, nowString) {
 }
 
 /**
- * Format datetime to localized string (year => minute) with TZ
- * @param {String} lang - BCP 47 language tag
- * @param {String|Number} dateInput - Date as ISO string or millisec timestamp number
- * @returns {String}
+ * Prepare a date formatter which formats datetime to localized string (year => minute) with TZ
+ * @param {string} lang - BCP 47 language tag
+ * @returns {DateFormatter}
  */
-export function formatDate(lang, dateInput) {
+export function prepareFormatDate(lang) {
   const dtf = new Intl.DateTimeFormat(lang, {
     year: 'numeric',
     month: 'short',
@@ -53,17 +60,16 @@ export function formatDate(lang, dateInput) {
     minute: 'numeric',
     timeZoneName: 'short',
   });
-  const date = new Date(dateInput);
-  return dtf.format(date);
+
+  return createFormatter(dtf);
 }
 
 /**
- * Format datetime to localized string (year => minutes) without TZ
- * @param {String} lang - BCP 47 language tag
- * @param {String|Number} dateInput - Date as ISO string or millisec timestamp number
- * @returns {String}
+ * Prepare a date formatter which formats datetime to localized string (year => minutes) without TZ
+ * @param {string} lang - BCP 47 language tag
+ * @returns {DateFormatter}
  */
-export function formatDatetime(lang, dateInput) {
+export function prepareFormatDatetime(lang) {
   const dtf = new Intl.DateTimeFormat(lang, {
     year: 'numeric',
     month: 'short',
@@ -71,36 +77,52 @@ export function formatDatetime(lang, dateInput) {
     hour: 'numeric',
     minute: 'numeric',
   });
-  const date = new Date(dateInput);
-  return dtf.format(date);
+  return createFormatter(dtf);
 }
 
 /**
- * Format date to localized string (year => day)
- * @param {String} lang - BCP 47 language tag
- * @param {String|Number} dateInput - Date as ISO string or millisec timestamp number
- * @returns {String}
+ * Prepare a date formatter which formats date to localized string (year => day)
+ * @param {string} lang - BCP 47 language tag
+ * @returns {DateFormatter}
  */
-export function formatDateOnly(lang, dateInput) {
+export function prepareFormatDateOnly(lang) {
   const dtf = new Intl.DateTimeFormat(lang, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
-  const date = new Date(dateInput);
-  return dtf.format(date);
+  return createFormatter(dtf);
 }
 
 /**
- * Format date to localized string (year => day)
- * @param {String} lang - BCP 47 language tag
- * @param {String|Number} dateInput - Date as ISO string or millisec timestamp number
- * @returns {String}
+ * Prepare a date formatter which formats date to localized string (year => day)
+ * @param {string} lang - BCP 47 language tag
+ * @returns {DateFormatter}
  */
-export function formatHours(lang, dateInput) {
+export function prepareFormatHours(lang) {
   const dtf = new Intl.DateTimeFormat(lang, {
     hour: 'numeric',
   });
-  const date = new Date(dateInput);
-  return dtf.format(date);
+  return createFormatter(dtf);
+}
+
+/**
+ *
+ * @param {Intl.DateTimeFormat} dateTimeFormat
+ * @return {DateFormatter}
+ */
+function createFormatter(dateTimeFormat) {
+  return (dateInput) => dateTimeFormat.format(new Date(dateInput));
+}
+
+/**
+ * @param {string} lang
+ * @param {RelativeTimeFormatFunction} fallback
+ */
+function getRelativeTimeFunction(lang, fallback) {
+  if ('RelativeTimeFormat' in Intl) {
+    /** @type {RelativeTimeFormatFunction} */
+    return (value, unit) => new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(-value, unit);
+  }
+  return fallback;
 }
