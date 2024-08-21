@@ -48,7 +48,6 @@ function formatFlavor(f) {
 }
 
 export const translations = {
-  LANGUAGE: 'English',
   //#region cc-addon-admin
   'cc-addon-admin.admin': `Add-on administration`,
   'cc-addon-admin.danger-zone': `Danger zone`,

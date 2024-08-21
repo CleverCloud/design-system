@@ -22,11 +22,11 @@ const $langContainer = document.querySelector('.languages');
 const languageToggle = document.createElement('cc-toggle');
 languageToggle.choices = [
   {
-    label: `${translationsEn.LANGUAGE}`,
+    label: `English`,
     value: langEn,
   },
   {
-    label: `${translationsFr.LANGUAGE}`,
+    label: `Français`,
     value: langFr,
   },
 ];

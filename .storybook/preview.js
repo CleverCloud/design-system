@@ -1,8 +1,7 @@
-import '../src/stories/lib/i18n-control.js';
 import { setCustomElementsManifest } from '@storybook/web-components';
 import customElementsManifest from '../dist/custom-elements.json';
-import { getAvailableLanguages } from '../src/lib/i18n/i18n.js';
 import { AutodocsTemplate } from '../src/stories/lib/autodocs-template.jsx';
+import '../src/stories/lib/i18n-control.js';
 
 setCustomElementsManifest(customElementsManifest);
 
@@ -21,15 +20,17 @@ Array
     };
   });
 
-const availableLanguages = Object
-  .entries(getAvailableLanguages())
-  .map(([title, value]) => ({ value, title }));
+const availableLanguages = [
+  { value: 'en', title: 'English' },
+  { value: 'fr', title: 'Français' },
+  { value: 'missing', title: '🤬 Missing' },
+];
 
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
   parameters: {
     docs: {
-      page: AutodocsTemplate
+      page: AutodocsTemplate,
     },
     options: {
       storySort: {
@@ -75,7 +76,7 @@ const preview = {
           '🚧 Beta',
           '🕹️ Controllers',
           '♻️ Templates',
-        ]
+        ],
       },
     },
     viewport: { viewports },

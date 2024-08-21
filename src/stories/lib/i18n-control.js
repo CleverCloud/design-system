@@ -2,21 +2,26 @@
 import { UPDATE_GLOBALS } from '@storybook/core-events';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { addons } from '@storybook/preview-api';
-import { addTranslations, getAvailableLanguages, getLanguage, setLanguage } from '../../lib/i18n/i18n.js';
+import { addTranslations, getLanguage, setLanguage } from '../../lib/i18n/i18n.js';
 import * as en from '../../translations/translations.en.js';
 import * as fr from '../../translations/translations.fr.js';
+
+const availableLanguages = [
+  { value: 'en', title: 'English' },
+  { value: 'fr', title: 'Français' },
+  { value: 'missing', title: '🤬 Missing' },
+];
 
 // Init languages
 addTranslations(en.lang, en.translations);
 addTranslations(fr.lang, fr.translations);
-addTranslations('missing', { LANGUAGE: '🤬 Missing' });
 
 const INIT_LANG = window.localStorage.getItem('I18N_LANG') ?? 'en';
 
 // Default to English
 setLanguage(INIT_LANG);
 
-const ALL_LANGS = Object.values(getAvailableLanguages());
+const ALL_LANGS = availableLanguages.map((o) => o.value);
 
 window.addEventListener('keypress', ({ keyCode, altKey, ctrlKey, metaKey, shiftKey }) => {
   // "i" key

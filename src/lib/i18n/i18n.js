@@ -59,15 +59,3 @@ export function addTranslations(lang, translations) {
     i18n._translations[lang][key] = translations[key];
   }
 }
-
-/**
- * @returns {object} - All defined languages (key: human name and value: code)
- */
-export function getAvailableLanguages() {
-  const availableLanguages = {};
-  for (const lang in i18n._translations) {
-    const { LANGUAGE } = i18n._translations[lang];
-    availableLanguages[LANGUAGE] = lang;
-  }
-  return availableLanguages;
-}

@@ -22,12 +22,8 @@ const unknownTagFunction = () => ``;
 // Translations must be grouped with fold region comments like this:
 //#region cc-component
 //#endregion
+
 export const translations = {
-  // First, declare the translated language name with some emoji flag with "LANGUAGE"
-  LANGUAGE: 'Français',
-
-  // Then, list the translations...
-
   // The key must follow this pattern: 'cc-component.foo.bar'
   // Valid custom element tag name for the component,
   // then a dot,

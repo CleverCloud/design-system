@@ -16,11 +16,6 @@ function isMainTranslationNode (node) {
     && (node.declaration.declarations[0].init.type === 'ObjectExpression');
 }
 
-function isLanguageTranslation (node) {
-  return (node.type === 'Identifier')
-    && (node.name === 'LANGUAGE');
-}
-
 /**
  * Returns the closest parent from a node that matches the specified type.
  * If no type is specified, returns the direct parent.
@@ -46,8 +41,7 @@ function getClosestParentFromType (node, type) {
 }
 
 function getTranslationProperties (node) {
-  return node.declaration.declarations[0].init.properties
-    .filter((node) => !isLanguageTranslation(node.key));
+  return node.declaration.declarations[0].init.properties;
 }
 
 const OPENING_HTML_TAG = /<[a-z]+([^>]*)?>/;

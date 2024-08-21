@@ -68,7 +68,7 @@ async function run() {
   const allUsedKeys = Object.values(usedKeysByFile).flat();
 
   Object.entries(translationsByLang).forEach(([lang, translations]) => {
-    const translationsKeys = Object.keys(translations).filter((k) => k !== 'LANGUAGE');
+    const translationsKeys = Object.keys(translations);
 
     const unusedKeys = translationsKeys.filter((key) => !allUsedKeys.includes(key));
 

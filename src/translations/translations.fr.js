@@ -59,7 +59,6 @@ function formatFlavor(f) {
 }
 
 export const translations = {
-  LANGUAGE: 'Français',
   //#region cc-addon-admin
   'cc-addon-admin.admin': `Administration de l'add-on`,
   'cc-addon-admin.danger-zone': `Zone de danger`,
