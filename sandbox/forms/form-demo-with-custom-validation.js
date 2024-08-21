@@ -1,9 +1,9 @@
 import { css, html, LitElement } from 'lit';
+import '../../src/components/cc-button/cc-button.js';
+import '../../src/components/cc-input-text/cc-input-text.js';
 import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
 import { Validation } from '../../src/lib/form/validation.js';
 import { sanitize } from '../../src/lib/i18n-sanitize.js';
-import '../../src/components/cc-button/cc-button.js';
-import '../../src/components/cc-input-text/cc-input-text.js';
 
 /**
  * @typedef {import('../../src/lib/form/validation.types.js').Validity} Validity
@@ -40,16 +40,23 @@ const EMAIL_ERRORS_MAP = {
 };
 
 export class FormDemoWithCustomValidation extends LitElement {
-  render () {
+  render() {
     return html`
       <form ${formSubmit()}>
-        <cc-input-text label="Name" name="name" required 
-                       .customValidator=${LOWER_CASE_VALIDATOR}
-                       .customErrorMessages=${NAME_ERRORS_MAP}
+        <cc-input-text
+          label="Name"
+          name="name"
+          required
+          .customValidator=${LOWER_CASE_VALIDATOR}
+          .customErrorMessages=${NAME_ERRORS_MAP}
         ></cc-input-text>
-        <cc-input-text label="Email" name="email" type="email" required
-                       .customValidator=${EMAIL_VALIDATOR}
-                       .customErrorMessages=${EMAIL_ERRORS_MAP}
+        <cc-input-text
+          label="Email"
+          name="email"
+          type="email"
+          required
+          .customValidator=${EMAIL_VALIDATOR}
+          .customErrorMessages=${EMAIL_ERRORS_MAP}
         >
           <p slot="help">Must be on <code>example.com</code> domain</p>
         </cc-input-text>
@@ -59,7 +66,7 @@ export class FormDemoWithCustomValidation extends LitElement {
     `;
   }
 
-  static get styles () {
+  static get styles() {
     return [
       // language=CSS
       css`

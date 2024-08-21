@@ -1,9 +1,9 @@
 import { css, html, LitElement } from 'lit';
-import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
-import { Validation } from '../../src/lib/form/validation.js';
 import '../../src/components/cc-button/cc-button.js';
 import '../../src/components/cc-input-text/cc-input-text.js';
 import '../../src/components/cc-select/cc-select.js';
+import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
+import { Validation } from '../../src/lib/form/validation.js';
 
 const CASE_OPTIONS = [
   {
@@ -27,7 +27,7 @@ const CASE_ERROR_MESSAGE = {
  */
 
 export class FormDemoWithCoupledInputs extends LitElement {
-  render () {
+  render() {
     const customValidator = {
       /**
        *
@@ -35,7 +35,7 @@ export class FormDemoWithCoupledInputs extends LitElement {
        * @param {FormDataMap} formData
        * @return {Validity}
        */
-      validate (value, formData) {
+      validate(value, formData) {
         if (formData.case === 'uppercase') {
           return value.toUpperCase() === value ? Validation.VALID : Validation.invalid('not-uppercase');
         }
@@ -49,9 +49,12 @@ export class FormDemoWithCoupledInputs extends LitElement {
     return html`
       <form ${formSubmit()}>
         <cc-select label="Case" .options=${CASE_OPTIONS} name="case" required></cc-select>
-        <cc-input-text label="Value" name="val" required 
-                       .customValidator=${customValidator}
-                       .customErrorMessages=${CASE_ERROR_MESSAGE}
+        <cc-input-text
+          label="Value"
+          name="val"
+          required
+          .customValidator=${customValidator}
+          .customErrorMessages=${CASE_ERROR_MESSAGE}
         ></cc-input-text>
 
         <cc-button primary type="submit">Submit</cc-button>
@@ -59,7 +62,7 @@ export class FormDemoWithCoupledInputs extends LitElement {
     `;
   }
 
-  static get styles () {
+  static get styles() {
     return [
       // language=CSS
       css`

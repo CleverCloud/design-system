@@ -4,9 +4,9 @@ import '../../src/components/cc-block/cc-block.js';
 import '../../src/components/cc-input-number/cc-input-number.js';
 import '../../src/components/cc-input-text/cc-input-text.js';
 import '../../src/components/cc-product-card/cc-product-card.js';
-import '../../src/components/cc-toggle/cc-toggle.js';
-import '../../src/components/cc-select/cc-select.js';
 import { generateRandomKeywords } from '../../src/components/cc-product-card/generate-random-keywords.js';
+import '../../src/components/cc-select/cc-select.js';
+import '../../src/components/cc-toggle/cc-toggle.js';
 import { sandboxStyles } from '../sandbox-styles.js';
 
 const DEFAULT_PRODUCT = {
@@ -30,22 +30,21 @@ const API_PRODUCTS_SELECT = [
 ];
 
 export class CcProductCardSandbox extends LitElement {
-
-  static get properties () {
+  static get properties() {
     return {
       _currentProduct: { type: Object },
       _componentWidth: { type: Number },
     };
   }
 
-  constructor () {
+  constructor() {
     super();
 
     this._currentProduct = DEFAULT_PRODUCT;
     this._componentWidth = 20;
   }
 
-  _onSelect ({ detail: productName }) {
+  _onSelect({ detail: productName }) {
     if (productName === 'default') {
       this._currentProduct = DEFAULT_PRODUCT;
       return;
@@ -59,19 +58,18 @@ export class CcProductCardSandbox extends LitElement {
     };
   }
 
-  _onProductInput ({ detail: product }) {
+  _onProductInput({ detail: product }) {
     const parsedProduct = JSON.parse(product);
     if (parsedProduct != null) {
       this._currentProduct = parsedProduct;
     }
   }
 
-  _onWidthInput ({ detail: width }) {
+  _onWidthInput({ detail: width }) {
     this._componentWidth = width;
   }
 
-  render () {
-
+  render() {
     return html`
       <div class="ctrl-top">
         <cc-select
@@ -106,13 +104,13 @@ export class CcProductCardSandbox extends LitElement {
     `;
   }
 
-  static get styles () {
+  static get styles() {
     return [
       sandboxStyles,
       css`
         cc-input-text {
           --cc-input-font-family: var(--cc-ff-monospace, monospace);
-          
+
           width: 40em;
         }
       `,

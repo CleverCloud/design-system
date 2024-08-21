@@ -12,11 +12,7 @@ import { iconRemixCloudFill as iconLogo } from '../src/assets/cc-remix.icons.js'
 const MY_AWESOME_CONST = 'foobar';
 
 // DOCS: You may setup/init constant data used when component is in skeleton state.
-const SKELETON_FOOBAR = [
-  { foo: '???????' },
-  { foo: '????' },
-  { foo: '???????' },
-];
+const SKELETON_FOOBAR = [{ foo: '???????' }, { foo: '????' }, { foo: '???????' }];
 
 /**
  * @typedef {import('./cc-example-component.types.js').ExampleInterface} ExampleInterface
@@ -50,10 +46,9 @@ const SKELETON_FOOBAR = [
  * @cssprop {Color} --cc-loader-color - The color of the animated circle (defaults: `#2653af`).
  */
 export class CcExampleComponent extends LitElement {
-
   // DOCS: 1. LitElement's properties descriptor
 
-  static get properties () {
+  static get properties() {
     return {
       // Simple public properties/attributes
       one: { type: String },
@@ -73,7 +68,7 @@ export class CcExampleComponent extends LitElement {
 
   // DOCS: 2. Constructor
 
-  constructor () {
+  constructor() {
     super();
     // Init every property with @type and default values for a clean component and for auto generated documentation.
 
@@ -106,7 +101,7 @@ export class CcExampleComponent extends LitElement {
    * @param {String} foo - Docs for foo.
    * @param {Boolean} bar - Docs for bar.
    */
-  publicMethod (foo, bar) {
+  publicMethod(foo, bar) {
     // Do something
   }
 
@@ -114,7 +109,7 @@ export class CcExampleComponent extends LitElement {
 
   // It's common to use private methods not to have too much code in `render()`.
   // We often use this for i18n multiple cases.
-  _privateMethod () {
+  _privateMethod() {
     // Do something
   }
 
@@ -122,7 +117,7 @@ export class CcExampleComponent extends LitElement {
 
   // If you listen to an event in your `render()` function,
   // use a private method to handle the event and prefix it with `_on`.
-  _onSomething () {
+  _onSomething() {
     // Do something
   }
 
@@ -130,12 +125,12 @@ export class CcExampleComponent extends LitElement {
 
   // It's rare, but you may need to directly into the custom element lifecycle callbacks.
   // This is useful if you set intervals or listeners.
-  connectedCallback () {
+  connectedCallback() {
     super.connectedCallback();
     // Do something
   }
 
-  disconnectedCallback () {
+  disconnectedCallback() {
     super.disconnectedCallback();
     // Do something
   }
@@ -144,33 +139,31 @@ export class CcExampleComponent extends LitElement {
 
   // If you need to hook some code when a property changes (before the render)
   // It's often needed when you have a private property that depends on a public property
-  willUpdate (changeProperties) {
-  }
+  willUpdate(changeProperties) {}
 
   // If you need to setup some code before the first render, use this.
   // It's often needed if your component contains DOM managed by a 3rd party (chart, map...).
-  firstUpdated () {
+  firstUpdated() {
     // Do something
   }
 
   // If you need to hook some code when a property changes (after the render)
   // Use this one instead of update when you have a "firstUpdated"
-  updated (changeProperties) {
+  updated(changeProperties) {
     // Do something
   }
 
   // DOCS: 8. LitElement's render method
 
   // All UI components will need this function to describe the "HTML template".
-  render () {
-
+  render() {
     // Prepare booleans and format stuffs here
 
     return html`
       <div>
         This is <code>cc-example-component</code>
         ${this._renderSubpart()}
-        
+
         <!-- icon usage -->
         <cc-icon .icon="${iconLogo}" size="xl"></cc-icon>
         <cc-icon .icon="${iconRam}" style="--cc-icon-color: #d74d4e;"></cc-icon>
@@ -183,18 +176,15 @@ export class CcExampleComponent extends LitElement {
   // If you need to isolate a part of the template, put it in a "sub render" private method.
   // This is often used in repetitions.
   // It must be prefixed with `_render`.
-  _renderSubpart () {
-
+  _renderSubpart() {
     // Prepare booleans and format stuffs here
 
-    return html`
-      <div>Sub part of the template</div>
-    `;
+    return html` <div>Sub part of the template</div> `;
   }
 
   // DOCS: 10. LitElement's styles descriptor
 
-  static get styles () {
+  static get styles() {
     // This array may contain style imports from shared files.
     // Then you can defined your own component's styles.
     return [

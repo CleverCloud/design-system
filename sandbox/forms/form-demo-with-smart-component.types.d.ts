@@ -1,11 +1,10 @@
 export interface FormDemoWithSmartComponentState {
-  type: 'idle'|'submitting',
+  type: 'idle' | 'submitting';
   values?: {
-    name: string,
-    email: string,
-  },
+    name: string;
+    email: string;
+  };
   errors?: {
-    email: 'email-used',
-  },
+    email: 'email-used';
+  };
 }
-

@@ -23,15 +23,14 @@ const DEMO_CHOICES = Object.entries(DEMOS).map(([value, label]) => ({ value, lab
  */
 
 export class FormsSandbox extends LitElement {
-
-  static get properties () {
+  static get properties() {
     return {
       _demo: { type: String, state: true },
       _event: { type: Object, state: true },
     };
   }
 
-  constructor () {
+  constructor() {
     super();
 
     this._demo = null;
@@ -41,14 +40,14 @@ export class FormsSandbox extends LitElement {
   /**
    * @param {CustomEvent} e
    */
-  _onDemoChange ({ detail }) {
+  _onDemoChange({ detail }) {
     this._loadDemo(detail);
   }
 
   /**
    * @param {CustomEvent} e
    */
-  _onFormValid (e) {
+  _onFormValid(e) {
     this._event = {
       type: `🎉 ${e.type}`,
       detail: e.detail,
@@ -60,7 +59,7 @@ export class FormsSandbox extends LitElement {
   /**
    * @param {CustomEvent} e
    */
-  _onFormInvalid (e) {
+  _onFormInvalid(e) {
     this._event = {
       type: `⚠️ ${e.type}`,
       detail: e.detail,
@@ -73,15 +72,15 @@ export class FormsSandbox extends LitElement {
    * @param {string} demo
    * @return {string}
    */
-  _getDemoFilePath (demo) {
+  _getDemoFilePath(demo) {
     return `./form-demo-${demo}.js`;
   }
 
   /**
    * @param {string} demo
    */
-  _loadDemo (demo) {
-    import((this._getDemoFilePath(demo))).then(() => {
+  _loadDemo(demo) {
+    import(this._getDemoFilePath(demo)).then(() => {
       this._demo = demo;
       localStorage.setItem('cc-sandbox-form-demo', demo);
       this._event = null;
@@ -91,11 +90,11 @@ export class FormsSandbox extends LitElement {
   /**
    * @param {FormsSandboxPropertyValues} _changedProperties
    */
-  firstUpdated (_changedProperties) {
+  firstUpdated(_changedProperties) {
     this._loadDemo(localStorage.getItem('cc-sandbox-form-demo') || Object.keys(DEMOS)[0]);
   }
 
-  render () {
+  render() {
     return html`
       <div class="ctrl">
         <cc-select
@@ -108,22 +107,22 @@ export class FormsSandbox extends LitElement {
       </div>
       <div class="main">
         <div class="demo">
-          <cc-smart-container context='{ "fake": "fake" }'>
-            ${this._renderDemo()}
-          </cc-smart-container>
+          <cc-smart-container context='{ "fake": "fake" }'> ${this._renderDemo()} </cc-smart-container>
         </div>
-        ${this._event != null ? html`
-          <div class="spacer"></div>
-          <div class="event">
-            <div class="event-title">${this._event.type}</div>
-            <pre>${this._event.json}</pre>
-          </div>
-        ` : ''}
+        ${this._event != null
+          ? html`
+              <div class="spacer"></div>
+              <div class="event">
+                <div class="event-title">${this._event.type}</div>
+                <pre>${this._event.json}</pre>
+              </div>
+            `
+          : ''}
       </div>
     `;
   }
 
-  _renderDemo () {
+  _renderDemo() {
     if (this._demo == null) {
       return null;
     }
@@ -132,7 +131,7 @@ export class FormsSandbox extends LitElement {
     return staticHtml`<${unsafeStatic(tagName)} @form:valid=${this._onFormValid} @form:invalid=${this._onFormInvalid}></${unsafeStatic(tagName)}>`;
   }
 
-  static get styles () {
+  static get styles() {
     return [
       css`
         :host {
@@ -148,13 +147,13 @@ export class FormsSandbox extends LitElement {
           margin-bottom: 1em;
           gap: 0.5em;
         }
-        
+
         .main {
           display: flex;
           gap: 1em;
           padding: 1em;
         }
-        
+
         .spacer {
           flex: 1;
         }

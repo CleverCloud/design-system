@@ -1,10 +1,10 @@
 import { css, html, LitElement } from 'lit';
-import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
-import { focusFirstFormControlWithError } from '../../src/lib/form/form-utils.js';
-import { Validation } from '../../src/lib/form/validation.js';
 import '../../src/components/cc-button/cc-button.js';
 import '../../src/components/cc-input-text/cc-input-text.js';
 import '../../src/components/cc-toggle/cc-toggle.js';
+import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
+import { focusFirstFormControlWithError } from '../../src/lib/form/form-utils.js';
+import { Validation } from '../../src/lib/form/validation.js';
 
 /**
  * @typedef {import('../../src/lib/form/validation.types.js').Validity} Validity
@@ -18,7 +18,7 @@ const UNIQUE_VALIDATOR = {
    * @param {FormDataMap} formData
    * @return {any}
    */
-  validate (value, formData) {
+  validate(value, formData) {
     if (Array.isArray(formData.items) && formData.items.filter((i) => i === value).length > 1) {
       return Validation.invalid('Must be unique');
     }
@@ -27,27 +27,27 @@ const UNIQUE_VALIDATOR = {
 };
 
 export class FormDemoWithFieldset extends LitElement {
-  _onInvalid () {
+  _onInvalid() {
     focusFirstFormControlWithError(this.shadowRoot.querySelector('fieldset'));
   }
 
-  render () {
+  render() {
     return html`
       <form ${formSubmit()} @form:invalid=${this._onInvalid}>
-        <fieldset >
+        <fieldset>
           <legend>Unique items</legend>
-          
+
           <cc-input-text label="Item 1" name="items" required .customValidator=${UNIQUE_VALIDATOR}></cc-input-text>
           <cc-input-text label="Item 2" name="items" required .customValidator=${UNIQUE_VALIDATOR}></cc-input-text>
           <cc-input-text label="Item 3" name="items" required .customValidator=${UNIQUE_VALIDATOR}></cc-input-text>
         </fieldset>
-        
+
         <cc-button primary type="submit">Submit</cc-button>
       </form>
     `;
   }
 
-  static get styles () {
+  static get styles() {
     return [
       // language=CSS
       css`

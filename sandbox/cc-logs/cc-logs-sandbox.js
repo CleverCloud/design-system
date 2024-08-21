@@ -1,10 +1,5 @@
 import { css, html, LitElement } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
-import '../../src/components/cc-logs/cc-logs.js';
-import '../../src/components/cc-toggle/cc-toggle.js';
-import '../../src/components/cc-button/cc-button.js';
-import '../../src/components/cc-input-number/cc-input-number.js';
-import '../../src/components/cc-select/cc-select.js';
 import {
   iconRemixAddFill as addIcon,
   iconRemixDeleteBin_2Fill as clearIcon,
@@ -12,8 +7,13 @@ import {
   iconRemixSkipDownFill as scrollToBottomIcon,
   iconRemixStopMiniFill as stopIcon,
 } from '../../src/assets/cc-remix.icons.js';
+import '../../src/components/cc-button/cc-button.js';
+import '../../src/components/cc-input-number/cc-input-number.js';
+import '../../src/components/cc-logs/cc-logs.js';
 import { DATE_DISPLAYS, TIMEZONES } from '../../src/components/cc-logs/date-displayer.js';
 import { createFakeLog, CUSTOM_METADATA_RENDERERS } from '../../src/components/cc-logs/fake-logs.js';
+import '../../src/components/cc-select/cc-select.js';
+import '../../src/components/cc-toggle/cc-toggle.js';
 import { ansiPaletteStyle } from '../../src/lib/ansi/ansi-palette-style.js';
 import defaultPalette from '../../src/lib/ansi/palettes/default.js';
 import everblushPalette from '../../src/lib/ansi/palettes/everblush.js';
@@ -46,7 +46,7 @@ const DATE_DISPLAY_OPTIONS = DATE_DISPLAYS.map((d) => ({ label: d, value: d }));
 const ZONE_OPTIONS = TIMEZONES.map((d) => ({ label: d, value: d }));
 
 class CcLogsSandbox extends LitElement {
-  static get properties () {
+  static get properties() {
     return {
       _dateDisplay: { type: String, state: true },
       _rate: { type: Number, state: true },
@@ -63,7 +63,7 @@ class CcLogsSandbox extends LitElement {
     };
   }
 
-  constructor () {
+  constructor() {
     super();
 
     this._dateDisplay = 'datetime-iso';
@@ -84,31 +84,34 @@ class CcLogsSandbox extends LitElement {
     this._timer = null;
     /** @type {Ref<CcLogs>} */
     this._logsRef = createRef();
-    this._buffer = new Buffer((logs) => {
-      this._logsRef.value.appendLogs(logs);
-    }, { timeout: 200 });
+    this._buffer = new Buffer(
+      (logs) => {
+        this._logsRef.value.appendLogs(logs);
+      },
+      { timeout: 200 },
+    );
   }
 
-  _newLog () {
+  _newLog() {
     this._index++;
 
     return createFakeLog(this._index, { longMessage: true, ansi: true });
   }
 
-  _addLog () {
+  _addLog() {
     this._buffer.add(this._newLog());
   }
 
-  _clear () {
+  _clear() {
     this._buffer.clear();
     this._logsRef.value.clear();
   }
 
-  _isStarted () {
+  _isStarted() {
     return this._started;
   }
 
-  _start (rate) {
+  _start(rate) {
     if (this._isStarted()) {
       this._stop();
     }
@@ -117,7 +120,7 @@ class CcLogsSandbox extends LitElement {
     this._started = true;
   }
 
-  _stop () {
+  _stop() {
     if (this._isStarted()) {
       clearInterval(this._timer);
       this._timer = null;
@@ -125,79 +128,78 @@ class CcLogsSandbox extends LitElement {
     }
   }
 
-  _onStartStopClick () {
+  _onStartStopClick() {
     if (this._isStarted()) {
       this._stop();
-    }
-    else {
+    } else {
       this._start(this._rate);
     }
   }
 
-  _onAddClick () {
+  _onAddClick() {
     this._logsRef.value.appendLogs([this._newLog()]);
   }
 
-  _onClearClick () {
+  _onClearClick() {
     this._clear();
   }
 
-  _onLimitChanged (e) {
+  _onLimitChanged(e) {
     this._limit = e.target.value;
   }
 
-  _onRateToggle ({ detail }) {
+  _onRateToggle({ detail }) {
     this._rate = parseInt(detail);
     if (this._isStarted()) {
       this._start(this._rate);
     }
   }
 
-  _onDateDisplayToggle ({ detail }) {
+  _onDateDisplayToggle({ detail }) {
     this._dateDisplay = detail;
   }
 
-  _onTimezoneToggle ({ detail }) {
+  _onTimezoneToggle({ detail }) {
     this._timezone = detail;
   }
 
-  _onPaletteToggle ({ detail }) {
+  _onPaletteToggle({ detail }) {
     this._palette = detail;
   }
 
-  _onFilterIpsToggle ({ detail }) {
+  _onFilterIpsToggle({ detail }) {
     this._filterIps = detail;
   }
 
-  _onFilterLevelsToggle ({ detail }) {
+  _onFilterLevelsToggle({ detail }) {
     this._filterLevels = detail;
   }
 
-  _onWrapLinesSwitched () {
+  _onWrapLinesSwitched() {
     this._wrapLines = !this._wrapLines;
   }
 
-  _onStripAnsiSwitched () {
+  _onStripAnsiSwitched() {
     this._stripAnsi = !this._stripAnsi;
   }
 
-  _onFollowSwitched () {
+  _onFollowSwitched() {
     this._follow = !this._follow;
   }
 
-  _onUseCustomMetadataRenderersSwitched () {
+  _onUseCustomMetadataRenderersSwitched() {
     this._useCustomMetadataRenderers = !this._useCustomMetadataRenderers;
   }
 
-  _onFollowChange ({ detail }) {
+  _onFollowChange({ detail }) {
     this._follow = detail;
   }
 
-  _onScrollToBottomClick () {
+  _onScrollToBottomClick() {
     this._logsRef.value.scrollToBottom();
   }
 
-  willUpdate (changedProperties) {
+  willUpdate(changedProperties) {
     if (changedProperties.has('_filterLevels') || changedProperties.has('_filterIps')) {
       this._filter = [
         ...this._filterLevels.map((v) => ({ metadata: 'level', value: v })),
@@ -206,10 +208,14 @@ class CcLogsSandbox extends LitElement {
     }
   }
 
-  render () {
+  render() {
     return html`
       <div class="ctrl-top">
-        <cc-toggle .value=${`${this._rate}`} @cc-toggle:input=${this._onRateToggle} .choices=${RATE_OPTIONS}></cc-toggle>
+        <cc-toggle
+          .value=${`${this._rate}`}
+          @cc-toggle:input=${this._onRateToggle}
+          .choices=${RATE_OPTIONS}
+        ></cc-toggle>
         <cc-button
           @cc-button:click=${this._onStartStopClick}
           ?danger=${this._started}
@@ -218,19 +224,11 @@ class CcLogsSandbox extends LitElement {
           a11y-name=${this._started ? 'Stop' : 'Start'}
           hide-text
         ></cc-button>
-        <cc-button
-          @cc-button:click=${this._onAddClick}
-          ?primary=${true}
-          ?outlined=${true}
-          .icon=${addIcon}
-        >Add one log
+        <cc-button @cc-button:click=${this._onAddClick} ?primary=${true} ?outlined=${true} .icon=${addIcon}
+          >Add one log
         </cc-button>
-        <cc-button
-          @cc-button:click=${this._onClearClick}
-          ?danger=${true}
-          ?outlined=${true}
-          .icon=${clearIcon}
-        >Clear
+        <cc-button @cc-button:click=${this._onClearClick} ?danger=${true} ?outlined=${true} .icon=${clearIcon}
+          >Clear
         </cc-button>
       </div>
 
@@ -248,18 +246,23 @@ class CcLogsSandbox extends LitElement {
           style="${this._palette}"
           ${ref(this._logsRef)}
           @cc-logs-beta:followChange=${this._onFollowChange}
-        ></cc-logs-beta>  
+        ></cc-logs-beta>
       </div>
 
       <div class="ctrl-right">
         <label for="useCustomMetadataRenderer">
-          <input id="useCustomMetadataRenderer" type="checkbox" @change=${this._onUseCustomMetadataRenderersSwitched}
-                 .checked=${this._useCustomMetadataRenderers}> Use custom metadata rendering
+          <input
+            id="useCustomMetadataRenderer"
+            type="checkbox"
+            @change=${this._onUseCustomMetadataRenderersSwitched}
+            .checked=${this._useCustomMetadataRenderers}
+          />
+          Use custom metadata rendering
         </label>
 
         <label for="wrap-lines">
-          <input id="wrap-lines" type="checkbox" @change=${this._onWrapLinesSwitched} .checked=${this._wrapLines}> Wrap
-          lines
+          <input id="wrap-lines" type="checkbox" @change=${this._onWrapLinesSwitched} .checked=${this._wrapLines} />
+          Wrap lines
         </label>
 
         <cc-select
@@ -272,8 +275,8 @@ class CcLogsSandbox extends LitElement {
         </cc-select>
 
         <label for="strip-ansi">
-          <input id="strip-ansi" type="checkbox" @change=${this._onStripAnsiSwitched} .checked=${this._stripAnsi}> Strip
-          ANSI
+          <input id="strip-ansi" type="checkbox" @change=${this._onStripAnsiSwitched} .checked=${this._stripAnsi} />
+          Strip ANSI
         </label>
 
         <cc-select
@@ -320,19 +323,18 @@ class CcLogsSandbox extends LitElement {
         <div class="spacer"></div>
 
         <div>
-          <cc-button
-            @cc-button:click=${this._onScrollToBottomClick}
-            .icon=${scrollToBottomIcon}
-          >Scroll to bottom</cc-button>
+          <cc-button @cc-button:click=${this._onScrollToBottomClick} .icon=${scrollToBottomIcon}
+            >Scroll to bottom</cc-button
+          >
         </div>
         <label for="follow">
-          <input id="follow" type="checkbox" @change=${this._onFollowSwitched} .checked=${this._follow}> Follow
+          <input id="follow" type="checkbox" @change=${this._onFollowSwitched} .checked=${this._follow} /> Follow
         </label>
       </div>
     `;
   }
 
-  static get styles () {
+  static get styles() {
     return [
       sandboxStyles,
       css`

@@ -1,6 +1,6 @@
 // Don't forget to import the component you're presenting!
-import './cc-example-component.js';
 import { makeStory, storyWait } from '../stories/lib/make-story.js';
+import './cc-example-component.js';
 
 export default {
   // this makes storybook generate a doc from the custom elements manifest
@@ -57,17 +57,13 @@ export const error = makeStory(conf, {
 // You need to name your stories with the `dataLoadedWith` prefix.
 // Don't forget edge cases (ex: small/huge strings, small/huge lists...).
 export const dataLoadedWithFoo = makeStory(conf, {
-  items: [
-    { one: 'Foo', three: [{ foo: 42 }] },
-  ],
+  items: [{ one: 'Foo', three: [{ foo: 42 }] }],
 });
 
 // If your component can trigger updates/deletes remote data,
 // don't forget the case where the user's waiting for an operation to complete.
 export const waiting = makeStory(conf, {
-  items: [
-    { one: 'Foo', three: [{ foo: 42 }], waiting: true },
-  ],
+  items: [{ one: 'Foo', three: [{ foo: 42 }], waiting: true }],
 });
 
 // If your component contains remote data,

@@ -1,12 +1,12 @@
 import { html, LitElement } from 'lit';
+import '../../src/components/cc-ansi-palette/cc-ansi-palette.js';
+import '../../src/components/cc-select/cc-select.js';
+import '../../src/components/cc-toggle/cc-toggle.js';
 import { analyzePalette } from '../../src/lib/ansi/ansi-palette-analyser.js';
 import { hexToRgb, isDark } from '../../src/lib/color.js';
 import { i18n } from '../../src/lib/i18n.js';
 import { sandboxStyles } from '../sandbox-styles.js';
 import { getGoghPalettes } from './gogh-palettes.js';
-import '../../src/components/cc-toggle/cc-toggle.js';
-import '../../src/components/cc-select/cc-select.js';
-import '../../src/components/cc-ansi-palette/cc-ansi-palette.js';
 
 const TYPES = [
   { label: 'light', value: 'light' },
@@ -14,8 +14,7 @@ const TYPES = [
 ];
 
 export class CcAnsiPaletteSandbox extends LitElement {
-
-  static get properties () {
+  static get properties() {
     return {
       _palettes: { type: String, state: true },
       _selectedPaletteName: { type: String, state: true },
@@ -23,7 +22,7 @@ export class CcAnsiPaletteSandbox extends LitElement {
     };
   }
 
-  constructor () {
+  constructor() {
     super();
 
     this._type = 'light';
@@ -32,7 +31,7 @@ export class CcAnsiPaletteSandbox extends LitElement {
     this._paletteChoices = [];
   }
 
-  _getPaletteChoices () {
+  _getPaletteChoices() {
     return Object.values(this._palettes)
       .filter((p) => p.type === this._type)
       .sort((p1, p2) => {
@@ -50,33 +49,38 @@ export class CcAnsiPaletteSandbox extends LitElement {
       });
   }
 
-  _getSelectedPalette () {
+  _getSelectedPalette() {
     return this._palettes[this._selectedPaletteName];
   }
 
-  _onTypeToggle ({ detail }) {
+  _onTypeToggle({ detail }) {
     this._type = detail;
   }
 
-  _onPaletteToggle ({ detail }) {
+  _onPaletteToggle({ detail }) {
     this._selectedPaletteName = detail;
     console.log(this._selectedPaletteName);
   }
 
-  firstUpdated (changedProperties) {
+  firstUpdated(changedProperties) {
     getGoghPalettes().then((goghPalettes) => {
-      this._palettes = Object.fromEntries(Object.entries(goghPalettes).map(([name, p]) => {
-        return [name, {
-          name: name,
-          palette: p,
-          type: isDark(hexToRgb(p.background)) ? 'dark' : 'light',
-          analysis: analyzePalette(p),
-        }];
-      }));
+      this._palettes = Object.fromEntries(
+        Object.entries(goghPalettes).map(([name, p]) => {
+          return [
+            name,
+            {
+              name: name,
+              palette: p,
+              type: isDark(hexToRgb(p.background)) ? 'dark' : 'light',
+              analysis: analyzePalette(p),
+            },
+          ];
+        }),
+      );
     });
   }
 
-  willUpdate (changedProperties) {
+  willUpdate(changedProperties) {
     if (changedProperties.has('_palettes') || changedProperties.has('_type')) {
       this._paletteChoices = this._getPaletteChoices();
     }
@@ -86,7 +90,7 @@ export class CcAnsiPaletteSandbox extends LitElement {
     }
   }
 
-  render () {
+  render() {
     return html`
       <div class="ctrl-top">
         <cc-toggle
@@ -112,10 +116,8 @@ export class CcAnsiPaletteSandbox extends LitElement {
     `;
   }
 
-  static get styles () {
-    return [
-      sandboxStyles,
-    ];
+  static get styles() {
+    return [sandboxStyles];
   }
 }
 

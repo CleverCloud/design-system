@@ -1,115 +1,117 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Demo smart</title>
-  <link rel="stylesheet" href="/src/styles/default-theme.css">
-  <style>
-    html, body {
-      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-      margin: 0;
-      height: 100%;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo smart</title>
+    <link rel="stylesheet" href="/src/styles/default-theme.css" />
+    <style>
+      html,
+      body {
+        font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+        margin: 0;
+        height: 100%;
+      }
 
-    .main {
-      height: 100%;
-      display: flex;
-    }
+      .main {
+        height: 100%;
+        display: flex;
+      }
 
-    .left {
-      box-shadow: 0 0 8px 0 #aaa;
-      display: flex;
-      flex-direction: column;
-      width: 15em;
-    }
+      .left {
+        box-shadow: 0 0 8px 0 #aaa;
+        display: flex;
+        flex-direction: column;
+        width: 15em;
+      }
 
-    .header {
-      padding: 0.25em;
-    }
+      .header {
+        padding: 0.25em;
+      }
 
-    .header img {
-      height: 2em;
-    }
+      .header img {
+        height: 2em;
+      }
 
-    .sandboxes-list {
-      padding: 0.5em;
-      background-color: #eee;
-      flex: 1;
-      overflow: auto;
-    }
+      .sandboxes-list {
+        padding: 0.5em;
+        background-color: #eee;
+        flex: 1;
+        overflow: auto;
+      }
 
-    .sandboxes-list ul {
-      padding: 0;
-      margin: 0;
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
-    }
+      .sandboxes-list ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+      }
 
-    .sandboxes-list li {
-      padding: 0;
-      margin-top: 0.5em;
-    }
+      .sandboxes-list li {
+        padding: 0;
+        margin-top: 0.5em;
+      }
 
-    .sandboxes-list a {
-      display: block;
-      background-color: #eee;
-      padding: 0.25em 0.5em;
-      border-radius: var(--cc-border-radius-default, 0.25em);
-    }
+      .sandboxes-list a {
+        display: block;
+        background-color: #eee;
+        padding: 0.25em 0.5em;
+        border-radius: var(--cc-border-radius-default, 0.25em);
+      }
 
-    .sandboxes-list a:hover {
-      background-color: #ddd;
-    }
+      .sandboxes-list a:hover {
+        background-color: #ddd;
+      }
 
-    .sandboxes-list a.selected, .sandboxes-list a:hover.selected {
-      background-color: #333;
-      color: #eee;
-    }
+      .sandboxes-list a.selected,
+      .sandboxes-list a:hover.selected {
+        background-color: #333;
+        color: #eee;
+      }
 
-    .languages {
-      padding: 1em;
-    }
+      .languages {
+        padding: 1em;
+      }
 
-    .sandbox-container {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      padding: 1em;
-      overflow: auto;
-    }
+      .sandbox-container {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 1em;
+        overflow: auto;
+      }
 
-    cc-toaster {
-      position: fixed;
-      top: 1em;
-      right: 1em;
-    }
-  </style>
-  <script src="index.js" type="module"></script>
-</head>
-<body>
-
-<div class="main">
-  <div class="left">
-    <div class="header">
-      <a title="Clever Cloud components" href="https://www.clever-cloud.com/doc/" target="_blank">
-        <img src="https://www.clever-cloud.com/app/themes/Starter/assets/img/brand-assets/logo_on_white.svg"
-             alt="Clever Cloud components">
-      </a>
+      cc-toaster {
+        position: fixed;
+        top: 1em;
+        right: 1em;
+      }
+    </style>
+    <script src="index.js" type="module"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="left">
+        <div class="header">
+          <a title="Clever Cloud components" href="https://www.clever-cloud.com/doc/" target="_blank">
+            <img
+              src="https://www.clever-cloud.com/app/themes/Starter/assets/img/brand-assets/logo_on_white.svg"
+              alt="Clever Cloud components"
+            />
+          </a>
+        </div>
+        <div class="sandboxes-list"></div>
+        <div class="languages"></div>
+      </div>
+      <div class="sandbox-container"></div>
     </div>
-    <div class="sandboxes-list"></div>
-    <div class="languages"></div>
-  </div>
-  <div class="sandbox-container"></div>
-</div>
 
-<cc-toaster
-  animation="fade-and-slide"
-  position="top-right"
-  toast-default-options='{"timeout": 5000, "closeable": true, "showProgress": true}'
-></cc-toaster>
-
-</body>
+    <cc-toaster
+      animation="fade-and-slide"
+      position="top-right"
+      toast-default-options='{"timeout": 5000, "closeable": true, "showProgress": true}'
+    ></cc-toaster>
+  </body>
 </html>

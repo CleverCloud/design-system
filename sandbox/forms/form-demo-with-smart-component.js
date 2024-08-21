@@ -1,15 +1,15 @@
 import { css, html, LitElement } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
+import '../../src/components/cc-button/cc-button.js';
+import '../../src/components/cc-input-text/cc-input-text.js';
+import '../../src/components/cc-notice/cc-notice.js';
+import '../../src/components/cc-smart-container/cc-smart-container.js';
 import { defineSmartComponent } from '../../src/lib/define-smart-component.js';
 import { dispatchCustomEvent } from '../../src/lib/events.js';
 import { FormErrorFocusController } from '../../src/lib/form/form-error-focus-controller.js';
 import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
 import { notifySuccess } from '../../src/lib/notifications.js';
 import { updateRootContext } from '../../src/lib/smart-manager.js';
-import '../../src/components/cc-button/cc-button.js';
-import '../../src/components/cc-input-text/cc-input-text.js';
-import '../../src/components/cc-notice/cc-notice.js';
-import '../../src/components/cc-smart-container/cc-smart-container.js';
 
 /**
  * @typedef {import('../../src/components/cc-input-text/cc-input-text.js').CcInputText} CcInputText
@@ -20,13 +20,13 @@ import '../../src/components/cc-smart-container/cc-smart-container.js';
  */
 
 export class FormDemoWithSmartComponent extends LitElement {
-  static get properties () {
+  static get properties() {
     return {
       formState: { type: Object, attribute: false },
     };
   }
 
-  constructor () {
+  constructor() {
     super();
 
     /** @type {HTMLFormElementRef} */
@@ -38,14 +38,14 @@ export class FormDemoWithSmartComponent extends LitElement {
     this.formState = { type: 'idle' };
   }
 
-  resetForm () {
+  resetForm() {
     this._formRef.value.reset();
   }
 
   /**
    * @param {{name: string, email: string}} formData
    */
-  _onValidSubmit (formData) {
+  _onValidSubmit(formData) {
     this.formState = {
       type: 'idle',
       values: {
@@ -61,40 +61,49 @@ export class FormDemoWithSmartComponent extends LitElement {
    * @param {'email-used'} code
    * @return {string}
    */
-  _getErrorMessage (code) {
+  _getErrorMessage(code) {
     if (code === 'email-used') {
       return 'Email already used';
     }
     return null;
   }
 
-  connectedCallback () {
+  connectedCallback() {
     super.connectedCallback();
     updateRootContext({});
   }
 
-  render () {
+  render() {
     const isFormSubmitting = this.formState.type === 'submitting';
 
     return html`
       <form ${ref(this._formRef)} ${formSubmit(this._onValidSubmit.bind(this))}>
         <cc-notice intent="info" message="Values are initialized asynchronously from smart component"></cc-notice>
-        <cc-input-text label="Name" name="name" required ?disabled=${isFormSubmitting} 
-                       value="${this.formState.values?.name}"
+        <cc-input-text
+          label="Name"
+          name="name"
+          required
+          ?disabled=${isFormSubmitting}
+          value="${this.formState.values?.name}"
         ></cc-input-text>
-        <cc-input-text label="Email" name="email" type="email" required ?disabled=${isFormSubmitting}
-                       value="${this.formState.values?.email}"
-                       .errorMessage=${this._getErrorMessage(this.formState.errors?.email)}
+        <cc-input-text
+          label="Email"
+          name="email"
+          type="email"
+          required
+          ?disabled=${isFormSubmitting}
+          value="${this.formState.values?.email}"
+          .errorMessage=${this._getErrorMessage(this.formState.errors?.email)}
         >
           <p slot="help">Try email address starting with <code>used@</code> to see asynchronous error</p>
         </cc-input-text>
 
         <cc-button primary type="submit" ?waiting=${isFormSubmitting}>Submit</cc-button>
-      </form>  
+      </form>
     `;
   }
 
-  static get styles () {
+  static get styles() {
     return [
       // language=CSS
       css`
@@ -130,7 +139,7 @@ defineSmartComponent({
    * @param {(prop: string, fn: (prop: any) => void) => void} settings.updateComponent
    * @param {(type: string, listener: (detail: any) => void) => void} settings.onEvent
    */
-  async onContextUpdate ({ component, updateComponent, onEvent }) {
+  async onContextUpdate({ component, updateComponent, onEvent }) {
     console.log('update context');
     // setting form value from smart
     component.formState = {
@@ -141,30 +150,36 @@ defineSmartComponent({
       },
     };
 
-    onEvent('form-demo-with-smart-component:submit-form',
+    onEvent(
+      'form-demo-with-smart-component:submit-form',
       /**
        * @param {{name: string, email: string}} data
        */
       (data) => {
-        updateComponent('formState',
+        updateComponent(
+          'formState',
           /** @param {FormDemoWithSmartComponentState} formState */
           (formState) => {
             formState.type = 'submitting';
-          });
+          },
+        );
 
         submitForm(data)
           .then(() => {
-            updateComponent('formState',
+            updateComponent(
+              'formState',
               /** @param {FormDemoWithSmartComponentState} formState */
               (formState) => {
                 formState.type = 'idle';
-              });
+              },
+            );
 
             component.resetForm();
             notifySuccess('Done successfully 🎉');
           })
           .catch((error) => {
-            updateComponent('formState',
+            updateComponent(
+              'formState',
               /** @param {FormDemoWithSmartComponentState} formState */
               (formState) => {
                 formState.type = 'idle';
@@ -174,9 +189,11 @@ defineSmartComponent({
                     email: 'email-used',
                   };
                 }
-              });
+              },
+            );
           });
-      });
+      },
+    );
   },
 });
 
@@ -185,13 +202,12 @@ defineSmartComponent({
  * @param {{name: string, email: string}} data
  * @return {Promise<unknown>}
  */
-function submitForm (data) {
+function submitForm(data) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (data.email.startsWith('used')) {
         reject(new Error('email-used'));
-      }
-      else {
+      } else {
         resolve();
       }
     }, 1500);

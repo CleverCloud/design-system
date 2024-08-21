@@ -29,7 +29,7 @@ const GOGH_PALETTES_URL = 'https://raw.githubusercontent.com/Gogh-Co/Gogh/master
 /**
  * @return {Promise<{[p: string]: AnsiPalette}>}
  */
-export async function getGoghPalettes () {
+export async function getGoghPalettes() {
   const response = await fetch(new URL(GOGH_PALETTES_URL));
   const palettes = await response.json();
   return Object.fromEntries(palettes.map((p) => [p.name, convert(p)]));
@@ -40,10 +40,12 @@ export async function getGoghPalettes () {
  * @param goghPalette
  * @return {AnsiPalette}
  */
-function convert (goghPalette) {
-  const palette = Object.fromEntries(Object.entries(GOGH_COLORS).map(([colorName, goghColorName]) => {
-    return [colorName, goghPalette[goghColorName]];
-  }));
+function convert(goghPalette) {
+  const palette = Object.fromEntries(
+    Object.entries(GOGH_COLORS).map(([colorName, goghColorName]) => {
+      return [colorName, goghPalette[goghColorName]];
+    }),
+  );
 
   const background = hexToRgb(palette.background);
   const shadeDirection = isDark(background) ? +1 : -1;
