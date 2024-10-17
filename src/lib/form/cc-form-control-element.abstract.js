@@ -228,6 +228,13 @@ export class CcFormControlElement extends LitElement {
     }
   }
 
+  /**
+   * @return {HTMLFormElement|null}
+   */
+  get form() {
+    return this._internals.form;
+  }
+
   /* endregion */
 
   /* region mimic the native validation API */

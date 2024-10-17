@@ -610,4 +610,16 @@ describe('InputElement', () => {
 
     expect(formControlElement.value).to.eql('reset value');
   });
+
+  it('should have the right form element', async () => {
+    const customElement = getCustomElement();
+
+    /** @type {HTMLFormElement} */
+    const formElement = await getElement(
+      `<form><${customElement} name="input" value="current value"></${customElement}></form>`,
+    );
+    const formControlElement = formElement.querySelector(customElement);
+
+    expect(formControlElement.form).to.eql(formElement);
+  });
 });
