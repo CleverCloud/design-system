@@ -63,6 +63,13 @@ export const defaultStory = makeStory(conf, {
   items,
 });
 
+export const disabled = makeStory(conf, {
+  items: items.map((item) => ({
+    ...item,
+    disabled: true,
+  })),
+});
+
 export const withButtonText = makeStory(conf, {
   items: items.map((item) => ({
     ...item,
