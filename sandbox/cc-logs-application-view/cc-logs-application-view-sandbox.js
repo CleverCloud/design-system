@@ -4,99 +4,87 @@ import '../../src/components/cc-button/cc-button.js';
 import '../../src/components/cc-input-text/cc-input-text.js';
 import '../../src/components/cc-logs-application-view/cc-logs-application-view.js';
 import '../../src/components/cc-logs-application-view/cc-logs-application-view.smart.js';
+import '../../src/components/cc-select/cc-select.js';
+import { formSubmit } from '../../src/lib/form/form-submit-directive.js';
 import { isStringEmpty } from '../../src/lib/utils.js';
 import { sandboxStyles } from '../sandbox-styles.js';
 
 const DATE_RANGE_SELECTION_OPTIONS = [
   { label: 'none', value: 'none', range: null },
   { label: 'live', value: 'live', range: { type: 'live' } },
-  { label: 'lastHour', value: 'lastHour', range: { type: 'predefined', def: 'lastHour' } },
-  { label: 'last4Hours', value: 'last4Hours', range: { type: 'predefined', def: 'last4Hours' } },
-  { label: 'last7Days', value: 'last7Days', range: { type: 'predefined', def: 'last7Days' } },
-  { label: 'today', value: 'today', range: { type: 'predefined', def: 'today' } },
-  { label: 'yesterday', value: 'yesterday', range: { type: 'predefined', def: 'yesterday' } },
+  { label: 'lastHour', value: 'lastHour', range: { type: 'preset', preset: 'lastHour' } },
+  { label: 'last4Hours', value: 'last4Hours', range: { type: 'preset', preset: 'last4Hours' } },
+  { label: 'last7Days', value: 'last7Days', range: { type: 'preset', preset: 'last7Days' } },
+  { label: 'today', value: 'today', range: { type: 'preset', preset: 'today' } },
+  { label: 'yesterday', value: 'yesterday', range: { type: 'preset', preset: 'yesterday' } },
 ];
 
-class CcLogsSandbox extends LitElement {
-  static get properties() {
-    return {
-      _ownerId: { type: String, state: true },
-      _applicationId: { type: String, state: true },
-    };
-  }
+const INITIAL_OWNER = 'orga_540caeb6-521c-4a19-a955-efe6da35d142';
+const INITIAL_APP = 'app_d0969d3a-5317-4e62-91e3-7adfe66acfa4';
 
+/**
+ * @typedef {import('../../src/components/cc-smart-container/cc-smart-container.js').CcSmartContainer} CcSmartContainer
+ * @typedef {import('../../src/lib/form/form.types.js').FormDataMap} FormDataMap
+ * @typedef {import('lit').PropertyValues<CcLogsApplicationViewSandbox>} PropertyValues
+ * @typedef {import('lit/directives/ref.js').Ref<HTMLFormElement>} HTMLFormElementRef
+ * @typedef {import('lit/directives/ref.js').Ref<CcSmartContainer>} CcSmartContainerRef
+ */
+
+class CcLogsApplicationViewSandbox extends LitElement {
   constructor() {
     super();
-    this._ownerId = 'orga_540caeb6-521c-4a19-a955-efe6da35d142';
-    this._applicationId = 'app_d0969d3a-5317-4e62-91e3-7adfe66acfa4';
-    // this._deploymentId = 'deployment_1c195ebf-c48f-464d-b182-ba79e0187bce';
 
-    /** @type {Ref<CcLogsApplicationView>} A reference to cc-logs-application-view component. */
-    this._logsRef = createRef();
+    /** @type {HTMLFormElementRef} */
+    this._formRef = createRef();
+
+    /** @type {CcSmartContainerRef} */
+    this._smartContainerRef = createRef();
+
+    this._onFormSubmit = this._onFormSubmit.bind(this);
   }
 
-  _onOwnerIdChange({ detail }) {
-    this._ownerId = detail;
-  }
+  /**
+   * @param {FormDataMap} formData
+   */
+  _onFormSubmit(formData) {
+    const deploymentId = /** @type {string} */ (formData.deploymentId);
 
-  _onApplicationIdChange({ detail }) {
-    this._applicationId = detail;
-  }
-
-  _onDeploymentIdChange({ detail }) {
-    this._deploymentId = detail;
-  }
-
-  _onDateRangeSelectionChange({ detail }) {
-    this._dateRangeSelection = detail;
-  }
-
-  _onApply() {
-    this.shadowRoot.querySelector('cc-smart-container').context = {
-      ownerId: this._ownerId,
-      appId: this._applicationId,
-      deploymentId: isStringEmpty(this._deploymentId) ? null : this._deploymentId,
-      dateRangeSelection: DATE_RANGE_SELECTION_OPTIONS.find((o) => o.value === this._dateRangeSelection)?.range,
+    this._smartContainerRef.value.context = {
+      ownerId: formData.ownerId,
+      appId: formData.applicationId,
+      deploymentId: isStringEmpty(deploymentId) ? null : deploymentId,
+      dateRangeSelection: DATE_RANGE_SELECTION_OPTIONS.find((o) => o.value === formData.dateRangeSelection)?.range,
     };
   }
 
   render() {
     return html`
-      <div class="ctrl-top" style="align-items: normal">
-        <cc-input-text
-          .value=${this._ownerId}
-          label="ownerId"
-          @cc-input-text:input=${this._onOwnerIdChange}
-          required
-        ></cc-input-text>
-        <cc-input-text
-          .value=${this._applicationId}
-          label="applicationId"
-          @cc-input-text:input=${this._onApplicationIdChange}
-          required
-        ></cc-input-text>
-        <cc-input-text
-          .value=${this._deploymentId}
-          label="deploymentId"
-          @cc-input-text:input=${this._onDeploymentIdChange}
-        ></cc-input-text>
+      <form class="ctrl-top" style="align-items: normal" ${ref(this._formRef)} ${formSubmit(this._onFormSubmit)}>
+        <cc-input-text label="ownerId" name="ownerId" value=${INITIAL_OWNER} required></cc-input-text>
+        <cc-input-text label="applicationId" name="applicationId" value=${INITIAL_APP} required></cc-input-text>
+        <cc-input-text label="deploymentId" name="deploymentId"></cc-input-text>
         <cc-select
-          .value=${this._dateRangeSelection}
           .options=${DATE_RANGE_SELECTION_OPTIONS}
           label="dateRangeSelection"
-          @cc-select:input=${this._onDateRangeSelectionChange}
+          name="dateRangeSelection"
+          value="none"
         ></cc-select>
-        <cc-button @cc-button:click=${this._onApply}>Apply</cc-button>
-      </div>
+        <cc-button type="submit">Apply</cc-button>
+      </form>
 
-      <cc-smart-container>
-        <cc-logs-application-view-beta ${ref(this._logsRef)} class="main"></cc-logs-application-view-beta>
+      <cc-smart-container ${ref(this._smartContainerRef)}>
+        <cc-logs-application-view-beta class="cc-logs-application-view main"></cc-logs-application-view-beta>
       </cc-smart-container>
     `;
   }
 
-  firstUpdated(changedProperties) {
-    this._onApply();
+  /**
+   * @param {PropertyValues} _changedProperties
+   */
+  firstUpdated(_changedProperties) {
+    this.updateComplete.then(() => {
+      this._formRef.value.requestSubmit();
+    });
   }
 
   static get styles() {
@@ -105,27 +93,27 @@ class CcLogsSandbox extends LitElement {
       css`
         :host {
           display: flex;
-          min-height: 0;
           flex: 1;
           flex-direction: column;
+          min-height: 0;
         }
 
         cc-smart-container {
           display: flex;
-          min-height: 0;
           flex: 1;
           flex-direction: column;
+          min-height: 0;
         }
 
-        cc-logs-application-view-beta {
-          min-height: 0;
+        .cc-logs-application-view {
           flex: 1;
+          min-height: 0;
         }
 
         cc-input-text {
           --cc-input-font-family: var(--cc-ff-monospace);
 
-          width: 22.5em;
+          width: 22em;
         }
 
         cc-button {
@@ -136,4 +124,4 @@ class CcLogsSandbox extends LitElement {
   }
 }
 
-window.customElements.define('cc-logs-application-view-sandbox', CcLogsSandbox);
+window.customElements.define('cc-logs-application-view-sandbox', CcLogsApplicationViewSandbox);

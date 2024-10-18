@@ -816,26 +816,6 @@ export const translations = {
   'cc-logs.unselect-button.label': /** @param {{index: number}} _ */ ({ index }) => `Unselect the line ${index}`,
   //#endregion
   //#region cc-logs-application-view
-  'cc-logs-application-view.custom-date-range.apply': `Apply`,
-  'cc-logs-application-view.custom-date-range.date.bad-input': `Invalid date format (YYYY-MM-DD HH:mm:ss)`,
-  'cc-logs-application-view.custom-date-range.date.empty': `Please enter a value`,
-  'cc-logs-application-view.custom-date-range.date.range-overflow': /** @param {{max: string}} _ */ ({ max }) =>
-    `Date must be lower than ${max}`,
-  'cc-logs-application-view.custom-date-range.date.range-underflow': /** @param {{min: string}} _ */ ({ min }) =>
-    `Date must be greater than ${min}`,
-  'cc-logs-application-view.custom-date-range.next': `Shift to next range`,
-  'cc-logs-application-view.custom-date-range.previous': `Shift to previous range`,
-  'cc-logs-application-view.custom-date-range.since.local': `Since (local time)`,
-  'cc-logs-application-view.custom-date-range.since.utc': `Since (UTC)`,
-  'cc-logs-application-view.custom-date-range.until.local': `Until (local time)`,
-  'cc-logs-application-view.custom-date-range.until.utc': `Until (UTC)`,
-  'cc-logs-application-view.date-selection.custom': `Custom`,
-  'cc-logs-application-view.date-selection.last-4-hours': `Last 4 hours`,
-  'cc-logs-application-view.date-selection.last-7-days': `Last 7 days`,
-  'cc-logs-application-view.date-selection.last-hour': `Last hour`,
-  'cc-logs-application-view.date-selection.live': `Live view`,
-  'cc-logs-application-view.date-selection.today': `Today`,
-  'cc-logs-application-view.date-selection.yesterday': `Yesterday`,
   'cc-logs-application-view.filter': `Filter`,
   'cc-logs-application-view.filter.bad-format': `Invalid regex`,
   'cc-logs-application-view.filter.mode.regex': `Filter with a regular expression`,

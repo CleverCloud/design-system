@@ -828,26 +828,6 @@ export const translations = {
   'cc-logs.unselect-button.label': /** @param {{index: number}} _ */ ({ index }) => `Désélectionner la ligne ${index}`,
   //#endregion
   //#region cc-logs-application-view
-  'cc-logs-application-view.custom-date-range.apply': `Appliquer`,
-  'cc-logs-application-view.custom-date-range.date.bad-input': `Format de date invalide (YYYY-MM-DD HH:mm:ss)`,
-  'cc-logs-application-view.custom-date-range.date.empty': `Veuillez saisir une valeur`,
-  'cc-logs-application-view.custom-date-range.date.range-overflow': /** @param {{max: string}} _ */ ({ max }) =>
-    `La date doit être inférieure à ${max}`,
-  'cc-logs-application-view.custom-date-range.date.range-underflow': /** @param {{min: string}} _ */ ({ min }) =>
-    `La date doit être supérieure à ${min}`,
-  'cc-logs-application-view.custom-date-range.next': `Décaler à l'interval suivant`,
-  'cc-logs-application-view.custom-date-range.previous': `Décaler à l'interval précédent`,
-  'cc-logs-application-view.custom-date-range.since.local': `Début (heure locale)`,
-  'cc-logs-application-view.custom-date-range.since.utc': `Début (UTC)`,
-  'cc-logs-application-view.custom-date-range.until.local': `Fin (heure locale)`,
-  'cc-logs-application-view.custom-date-range.until.utc': `Fin (UTC)`,
-  'cc-logs-application-view.date-selection.custom': `Personnalisé`,
-  'cc-logs-application-view.date-selection.last-4-hours': `4 dernières heures`,
-  'cc-logs-application-view.date-selection.last-7-days': `7 derniers jours`,
-  'cc-logs-application-view.date-selection.last-hour': `Dernière heure`,
-  'cc-logs-application-view.date-selection.live': `Vue en temps réel`,
-  'cc-logs-application-view.date-selection.today': `Aujourd'hui`,
-  'cc-logs-application-view.date-selection.yesterday': `Hier`,
   'cc-logs-application-view.filter': `Filtrer`,
   'cc-logs-application-view.filter.bad-format': `Regex invalide`,
   'cc-logs-application-view.filter.mode.regex': `Filtrer avec une expression régulière`,

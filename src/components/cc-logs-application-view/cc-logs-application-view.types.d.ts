@@ -22,41 +22,6 @@ export type LogsApplicationViewState =
   | LogsApplicationViewStateLogs
   | LogsApplicationViewStateErrorInstances;
 
-export type DateRange = {
-  since: string;
-  until?: string;
-};
-
-export interface DateRangeSelectionLive {
-  type: 'live';
-}
-
-export type DateRangeSelectionPredefinedDefinition = 'lastHour' | 'last4Hours' | 'last7Days' | 'today' | 'yesterday';
-
-export interface DateRangeSelectionPredefined {
-  type: 'predefined';
-  def: DateRangeSelectionPredefinedDefinition;
-}
-
-export interface DateRangeSelectionCustom {
-  type: 'custom';
-  since: string;
-  until: string;
-}
-
-export type DateRangeSelection = DateRangeSelectionLive | DateRangeSelectionPredefined | DateRangeSelectionCustom;
-
-export type DateRangeSelectionMenuEntry = 'live' | 'custom' | DateRangeSelectionPredefinedDefinition;
-
-export interface Valid {
-  valid: true;
-}
-export interface Invalid {
-  valid: false;
-  code: string;
-}
-export type Validity = Valid | Invalid;
-
 export interface LogsApplicationViewOptions {
   'date-display': DateDisplay;
   'metadata-display': {

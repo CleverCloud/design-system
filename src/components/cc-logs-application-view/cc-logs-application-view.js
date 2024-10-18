@@ -4,15 +4,8 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import {
   iconRemixFullscreenExitLine as fullscreenExitIcon,
   iconRemixFullscreenLine as fullscreenIcon,
-  iconRemixArrowDownSLine,
-  iconRemixArrowLeftSLine,
-  iconRemixArrowRightSLine,
-  iconRemixCalendarScheduleLine,
-  iconRemixCheckLine,
-  iconRemixFlashlightLine,
   iconRemixPauseLine,
   iconRemixPlayLine,
-  iconRemixTimeLine,
 } from '../../assets/cc-remix.icons.js';
 import { dispatchCustomEvent } from '../../lib/events.js';
 import { parseRegex } from '../../lib/regex-parse.js';
@@ -20,15 +13,13 @@ import { isStringEmpty } from '../../lib/utils.js';
 import { i18n } from '../../translations/translation.js';
 import '../cc-datetime-relative/cc-datetime-relative.js';
 import '../cc-icon/cc-icon.js';
-import '../cc-input-date/cc-input-date.js';
 import '../cc-loader/cc-loader.js';
 import '../cc-logs-control/cc-logs-control.js';
+import '../cc-logs-date-range-selector/cc-logs-date-range-selector.js';
+import { dateRangeSelectionToDateRange } from '../cc-logs-date-range-selector/date-range-selection.js';
 import '../cc-logs-instances/cc-logs-instances.js';
 import '../cc-notice/cc-notice.js';
-import '../cc-popover/cc-popover.js';
 import '../cc-toggle/cc-toggle.js';
-import { dateRangeSelectionToDateRange } from './date-range-selection.js';
-import { isLive, isRightDateRangeAfterNow, shiftDateRange } from './date-range.js';
 
 /** @type {{instanceId: MetadataRenderer, instance: MetadataRenderer}} */
 const CUSTOM_METADATA_RENDERERS = {
@@ -53,39 +44,27 @@ const CUSTOM_METADATA_RENDERERS = {
   },
 };
 
-/** @type {DateRangeSelectionMenuEntry[]} */
-const MENU_ENTRIES = ['live', 'lastHour', 'last4Hours', 'today', 'yesterday', 'last7Days', 'custom'];
-
 /**
- * @typedef {import('../cc-input-date/cc-input-date.js').CcInputDate} CcInputDate
- * @typedef {import('../cc-popover/cc-popover.js').CcPopover} CcPopover
  * @typedef {import('../common.types.js').IconModel} IconModel
  * @typedef {import('../cc-logs-control/cc-logs-control.js').CcLogsControl} CcLogsControl
  * @typedef {import('../cc-logs-control/cc-logs-control.types.js').LogsControlOption} LogsControlOption
  * @typedef {import('../cc-logs-control/cc-logs-control.types.js').LogsMetadataDisplay} LogsMetadataDisplay
  * @typedef {import('../cc-logs-instances/cc-logs-instances.types.js').LogsInstancesState} LogsInstancesState
- * @typedef {import('./cc-logs-application-view.types.js').DateRange} DateRange
- * @typedef {import('./cc-logs-application-view.types.js').DateRangeSelection} DateRangeSelection
- * @typedef {import('./cc-logs-application-view.types.js').DateRangeSelectionPredefinedDefinition} DateRangeSelectionPredefinedDefinition
- * @typedef {import('./cc-logs-application-view.types.js').DateRangeSelectionMenuEntry} DateRangeSelectionMenuEntry
  * @typedef {import('./cc-logs-application-view.types.js').LogsApplicationViewState} LogsApplicationViewState
  * @typedef {import('./cc-logs-application-view.types.js').LogsApplicationViewOptions} LogsApplicationViewOptions
- * @typedef {import('./cc-logs-application-view.types.js').Validity} Validity
+ * @typedef {import('./cc-logs-application-view.types.js').ProgressState} ProgressState
  * @typedef {import('../cc-logs/cc-logs.types.js').Log} Log
  * @typedef {import('../cc-logs/cc-logs.types.js').MetadataRenderer} MetadataRenderer
  * @typedef {import('../cc-logs/cc-logs.types.js').LogMessageFilterMode} LogMessageFilterMode
- * @typedef {import('lit/directives/ref.js').Ref<CcInputDate>} RefCcInputDate
+ * @typedef {import('../cc-logs-date-range-selector/cc-logs-date-range-selector.types.js').LogsDateRangeSelection} LogsDateRangeSelection
+ * @typedef {import('../cc-logs-date-range-selector/cc-logs-date-range-selector.types.js').LogsDateRangeSelectionChangeEventData} LogsDateRangeSelectionChangeEventData
  * @typedef {import('lit/directives/ref.js').Ref<CcLogsControl>} RefCcLogsControl
- * @typedef {import('lit/directives/ref.js').Ref<CcPopover>} RefCcPopover
  * @typedef {import('lit').PropertyValues<CcLogsApplicationView>} CcLogsApplicationViewPropertyValues
  * @typedef {import('lit').TemplateResult<1>} TemplateResult
- * @typedef {import('./cc-logs-application-view.types.js').ProgressState} ProgressState
  */
 
 /**
  *
- * @fires {CustomEvent<DateRange>} cc-logs-application-view:date-range-change - Fires the `range` whenever the `range` changes.
- * @fires {CustomEvent<DateRangeSelection>} cc-logs-application-view:date-range-selection-change - Fires the `range selection` whenever the `range selection` changes.
  * @fires {CustomEvent<void>} cc-logs-application-view:pause - Fires when the pause button is clicked.
  * @fires {CustomEvent<void>} cc-logs-application-view:resume - Fires when the resume button is clicked.
  *
@@ -100,9 +79,6 @@ export class CcLogsApplicationView extends LitElement {
       overflowWatermarkOffset: { type: Number, attribute: 'overflow-watermark-offset' },
       selectedInstances: { type: Array, attribute: 'selected-instances' },
       state: { type: Object },
-      _selectedDateRangeMenuEntry: { type: String, state: true },
-      _dateRangeValidation: { type: Object, state: true },
-      _customDateRange: { type: Object, state: true },
       _overflowDecision: { type: String, state: true },
       _messageFilter: { type: String, state: true },
       _messageFilterMode: { type: String, state: true },
@@ -113,7 +89,7 @@ export class CcLogsApplicationView extends LitElement {
   constructor() {
     super();
 
-    /** @type {DateRangeSelection} The date range selection. */
+    /** @type {LogsDateRangeSelection} The date range selection. */
     this.dateRangeSelection = {
       type: 'live',
     };
@@ -133,39 +109,19 @@ export class CcLogsApplicationView extends LitElement {
       'wrap-lines': false,
     };
 
-    /** @type {number|null} The number of logs before the limit from which the user will be asked to accept or discard logs limit overflow. */
+    /** @type {number|null} The number of logs before the limit from which the user will be asked to accept or discard logs limit overflow */
     this.overflowWatermarkOffset = 10;
 
-    /** @type {Array<string>} The array of instances ids that should be selected. */
+    /** @type {Array<string>} The array of instances ids that should be selected */
     this.selectedInstances = [];
 
-    /** @type {LogsApplicationViewState} The state of the component. */
+    /** @type {LogsApplicationViewState} The state of the component */
     this.state = {
       type: 'loadingInstances',
     };
 
-    /** @type {DateRangeSelectionMenuEntry} */
-    this._selectedDateRangeMenuEntry = this._getDateRangeSelectionMenuEntry(this.dateRangeSelection);
-
-    /** @type {DateRange|null} */
-    this._customDateRange = null;
-
-    /** @type {DateRange} */
-    this._currentDateRange = dateRangeSelectionToDateRange(this.dateRangeSelection);
-
-    /** @type {{until: Validity, since: Validity}} */
-    this._dateRangeValidation = {
-      since: { valid: true },
-      until: { valid: true },
-    };
-
-    /** @type {{dateRangeSelector: RefCcPopover, until: RefCcInputDate, logs: RefCcLogsControl, since: RefCcInputDate}} */
-    this._refs = {
-      since: createRef(),
-      until: createRef(),
-      logs: createRef(),
-      dateRangeSelector: createRef(),
-    };
+    /** @type {RefCcLogsControl} */
+    this._logsRef = createRef();
 
     this._loadingProgressCtrl = new LoadingProgressController(this);
 
@@ -203,78 +159,19 @@ export class CcLogsApplicationView extends LitElement {
     }
 
     if (this.state.type === 'receivingLogs') {
-      this._refs.logs.value.appendLogs(logs);
+      this._logsRef.value.appendLogs(logs);
       this._loadingProgressCtrl.progress(logs);
     }
   }
 
   clear() {
-    this._refs.logs.value?.clear();
+    this._logsRef.value?.clear();
     this._loadingProgressCtrl.reset();
-  }
-
-  /**
-   * @return {DateRange}
-   */
-  getDateRange() {
-    return this._currentDateRange;
   }
 
   /* endregion */
 
   /* region Private methods */
-
-  /**
-   * @param {DateRangeSelection} dateRangeSelection
-   * @return {DateRangeSelectionMenuEntry}
-   */
-  _getDateRangeSelectionMenuEntry(dateRangeSelection) {
-    return dateRangeSelection.type === 'predefined' ? dateRangeSelection.def : dateRangeSelection.type;
-  }
-
-  /**
-   * @param {DateRangeSelectionMenuEntry} menuEntry
-   * @return {IconModel}
-   */
-  _getDateRangeSelectionMenuEntryIcon(menuEntry) {
-    if (menuEntry === 'live') {
-      return iconRemixFlashlightLine;
-    }
-    if (menuEntry === 'custom') {
-      return iconRemixCalendarScheduleLine;
-    }
-    return iconRemixTimeLine;
-  }
-
-  /**
-   * @param {DateRangeSelectionMenuEntry} type
-   * @return {string}
-   */
-  _getDateRangeSelectionMenuEntryLabel(type) {
-    if (type === 'live') {
-      return i18n('cc-logs-application-view.date-selection.live');
-    }
-    if (type === 'custom') {
-      return i18n('cc-logs-application-view.date-selection.custom');
-    }
-    if (type === 'lastHour') {
-      return i18n('cc-logs-application-view.date-selection.last-hour');
-    }
-    if (type === 'last4Hours') {
-      return i18n('cc-logs-application-view.date-selection.last-4-hours');
-    }
-    if (type === 'today') {
-      return i18n('cc-logs-application-view.date-selection.today');
-    }
-    if (type === 'yesterday') {
-      return i18n('cc-logs-application-view.date-selection.yesterday');
-    }
-    if (type === 'last7Days') {
-      return i18n('cc-logs-application-view.date-selection.last-7-days');
-    }
-
-    throw new Error(`Unsupported menu entry "${type}"`);
-  }
 
   /**
    * @return {string}
@@ -289,55 +186,6 @@ export class CcLogsApplicationView extends LitElement {
     }
 
     return i18n('cc-logs-application-view.progress.loading', { percent: this._loadingProgressCtrl.percent / 100 });
-  }
-
-  _validateCustomDateRange() {
-    if (this._customDateRange != null) {
-      this._refs.since.value.max = this._customDateRange.until;
-      this._refs.until.value.min = this._customDateRange.since;
-      this._dateRangeValidation = {
-        since: this._refs.since.value.validate(),
-        until: this._refs.until.value.validate(),
-      };
-    }
-  }
-
-  /**
-   *
-   * @param {string} code
-   * @param {{min: string, max: string}} minMax
-   * @return {string}
-   */
-  _getDateError(code, minMax) {
-    if (code === 'empty') {
-      return i18n('cc-logs-application-view.custom-date-range.date.empty');
-    }
-
-    if (code === 'badInput') {
-      return i18n('cc-logs-application-view.custom-date-range.date.bad-input');
-    }
-
-    if (code === 'rangeOverflow') {
-      return i18n('cc-logs-application-view.custom-date-range.date.range-overflow', minMax);
-    }
-
-    if (code === 'rangeUnderflow') {
-      return i18n('cc-logs-application-view.custom-date-range.date.range-underflow', minMax);
-    }
-
-    return null;
-  }
-
-  /**
-   * @param {DateRangeSelection} dateRangeSelection
-   */
-  _applyDateRange(dateRangeSelection) {
-    this._loadingProgressCtrl.cancel();
-    this.dateRangeSelection = dateRangeSelection;
-    this._currentDateRange = dateRangeSelectionToDateRange(this.dateRangeSelection);
-    this._overflowDecision = 'none';
-    dispatchCustomEvent(this, 'date-range-change', this._currentDateRange);
-    dispatchCustomEvent(this, 'date-range-selection-change', this.dateRangeSelection);
   }
 
   _validateMessageFilter() {
@@ -360,89 +208,29 @@ export class CcLogsApplicationView extends LitElement {
   /* region Event handlers */
 
   /**
-   * @param {MouseEvent & {target: {dataset: {type: DateRangeSelectionMenuEntry, current: 'true'|'false'}}}} e
+   * @param {CustomEvent<LogsDateRangeSelectionChangeEventData>} event
    */
-  _onDateSelectionRangeItemClick(e) {
-    /** @type {DateRangeSelectionMenuEntry} */
-    this._selectedDateRangeMenuEntry = e.target.dataset.type;
-    const isCurrent = e.target.dataset.current;
-    this._refs.dateRangeSelector.value.close();
+  _onDateRangeSelectionChange(event) {
+    this._loadingProgressCtrl.cancel();
+    this.dateRangeSelection = event.detail.selection;
+    this._overflowDecision = 'none';
+  }
 
-    if (isCurrent === 'true') {
+  /**
+   * @param {CustomEvent<Array<string>>} event
+   */
+  _onInstanceSelectionChange(event) {
+    if (this.state.type === 'errorInstances' || this.state.type === 'loadingInstances') {
       return;
     }
 
-    if (this._selectedDateRangeMenuEntry === 'custom') {
-      this.dateRangeSelection = {
-        type: 'custom',
-        since: this._currentDateRange.since,
-        until: isLive(this._currentDateRange) ? new Date().toISOString() : this._currentDateRange.until,
-      };
-    } else if (this._selectedDateRangeMenuEntry === 'live') {
-      this._applyDateRange({
-        type: 'live',
-      });
-    } else {
-      this._applyDateRange({
-        type: 'predefined',
-        def: this._selectedDateRangeMenuEntry,
-      });
-    }
-  }
-
-  /**
-   * @param {'since'|'until'} field
-   * @param {string} value
-   */
-  _onCustomDateChanged(field, value) {
-    this._customDateRange = {
-      ...this._customDateRange,
-      [field]: value,
-    };
-
-    this._validateCustomDateRange();
-  }
-
-  /**
-   * @param {Object} event
-   * @param {string} event.detail
-   */
-  _onCustomSinceDateChanged({ detail }) {
-    this._onCustomDateChanged('since', detail);
-  }
-
-  /**
-   * @param {Object} event
-   * @param {string} event.detail
-   */
-  _onCustomUntilDateChanged({ detail }) {
-    this._onCustomDateChanged('until', detail);
-  }
-
-  _onCustomDateRangeShiftLeft() {
-    this._customDateRange = shiftDateRange(this._customDateRange, 'left');
-  }
-
-  _onCustomDateRangeShiftRight() {
-    this._customDateRange = shiftDateRange(this._customDateRange, 'right');
-  }
-
-  _onApplyCustomDateRange() {
-    this._applyDateRange({
-      type: 'custom',
-      since: this._customDateRange.since,
-      until: this._customDateRange.until,
-    });
-  }
-
-  _onInstanceSelectionChange({ detail: instances }) {
-    if (!isLive(this._currentDateRange)) {
+    if (this.dateRangeSelection.type !== 'live') {
       this._loadingProgressCtrl.cancel();
-      dispatchCustomEvent(this, 'instance-selection-change', instances);
+      dispatchCustomEvent(this, 'instance-selection-change', event.detail);
     } else {
       this.state = {
         ...this.state,
-        selection: instances,
+        selection: event.detail,
       };
     }
   }
@@ -487,7 +275,7 @@ export class CcLogsApplicationView extends LitElement {
     this._overflowDecision = 'discarded';
     this.dateRangeSelection = {
       type: 'custom',
-      since: this._currentDateRange.since,
+      since: dateRangeSelectionToDateRange(this.dateRangeSelection).since,
       until: this._loadingProgressCtrl.lastLogDate.toISOString(),
     };
   }
@@ -503,7 +291,6 @@ export class CcLogsApplicationView extends LitElement {
   }
 
   /**
-   *
    * @param {Event & {target: HTMLElement & {dataset: {mode: LogMessageFilterMode}}}} e
    * @private
    */
@@ -524,36 +311,15 @@ export class CcLogsApplicationView extends LitElement {
   /**
    * @param {CcLogsApplicationViewPropertyValues} changedProperties
    */
-  updated(changedProperties) {
-    if (changedProperties.has('_customDateRange')) {
-      this._validateCustomDateRange();
-    }
-  }
-
-  /**
-   *
-   * @param {CcLogsApplicationViewPropertyValues} changedProperties
-   */
   willUpdate(changedProperties) {
     const stateTypeHasChanged =
       changedProperties.has('state') && changedProperties.get('state')?.type !== this.state.type;
 
-    if (changedProperties.has('dateRangeSelection')) {
-      this._selectedDateRangeMenuEntry = this._getDateRangeSelectionMenuEntry(this.dateRangeSelection);
-      this._customDateRange =
-        this.dateRangeSelection.type === 'custom'
-          ? {
-              since: this.dateRangeSelection.since,
-              until: this.dateRangeSelection.until,
-            }
-          : null;
-      this._currentDateRange = dateRangeSelectionToDateRange(this.dateRangeSelection);
-    }
     if (stateTypeHasChanged) {
       if (this.state.type === 'errorLogs') {
         this._loadingProgressCtrl.reset();
       } else if (this.state.type === 'connectingLogs') {
-        this._loadingProgressCtrl.init(this._currentDateRange);
+        this._loadingProgressCtrl.init(this.dateRangeSelection);
       } else if (this.state.type === 'receivingLogs') {
         this._loadingProgressCtrl.start();
       } else if (this.state.type === 'logStreamPaused') {
@@ -585,8 +351,7 @@ export class CcLogsApplicationView extends LitElement {
       <div class=${classMap(overlay)}>
         <div class=${classMap(wrapper)}>
           <div class="left">
-            ${this._renderDateRangeSelection()} ${this._renderCustomDateRange()} ${this._renderInstances()}
-            ${this._renderLoadingProgress()}
+            ${this._renderDateRangeSelection()} ${this._renderInstances()} ${this._renderLoadingProgress()}
           </div>
 
           <div class="logs-wrapper">${this._renderLogs()}</div>
@@ -597,118 +362,10 @@ export class CcLogsApplicationView extends LitElement {
 
   _renderDateRangeSelection() {
     return html`
-      <cc-popover
-        ${ref(this._refs.dateRangeSelector)}
-        .icon=${this._getDateRangeSelectionMenuEntryIcon(this._selectedDateRangeMenuEntry)}
-        class="date-range-selection"
-      >
-        <div slot="button-content" class="date-range-selection-button-content">
-          <div>${this._getDateRangeSelectionMenuEntryLabel(this._selectedDateRangeMenuEntry)}</div>
-          <cc-icon class="date-range-selection-icon" .icon=${iconRemixArrowDownSLine}></cc-icon>
-        </div>
-        <div class="date-range-selection-list" style="display: flex; flex-direction: column; gap: 0.25em;">
-          ${MENU_ENTRIES.map((type) => {
-            const current = type === this._selectedDateRangeMenuEntry;
-
-            return html`<button
-              class="date-range-selection-menu-entry"
-              data-type="${type}"
-              data-current="${current}"
-              @click=${this._onDateSelectionRangeItemClick}
-            >
-              <cc-icon .icon=${this._getDateRangeSelectionMenuEntryIcon(type)} data-type="${type}"></cc-icon>
-              <span data-type="${type}">${this._getDateRangeSelectionMenuEntryLabel(type)}</span>
-              ${current
-                ? html`<cc-icon
-                    class="date-range-selection-current"
-                    .icon=${iconRemixCheckLine}
-                    data-type="${type}"
-                  ></cc-icon>`
-                : ''}
-            </button>`;
-          })}
-        </div>
-      </cc-popover>
-    `;
-  }
-
-  _renderCustomDateRange() {
-    if (this._customDateRange == null) {
-      return null;
-    }
-
-    const sinceErr =
-      this._dateRangeValidation.since.valid === true
-        ? null
-        : this._getDateError(this._dateRangeValidation.since.code, {
-            min: this._customDateRange.since,
-            max: this._customDateRange.until,
-          });
-    const untilErr =
-      this._dateRangeValidation.until.valid === true
-        ? null
-        : this._getDateError(this._dateRangeValidation.until.code, {
-            min: this._customDateRange.since,
-            max: this._customDateRange.until,
-          });
-    const nextDisabled = isRightDateRangeAfterNow(this._customDateRange);
-    const isDateRangeInvalid = !this._dateRangeValidation.since.valid || !this._dateRangeValidation.until.valid;
-
-    return html`
-      <div class="date-range">
-        <cc-input-date
-          ${ref(this._refs.since)}
-          .value=${this._customDateRange.since}
-          label=${this.options.timezone === 'UTC'
-            ? i18n('cc-logs-application-view.custom-date-range.since.utc')
-            : i18n('cc-logs-application-view.custom-date-range.since.local')}
-          .max=${this._customDateRange.until}
-          timezone=${this.options.timezone}
-          @cc-input-date:input=${this._onCustomSinceDateChanged}
-          @cc-input-date:requestimplicitsubmit=${this._onApplyCustomDateRange}
-        >
-          ${sinceErr != null ? html`<p slot="error">${sinceErr}</p>` : ''}
-        </cc-input-date>
-        <cc-input-date
-          ${ref(this._refs.until)}
-          .value=${this._customDateRange.until}
-          label=${this.options.timezone === 'UTC'
-            ? i18n('cc-logs-application-view.custom-date-range.until.utc')
-            : i18n('cc-logs-application-view.custom-date-range.until.local')}
-          .min=${this._customDateRange.since}
-          timezone=${this.options.timezone}
-          @cc-input-date:input=${this._onCustomUntilDateChanged}
-          @cc-input-date:requestimplicitsubmit=${this._onApplyCustomDateRange}
-        >
-          ${untilErr != null ? html`<p slot="error">${untilErr}</p>` : ''}
-        </cc-input-date>
-        <div class="date-range-buttons">
-          <cc-button
-            class="date-range-left"
-            ?disabled=${isDateRangeInvalid}
-            .icon=${iconRemixArrowLeftSLine}
-            hide-text
-            a11y-name=${i18n('cc-logs-application-view.custom-date-range.previous')}
-            @cc-button:click=${this._onCustomDateRangeShiftLeft}
-          >
-          </cc-button>
-          <cc-button
-            class="date-range-right"
-            ?disabled=${nextDisabled || isDateRangeInvalid}
-            .icon=${iconRemixArrowRightSLine}
-            hide-text
-            a11y-name=${i18n('cc-logs-application-view.custom-date-range.next')}
-            @cc-button:click=${this._onCustomDateRangeShiftRight}
-          >
-          </cc-button>
-          <cc-button
-            class="date-range-apply-button"
-            ?disabled=${isDateRangeInvalid}
-            @cc-button:click=${this._onApplyCustomDateRange}
-            >${i18n('cc-logs-application-view.custom-date-range.apply')}
-          </cc-button>
-        </div>
-      </div>
+      <cc-logs-date-range-selector-beta
+        .value=${this.dateRangeSelection}
+        @cc-logs-date-range-selector:change=${this._onDateRangeSelectionChange}
+      ></cc-logs-date-range-selector-beta>
     `;
   }
 
@@ -724,7 +381,7 @@ export class CcLogsApplicationView extends LitElement {
     } else {
       state = {
         state: 'loaded',
-        mode: isLive(this._currentDateRange) ? 'live' : 'cold',
+        mode: this.dateRangeSelection.type === 'live' ? 'live' : 'cold',
         instances: this.state.instances,
         selection: this.state.selection,
       };
@@ -864,7 +521,7 @@ export class CcLogsApplicationView extends LitElement {
 
     return html`
       <cc-logs-control-beta
-        ${ref(this._refs.logs)}
+        ${ref(this._logsRef)}
         class="logs"
         follow
         limit="${this.limit}"
@@ -1030,89 +687,6 @@ export class CcLogsApplicationView extends LitElement {
           padding: 0.25em;
         }
 
-        .date-range {
-          background-color: var(--cc-color-bg-default, #fff);
-          border: 1px solid var(--cc-color-border-neutral, #aaa);
-          border-radius: var(--cc-border-radius-default, 0.25em);
-          display: flex;
-          flex-direction: column;
-          gap: 0.75em;
-          grid-area: date-range;
-          padding: 0.5em;
-        }
-
-        .date-range-buttons {
-          align-items: center;
-          display: grid;
-          grid-gap: 0.5em;
-          grid-template-areas: 'left right spacer apply';
-          grid-template-columns: auto auto 1fr auto;
-        }
-
-        .date-range-apply-button {
-          grid-area: apply;
-        }
-
-        .date-range-selection {
-          --cc-button-font-weight: normal;
-          --cc-button-text-transform: none;
-          --cc-popover-trigger-button-width: 100%;
-        }
-
-        .date-range-selection-button-content {
-          align-items: center;
-          display: flex;
-          font-size: 1.2em;
-          gap: 1em;
-        }
-
-        .date-range-selection-button-content div {
-          display: flex;
-          flex: 1;
-          justify-content: start;
-        }
-
-        .date-range-selection-button-content cc-icon {
-          transition: transform 0.2s;
-        }
-
-        .date-range-selection[is-open] .date-range-selection-button-content cc-icon {
-          transform: rotate(180deg);
-        }
-
-        .date-range-selection-list {
-          display: flex;
-        }
-
-        button {
-          background: unset;
-          border: none;
-          display: block;
-          font-family: inherit;
-          font-size: unset;
-          margin: 0;
-          padding: 0;
-        }
-
-        .date-range-selection-menu-entry {
-          align-items: start;
-          cursor: pointer;
-          display: grid;
-          gap: 0.5em;
-          grid-template-columns: auto 1fr auto;
-          justify-items: start;
-          padding: 0.5em;
-        }
-
-        .date-range-selection-current {
-          align-self: end;
-        }
-
-        .date-range-selection-button:hover,
-        .date-range-selection-button[data-current='true'] {
-          background-color: var(--cc-color-bg-neutral);
-        }
-
         .logs-loading-state {
           background-color: var(--cc-color-bg-default, #fff);
           border: 1px solid var(--cc-color-border-neutral, #aaa);
@@ -1245,13 +819,19 @@ export class CcLogsApplicationView extends LitElement {
         }
 
         .inner-buttons-wrapper button {
+          background: unset;
           background: var(--cc-color-bg-default, #fff);
+          border: none;
           border-radius: var(--cc-border-radius-default, 0.15em);
           color: var(--cc-input-btn-icons-color, #595959);
           cursor: pointer;
+          display: block;
           flex-shrink: 0;
           font-family: var(--cc-ff-monospace, monospace);
+          font-size: unset;
           height: 1.6em;
+          margin: 0;
+          padding: 0;
           width: 1.6em;
         }
 
@@ -1340,16 +920,16 @@ class LoadingProgressController {
   }
 
   /**
-   * @param {DateRange} dateRange
+   * @param {LogsDateRangeSelection} dateRangeSelection
    */
-  init(dateRange) {
+  init(dateRangeSelection) {
     this.reset();
 
-    this._dateRange = dateRange;
+    this._dateRange = dateRangeSelectionToDateRange(dateRangeSelection);
 
     this._step('init', {
       none: () => {
-        this._isLive = isLive(this._dateRange);
+        this._isLive = dateRangeSelection.type === 'live';
         this._dateRangeStart = new Date(this._dateRange.since).getTime();
         this._dateRangeDuration = this._isLive ? 0 : new Date(this._dateRange.until).getTime() - this._dateRangeStart;
 
@@ -1510,9 +1090,8 @@ class LoadingProgressController {
   }
 
   /**
-   *
    * @param {string} actionName
-   * @param {{[state: ProgressState|'*']: () => ProgressState|null}} machine
+   * @param {Partial<{[state in ProgressState|'*']: () => ProgressState|null}>} machine
    */
   _step(actionName, machine) {
     const state = this._state;
@@ -1537,9 +1116,9 @@ class LoadingProgressController {
     }
   }
 
-  _log(...args) {
+  _log() {
     if (this._debug) {
-      console.log(...args);
+      console.log(arguments);
     }
   }
 }

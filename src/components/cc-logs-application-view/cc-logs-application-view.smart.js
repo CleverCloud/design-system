@@ -3,13 +3,13 @@ import { pickNonNull } from '@clevercloud/client/esm/pick-non-null.js';
 import { ApplicationLogStream } from '@clevercloud/client/esm/streams/application-logs.js';
 import { HttpError } from '@clevercloud/client/esm/streams/clever-cloud-sse.js';
 import { Buffer } from '../../lib/buffer.js';
+import { isLive, lastXDays } from '../../lib/date/date-range-utils.js';
 import { defineSmartComponent } from '../../lib/define-smart-component.js';
 import { sendToApi } from '../../lib/send-to-api.js';
 import { unique } from '../../lib/utils.js';
+import { dateRangeSelectionToDateRange } from '../cc-logs-date-range-selector/date-range-selection.js';
 import '../cc-smart-container/cc-smart-container.js';
 import './cc-logs-application-view.js';
-import { dateRangeSelectionToDateRange } from './date-range-selection.js';
-import { isLive, lastXDays } from './date-range.js';
 
 /**
  * @typedef {import('../cc-logs-instances/cc-logs-instances.types.js').Instance} Instance
@@ -17,8 +17,9 @@ import { isLive, lastXDays } from './date-range.js';
  * @typedef {import('../cc-logs-instances/cc-logs-instances.types.js').Deployment} Deployment
  * @typedef {import('./cc-logs-application-view.types.js').LogsApplicationViewState} LogsApplicationViewState
  * @typedef {import('./cc-logs-application-view.types.js').LogsApplicationViewStateLogs} LogsApplicationViewStateLogs
- * @typedef {import('./cc-logs-application-view.types.js').DateRange} DateRange
- * @typedef {import('./cc-logs-application-view.types.js').DateRangeSelection} DateRangeSelection
+ * @typedef {import('../cc-logs-date-range-selector/cc-logs-date-range-selector.types.js').LogsDateRangeSelection} LogsDateRangeSelection
+ * @typedef {import('../cc-logs-date-range-selector/cc-logs-date-range-selector.types.js').LogsDateRangeSelectionChangeEventData} LogsDateRangeSelectionChangeEventData
+ * @typedef {import('../../lib/date/date-range.types.js').DateRange} DateRange
  * @typedef {import('./cc-logs-application-view.js').CcLogsApplicationView} CcLogsApplicationView
  */
 
@@ -102,10 +103,10 @@ defineSmartComponent({
     );
 
     onEvent(
-      'cc-logs-application-view:date-range-change',
-      /** @param {DateRange} dateRange */
-      (dateRange) => {
-        controller.setNewDateRange(dateRange);
+      'cc-logs-date-range-selector:change',
+      /** @param {LogsDateRangeSelectionChangeEventData} eventData */
+      (eventData) => {
+        controller.setNewDateRange(eventData.range);
       },
     );
 
@@ -310,8 +311,8 @@ class LogsApplicationViewSmartController {
         if (instances.length === 0) {
           this._dateRange = last7DaysRange;
           this._view.component.dateRangeSelection = {
-            type: 'predefined',
-            def: 'last7Days',
+            type: 'preset',
+            preset: 'last7Days',
           };
           this._view.updateState({ type: 'logStreamEnded', instances: [], selection: [] });
           return;
@@ -335,8 +336,8 @@ class LogsApplicationViewSmartController {
         // cold mode with 7 days and last deployment selected.
         this._dateRange = last7DaysRange;
         this._view.component.dateRangeSelection = {
-          type: 'predefined',
-          def: 'last7Days',
+          type: 'preset',
+          preset: 'last7Days',
         };
 
         // select the last deployment instances
@@ -352,7 +353,7 @@ class LogsApplicationViewSmartController {
   }
 
   /**
-   * @param {DateRangeSelection} dateRangeSelection
+   * @param {LogsDateRangeSelection} dateRangeSelection
    */
   initByDateRangeSelection(dateRangeSelection) {
     // clear and close everything
@@ -400,8 +401,8 @@ class LogsApplicationViewSmartController {
         // we automatically select the last deployment
         if (
           this._selection.length === 0 &&
-          this._view.component.dateRangeSelection.type === 'predefined' &&
-          this._view.component.dateRangeSelection.def === 'last7Days'
+          this._view.component.dateRangeSelection.type === 'preset' &&
+          this._view.component.dateRangeSelection.preset === 'last7Days'
         ) {
           const lastDeploymentInstances = this._instancesManager.getLastDeploymentInstances();
           this._selection = lastDeploymentInstances.map((instance) => instance.id);
