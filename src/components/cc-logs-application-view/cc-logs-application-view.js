@@ -1229,10 +1229,6 @@ export class CcLogsApplicationView extends LitElement {
           width: 1.5em;
         }
 
-        .spacer {
-          flex: 1;
-        }
-
         .input-wrapper {
           display: flex;
           flex: 1;

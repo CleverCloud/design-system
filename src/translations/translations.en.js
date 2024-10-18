@@ -885,6 +885,22 @@ export const translations = {
   'cc-logs-control.timezone.utc': `UTC`,
   'cc-logs-control.wrap-lines': `Force lines wrap`,
   //#endregion
+  //#region cc-logs-date-range-selector
+  'cc-logs-date-range-selector.custom-date-range.apply': `Apply`,
+  'cc-logs-date-range-selector.custom-date-range.next': `Shift to next range`,
+  'cc-logs-date-range-selector.custom-date-range.previous': `Shift to previous range`,
+  'cc-logs-date-range-selector.custom-date-range.since.local': `Since (local time)`,
+  'cc-logs-date-range-selector.custom-date-range.since.utc': `Since (UTC)`,
+  'cc-logs-date-range-selector.custom-date-range.until.local': `Until (local time)`,
+  'cc-logs-date-range-selector.custom-date-range.until.utc': `Until (UTC)`,
+  'cc-logs-date-range-selector.option.custom': `Custom`,
+  'cc-logs-date-range-selector.option.last-4-hours': `Last 4 hours`,
+  'cc-logs-date-range-selector.option.last-7-days': `Last 7 days`,
+  'cc-logs-date-range-selector.option.last-hour': `Last hour`,
+  'cc-logs-date-range-selector.option.live': `Live view`,
+  'cc-logs-date-range-selector.option.today': `Today`,
+  'cc-logs-date-range-selector.option.yesterday': `Yesterday`,
+  //#endregion
   //#region cc-logs-instances
   'cc-logs-instances.cold.empty': `No instance`,
   'cc-logs-instances.cold.header': `Instances`,

@@ -897,6 +897,22 @@ export const translations = {
   'cc-logs-control.timezone.utc': `UTC`,
   'cc-logs-control.wrap-lines': `Forcer le retour à la ligne`,
   //#endregion
+  //#region cc-logs-date-range-selector
+  'cc-logs-date-range-selector.custom-date-range.apply': `Appliquer`,
+  'cc-logs-date-range-selector.custom-date-range.next': `Décaler à l'interval suivant`,
+  'cc-logs-date-range-selector.custom-date-range.previous': `Décaler à l'interval précédent`,
+  'cc-logs-date-range-selector.custom-date-range.since.local': `Début (heure locale)`,
+  'cc-logs-date-range-selector.custom-date-range.since.utc': `Début (UTC)`,
+  'cc-logs-date-range-selector.custom-date-range.until.local': `Fin (heure locale)`,
+  'cc-logs-date-range-selector.custom-date-range.until.utc': `Fin (UTC)`,
+  'cc-logs-date-range-selector.option.custom': `Personnalisé`,
+  'cc-logs-date-range-selector.option.last-4-hours': `4 dernières heures`,
+  'cc-logs-date-range-selector.option.last-7-days': `7 derniers jours`,
+  'cc-logs-date-range-selector.option.last-hour': `Dernière heure`,
+  'cc-logs-date-range-selector.option.live': `Vue en temps réel`,
+  'cc-logs-date-range-selector.option.today': `Aujourd'hui`,
+  'cc-logs-date-range-selector.option.yesterday': `Hier`,
+  //#endregion
   //#region cc-logs-instances
   'cc-logs-instances.cold.empty': `Aucune instance`,
   'cc-logs-instances.cold.header': `Instances`,
