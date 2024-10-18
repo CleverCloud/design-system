@@ -13,19 +13,21 @@ export default {
   component: 'cc-popover',
 };
 
+// language=CSS
+const defaultCss = `
+  cc-popover {
+    margin: 5em;
+  }
+
+  cc-popover div {
+    white-space: nowrap;
+  }
+`;
+
 const conf = {
   component: 'cc-popover',
   displayMode: 'flex-wrap',
-  // language=CSS
-  css: `
-    cc-popover {
-      margin: 2.5em;
-    }
-
-    cc-popover div {
-      white-space: nowrap;
-    }
-  `,
+  css: defaultCss,
 };
 
 const items = [
@@ -91,5 +93,27 @@ export const withFocusableContent = makeStory(conf, {
   items: items.map((item) => ({
     ...item,
     innerHTML: '<div>This is the popover content with <cc-button>Button</cc-button></div>',
+  })),
+});
+
+export const withLargeCssPadding = makeStory(conf, {
+  css:
+    defaultCss +
+    // language=CSS
+    `cc-popover { --cc-popover-padding: 2em; } div { background-color: gray; padding: 0.5em; }`,
+  items: items.map((item) => ({
+    ...item,
+    innerHTML: '<div>This is the popover content with large padding</div>',
+  })),
+});
+
+export const withNoCssPadding = makeStory(conf, {
+  css:
+    defaultCss +
+    // language=CSS
+    `cc-popover { --cc-popover-padding: 0; } div { background-color: gray; padding: 0.5em; }`,
+  items: items.map((item) => ({
+    ...item,
+    innerHTML: '<div>This is the popover content with no padding</div>',
   })),
 });

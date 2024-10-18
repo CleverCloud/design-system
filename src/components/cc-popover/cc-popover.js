@@ -54,6 +54,7 @@ import '../cc-button/cc-button.js';
  * @slot button-content - The area containing the button content.
  *
  * @cssprop {Size} --cc-popover-gap - Sets the gap between the button and the floating area (default 0.4em).
+ * @cssprop {Size} --cc-popover-padding - Sets the padding of the floating area (default 0.5em).
  * @cssprop {Number} --cc-popover-z-index - Sets the z-index of the floating content (defaults: `999`).
  * @cssprop {Width} --cc-popover-trigger-button-width - Sets the width of the trigger button (defaults: `inherit`).
  */
@@ -257,7 +258,8 @@ export class CcPopover extends LitElement {
           box-shadow:
             0 2px 4px rgb(38 38 38 / 25%),
             0 5px 15px rgb(38 38 38 / 25%);
-          padding: 0.5em;
+          overflow: hidden;
+          padding: var(--cc-popover-padding, 0.5em);
           position: absolute;
           z-index: var(--cc-popover-z-index, 999);
         }
