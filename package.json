@@ -57,7 +57,7 @@
     "typecheck:stats": "node tasks/typechecking-stats.js"
   },
   "dependencies": {
-    "@clevercloud/client": "^8.2.0",
+    "@clevercloud/client": "^9.1.0",
     "@lit-labs/motion": "^1.0.3",
     "@lit-labs/virtualizer": "^2.0.12",
     "@shoelace-style/shoelace": "^2.5.0",
