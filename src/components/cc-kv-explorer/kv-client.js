@@ -27,8 +27,8 @@ export class KvClient {
    * @return {Promise<boolean>}
    */
   async ping() {
-    const result = await this.sendCommand('PING', []);
-    return result.result === 'PONG';
+    const pong = await this.sendCommand('PING', []);
+    return pong.result === 'PONG';
   }
 
   /**
@@ -39,7 +39,7 @@ export class KvClient {
    * @param {string} [options.match]
    * @return {Promise<{cursor: number, total: number, keys: Array<{name: string, type: CcKvKeyType}>}>}
    */
-  async scanKeys({ cursor, count, type, match } = {}) {
+  scanKeys({ cursor, count, type, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/keys/_scan`,
@@ -51,7 +51,7 @@ export class KvClient {
    * @param {string} keyName
    * @return {Promise<{key: string, deleted: boolean}>}
    */
-  async deleteKey(keyName) {
+  deleteKey(keyName) {
     return Promise.resolve({
       method: 'post',
       url: `/key/_delete`,
@@ -63,7 +63,7 @@ export class KvClient {
    * @param {string} keyName
    * @return {Promise<{key: string, value: string}>}
    */
-  async getStringKey(keyName) {
+  getStringKey(keyName) {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_get`,
@@ -76,7 +76,7 @@ export class KvClient {
    * @param {string} value
    * @return {Promise<{key: string, value: string}>}
    */
-  async createStringKey(keyName, value) {
+  createStringKey(keyName, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_create`,
@@ -89,7 +89,7 @@ export class KvClient {
    * @param {string} value
    * @return {Promise<{key: string, value: string}>}
    */
-  async updateStringKey(keyName, value) {
+  updateStringKey(keyName, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_update`,
@@ -102,7 +102,7 @@ export class KvClient {
    * @param {Array<{field: string, value: string}>} elements
    * @return {Promise<{key: string, elements: Array<{field: string, value: string}>}>}
    */
-  async createHashKey(keyName, elements) {
+  createHashKey(keyName, elements) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_create`,
@@ -118,7 +118,7 @@ export class KvClient {
    * @param {string} [options.match]
    * @return {Promise<{cursor: number, total: number, elements: Array<{field: string, value: string}>}>}
    */
-  async scanHash(keyName, { cursor, count, match } = {}) {
+  scanHash(keyName, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_scan`,
@@ -131,7 +131,7 @@ export class KvClient {
    * @param {string} field
    * @return {Promise<{key: string, field: string, deleted: boolean}>}
    */
-  async deleteHashElement(keyName, field) {
+  deleteHashElement(keyName, field) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_delete`,
@@ -145,7 +145,7 @@ export class KvClient {
    * @param {string} value
    * @return {Promise<{key: string, field: string, value: string, added: boolean}>}
    */
-  async setHashElement(keyName, field, value) {
+  setHashElement(keyName, field, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_set`,
@@ -158,7 +158,7 @@ export class KvClient {
    * @param {Array<string>} elements
    * @return {Promise<{key: string, elements: Array<{index: number, value: string}>}>}
    */
-  async createListKey(keyName, elements) {
+  createListKey(keyName, elements) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_create`,
@@ -174,7 +174,7 @@ export class KvClient {
    * @param {number} [options.match]
    * @return {Promise<{cursor: number, total: number, elements: Array<{index: number, value: string}>}>}
    */
-  async scanList(keyName, { cursor, count, match } = {}) {
+  scanList(keyName, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_scan`,
@@ -187,7 +187,7 @@ export class KvClient {
    * @param {number} index
    * @return {Promise<{key: string, index: number, value: string}>}
    */
-  async getListElementAt(keyName, index) {
+  getListElementAt(keyName, index) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_get`,
@@ -201,7 +201,7 @@ export class KvClient {
    * @param {string} value
    * @return {Promise<{key: string, index: number, value: string}>}
    */
-  async updateListElement(keyName, index, value) {
+  updateListElement(keyName, index, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_update`,
@@ -215,7 +215,7 @@ export class KvClient {
    * @param {string} value
    * @return {Promise<{key: string, index: number, value: string}>}
    */
-  async pushListElement(keyName, position, value) {
+  pushListElement(keyName, position, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_push`,
@@ -228,7 +228,7 @@ export class KvClient {
    * @param {Array<string>} elements
    * @return {Promise<{key: string, elements: Array<string>}>}
    */
-  async createSetKey(keyName, elements) {
+  createSetKey(keyName, elements) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_create`,
@@ -244,7 +244,7 @@ export class KvClient {
    * @param {string} [options.match]
    * @return {Promise<{cursor: number, total: number, elements: Array<string>}>}
    */
-  async scanSet(keyName, { cursor, count, match } = {}) {
+  scanSet(keyName, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_scan`,
@@ -257,7 +257,7 @@ export class KvClient {
    * @param {string} element
    * @return {Promise<{key: string, element: string, deleted: boolean}>}
    */
-  async deleteSetElement(keyName, element) {
+  deleteSetElement(keyName, element) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_delete`,
@@ -270,7 +270,7 @@ export class KvClient {
    * @param {string} element
    * @return {Promise<{key: string, element: string, added: boolean}>}
    */
-  async addSetElement(keyName, element) {
+  addSetElement(keyName, element) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_set`,
@@ -282,7 +282,7 @@ export class KvClient {
    * @param {string} commandLine
    * @return {Promise<{success: boolean, result: Array<string>}>}
    */
-  async sendCommandLine(commandLine) {
+  sendCommandLine(commandLine) {
     return Promise.resolve({
       method: 'post',
       url: `/command/cli`,
@@ -295,16 +295,12 @@ export class KvClient {
    * @param {Array<string>} args
    * @return {Promise<{result: CommandResult}>}
    */
-  async sendCommand(command, args) {
+  sendCommand(command, args) {
     return Promise.resolve({
       method: 'post',
       url: `/command`,
       body: { command, args },
-    })
-      .then(this.sendToKvProxy())
-      .then((result) => {
-        return result;
-      });
+    }).then(this.sendToKvProxy());
   }
 
   /**
