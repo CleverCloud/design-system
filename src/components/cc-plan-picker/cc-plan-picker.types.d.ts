@@ -4,7 +4,7 @@ export interface PlanItem {
   id: string;
   badge?: PlanBadge;
   name: string;
-  details?: PlanDetails[] | [];
+  details?: PlanDetails[];
   disabled?: boolean;
   selected?: boolean;
 }

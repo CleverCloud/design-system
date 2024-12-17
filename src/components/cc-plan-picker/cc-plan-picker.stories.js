@@ -3,8 +3,8 @@ import {
   iconRemixCpuLine as iconCpu,
   iconRemixDatabase_2Fill as iconDatabase,
   iconRemixHardDrive_2Fill as iconDisk,
-  iconRemixRam_2Fill as iconMem,
 } from '../../assets/cc-remix.icons.js';
+import { DEFAULT_PLANS, THIRD_PARTY } from '../../stories/fixtures/plans.js';
 import { makeStory } from '../../stories/lib/make-story.js';
 import '../cc-badge/cc-badge.js';
 import './cc-plan-picker.js';
@@ -24,156 +24,35 @@ const conf = {
   component: 'cc-plan-picker',
 };
 
-/** @type {PickerPlan[]}  **/
-const DEFAULT_ITEM = [
-  {
-    id: 'dev',
-    name: 'DEV',
-    details: [
-      {
-        icon: iconMem,
-        value: 'Shared',
-      },
-      {
-        value: '1',
-        icon: iconCpu,
-      },
-    ],
-    badge: { content: 'Free' },
-  },
-  {
-    name: 'XXS',
-    id: 'xxs',
-    details: [
-      {
-        value: '512 MB',
-        icon: iconMem,
-      },
-      {
-        value: '1',
-        icon: iconCpu,
-      },
-    ],
-  },
-  {
-    name: 'XS',
-    id: 'xs',
-    details: [
-      {
-        value: '1 GB',
-        icon: iconMem,
-      },
-      {
-        value: '1',
-        icon: iconCpu,
-      },
-    ],
-  },
-  {
-    name: 'S',
-    id: 's',
-    details: [
-      {
-        value: '2 GB',
-        icon: iconMem,
-      },
-      {
-        value: '2',
-        icon: iconCpu,
-      },
-    ],
-  },
-  {
-    name: 'M',
-    id: 'm',
-    details: [
-      {
-        value: '4 GB',
-        icon: iconMem,
-      },
-      {
-        value: '4',
-        icon: iconCpu,
-      },
-    ],
-  },
-
-  {
-    name: 'L',
-    id: 'l',
-    details: [
-      {
-        value: '8 GB',
-        icon: iconMem,
-      },
-      {
-        value: '6',
-        icon: iconCpu,
-      },
-    ],
-  },
-  {
-    name: 'XL',
-    id: 'xl',
-    details: [
-      {
-        value: '16 GB',
-        icon: iconMem,
-      },
-      {
-        value: '8',
-        icon: iconCpu,
-      },
-    ],
-  },
-  {
-    name: 'XXL',
-    id: 'xxl',
-    details: [
-      {
-        value: '32 GB',
-        icon: iconMem,
-      },
-      {
-        value: '10',
-        icon: iconCpu,
-      },
-    ],
-  },
-];
-
-/** @type {PickerPlan[]}  **/
-const THIRD_PARTY = [
-  {
-    id: 'third_party_1',
-    name: 'Third party 1',
-    details: [],
-  },
-  {
-    id: 'third_party_2',
-    name: 'Third party 2',
-    details: [],
-  },
-  {
-    id: 'third_party_3',
-    name: 'Third party 3',
-    details: [],
-  },
-  {
-    id: 'third_party_4',
-    name: 'Third party 4',
-    details: [],
-  },
-];
-
 export const defaultStory = makeStory(conf, {
   /** @type {Array<Partial<CcPlanPicker>>}  **/
-  items: [{ plans: DEFAULT_ITEM, value: 'xxs' }],
+  items: [
+    {
+      plans: DEFAULT_PLANS.map((plan) => ({
+        id: plan.id,
+        badge: plan?.badge,
+        name: plan.name,
+        details: plan.details,
+      })),
+      value: 'xxs',
+    },
+  ],
 });
 
 export const readonly = makeStory(conf, {
   /** @type {Array<Partial<CcPlanPicker>>}  **/
-  items: [{ plans: DEFAULT_ITEM, value: 'xxs', readonly: true }],
+  items: [
+    {
+      plans: DEFAULT_PLANS.map((plan) => ({
+        id: plan.id,
+        badge: plan?.badge,
+        name: plan.name,
+        details: plan.details,
+      })),
+      value: 'xxs',
+      readonly: true,
+    },
+  ],
 });
 
 export const sampleDatabase = makeStory(conf, {

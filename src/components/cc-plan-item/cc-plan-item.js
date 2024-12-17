@@ -1,12 +1,13 @@
 import { css, html, LitElement } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { iconRemixCheckboxCircleFill as selectedIcon } from '../../assets/cc-remix.icons.js';
-import '../cc-badge/cc-badge';
+import '../cc-badge/cc-badge.js';
 import '../cc-icon/cc-icon.js';
 
 /**
  * @typedef {import('./cc-plan-item.types.js').PlanDetails} PlanDetails
  * @typedef {import('./cc-plan-item.types.js').PlanBadge} PlanBadge
+ * @typedef {import('lit').TemplateResult<1>} TemplateResult
  */
 
 /**
@@ -56,7 +57,9 @@ export class CcPlanItem extends LitElement {
       </div>
       <cc-icon class="icon-selected" .icon="${selectedIcon}" size="lg"></cc-icon>
       ${this.details?.length > 0
-        ? html`<div class="details">${this.details.map((detail) => this._renderDetail(detail))}</div>`
+        ? html`<ul class="details">
+            ${this.details.map((detail) => this._renderDetail(detail))}
+          </ul>`
         : ``}
     `;
   }
@@ -64,14 +67,14 @@ export class CcPlanItem extends LitElement {
   /**
    *
    * @param {PlanDetails} detail
-   * @returns HTMLElement
+   * @returns TemplateResult
    */
   _renderDetail(detail) {
     return html`
-      <div class="detail">
+      <li class="detail">
         <span class="detail-icon"><cc-icon .icon="${detail.icon}" size="md"></cc-icon></span>
         <span class="detail-value">${detail.value}</span>
-      </div>
+      </li>
     `;
   }
 
@@ -80,8 +83,8 @@ export class CcPlanItem extends LitElement {
       // language=CSS
       css`
         :host {
-          border: 2px solid var(--cc-color-border-neutral);
-          border-radius: var(--cc-border-radius-default);
+          border: 2px solid var(--cc-color-border-neutral, #eee);
+          border-radius: var(--cc-border-radius-default, 0.25em);
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -96,12 +99,8 @@ export class CcPlanItem extends LitElement {
           flex: 0 0 auto;
         }
 
-        :host(:hover) {
-          border-color: var(--cc-color-border-neutral-hovered);
-        }
-
         :host(:hover:not([disabled])) {
-          border-color: var(--cc-color-border-neutral-hovered);
+          border-color: var(--cc-color-border-neutral-hovered, #777);
         }
 
         :host(:not([selected], [disabled])) {
@@ -109,12 +108,12 @@ export class CcPlanItem extends LitElement {
         }
 
         :host([disabled]) {
-          border-color: var(--cc-color-border-neutral-disabled);
-          opacity: var(--cc-opacity-when-disabled);
+          border-color: var(--cc-color-border-neutral-disabled, #777);
+          opacity: var(--cc-opacity-when-disabled, 0.65);
         }
 
         :host(:focus-visible) {
-          outline: var(--cc-focus-outline);
+          outline: var(--cc-focus-outline, #000 solid 2px);
           outline-offset: 2px;
         }
 
@@ -173,6 +172,7 @@ export class CcPlanItem extends LitElement {
           display: flex;
           flex-direction: column;
           gap: 0.5em;
+          margin: 0;
           padding: 0.75em 1.125em;
         }
 
@@ -184,7 +184,7 @@ export class CcPlanItem extends LitElement {
           line-height: 1;
         }
 
-        .detail-con {
+        .detail-icon {
           color: var(--cc-color-text-weak);
           flex: 0 0 auto;
         }

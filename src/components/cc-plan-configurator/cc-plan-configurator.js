@@ -1,7 +1,6 @@
 import { css, html } from 'lit';
 import { dispatchCustomEvent } from '../../lib/events.js';
 import { CcFormControlElement } from '../../lib/form/cc-form-control-element.abstract.js';
-import { accessibilityStyles } from '../../styles/accessibility.js';
 import { i18n } from '../../translations/translation.js';
 import '../cc-plan-picker/cc-plan-picker.js';
 
@@ -26,8 +25,8 @@ export class CcPlanConfigurator extends CcFormControlElement {
       plans: { type: Array },
       readonly: { type: Boolean },
       value: { type: String },
-      _currentPlanId: { type: String },
-      _currentRelatedPlans: { type: Array },
+      _currentPlanId: { type: String, state: true },
+      _currentRelatedPlans: { type: Array, state: true },
     };
   }
 
@@ -56,7 +55,6 @@ export class CcPlanConfigurator extends CcFormControlElement {
    */
   _onChangePlan(e) {
     const currentPlan = this._findPlan(this.plans, e.target.value);
-    console.log(currentPlan);
     this._currentPlanId = e.target.value;
     if (currentPlan.relatedPlans != null && currentPlan.relatedPlans.length > 0) {
       this.value = currentPlan.relatedPlans[0].id;
@@ -120,7 +118,7 @@ export class CcPlanConfigurator extends CcFormControlElement {
     if (changedProperties.has('plans') && changedProperties.has('value')) {
       const currentPlan = this._findPlan(this.plans, this.value);
       if (currentPlan.relatedPlans != null && currentPlan.relatedPlans.length > 0) {
-        const valueExistsInRelated = currentPlan.relatedPlans.find((plan) => plan.id === this.value) != null;
+        const valueExistsInRelated = currentPlan.relatedPlans.some((plan) => plan.id === this.value);
         this.value = valueExistsInRelated ? this.value : currentPlan.relatedPlans[0].id;
       } else {
         this.value = currentPlan.id;
@@ -133,7 +131,7 @@ export class CcPlanConfigurator extends CcFormControlElement {
   render() {
     return html`
       <cc-plan-picker
-        @input="${this._onChangePlan}"
+        @cc-plan-picker:input="${this._onChangePlan}"
         name="plan"
         .plans=${this.plans}
         value="${this._currentPlanId}"
@@ -142,7 +140,7 @@ export class CcPlanConfigurator extends CcFormControlElement {
       ${this._currentRelatedPlans != null && this._currentRelatedPlans.length > 0
         ? html`
             <cc-plan-picker
-              @input="${this._onChangeRelatedPlan}"
+              @cc-plan-picker:input="${this._onChangeRelatedPlan}"
               name="customize-plans"
               .plans="${this._currentRelatedPlans}"
               value="${this.value}"
@@ -156,7 +154,6 @@ export class CcPlanConfigurator extends CcFormControlElement {
 
   static get styles() {
     return [
-      accessibilityStyles,
       // language=CSS
       css`
         :host {
