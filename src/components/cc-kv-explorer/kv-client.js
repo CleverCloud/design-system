@@ -9,6 +9,7 @@ import { withOptions } from '@clevercloud/client/esm/with-options.js';
 
 /**
  * @typedef {import('./cc-kv-explorer.types.js').CcKvKeyType} CcKvKeyType
+ * @typedef {import('../common.types.js').ValueOrArray<string|number|null>} CommandResult
  */
 
 /**
@@ -29,7 +30,7 @@ export class KvClient {
    */
   async ping({ signal }) {
     const result = await this.sendCommand('PING', [], { signal });
-    return result === 'PONG';
+    return result.result === 'PONG';
   }
 
   /**
@@ -353,13 +354,13 @@ export class KvClient {
    * @param {Array<string>} args
    * @param {object} [_]
    * @param {AbortSignal} [_.signal]
-   * @return {Promise<string>}
+   * @return {Promise<{result: CommandResult}>}
    */
   async sendCommand(command, args, { signal } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/command`,
-      headers: { Accept: 'application/json, text/plain', 'Content-Type': 'application/json' },
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { command, args },
     })
       .then(sendToKvProxy({ apiConfig: this._apiConfig, signal }))
@@ -385,15 +386,23 @@ function sendToKvProxy({ apiConfig, signal, cacheDelay, timeout }) {
       const { url, backendUrl } = apiConfig;
       return Promise.resolve(requestParams)
         .then(prefixUrl(url))
-        .then((requestParams) => ({
-          ...requestParams,
-          headers: {
-            ...requestParams.headers,
-            'Cc-Backend-Url': backendUrl,
-          },
-        }))
+        .then((requestParams) => {
+          return {
+            ...requestParams,
+            body: { ...omitNulls(requestParams.body), backendUrl },
+          };
+        })
         .then(withOptions({ signal, timeout }))
         .then(request);
     });
   };
+}
+
+/**
+ *
+ * @param {Partial<T>} object
+ * @template {object} T
+ */
+function omitNulls(object) {
+  return Object.fromEntries(Object.entries(object).filter(([, v]) => v != null));
 }

@@ -243,8 +243,8 @@ defineSmartComponent({
         } catch (e) {
           console.error(e);
 
-          const statusCode = getErrorStatusCode(e);
-          if (statusCode === 409) {
+          const errorCode = getErrorCode(e);
+          if (errorCode === 'clever.redis-http.key-already-exists') {
             updateComponent(
               'detailState',
               /** @param {CcKvExplorerDetailStateAdd} state */
@@ -669,8 +669,11 @@ defineSmartComponent({
         } catch (e) {
           console.error(e);
 
-          const err = /** @type {{responseBody: {statusCode: number, message: string}}} */ (e);
-          if (err.responseBody.statusCode !== 400 && err.responseBody.statusCode !== 404) {
+          const err = /** @type {{responseBody: {code: string, message: string}}} */ (e);
+          if (
+            err.responseBody.code !== 'clever.redis-http.unknown-command' &&
+            err.responseBody.code !== 'clever.redis-http.bad-command-format'
+          ) {
             console.error(e);
           }
 
@@ -748,7 +751,7 @@ defineSmartComponent({
     function checkIfKeyNotFoundOrElse(e, orElse) {
       if (isKeyNotFound(e)) {
         notifyError(i18n('cc-kv-explorer.error.key-doesnt-exist'));
-        keysCtrl.updateKeyState(e.responseBody.key, 'idle');
+        keysCtrl.updateKeyState(e.responseBody.context.key, 'idle');
         updateComponent('detailState', { type: 'hidden' });
       } else {
         console.error(e);
@@ -759,20 +762,19 @@ defineSmartComponent({
 });
 
 /**
- * @param {any} e
- * @return {number | null} e
+ * @param {{responseBody?: { code?: string}}} e
+ * @return {string | null} e
  */
-function getErrorStatusCode(e) {
-  return e?.responseBody?.statusCode;
+function getErrorCode(e) {
+  return e?.responseBody?.code;
 }
 
 /**
  * @param {any} e
- * @return {e is {responseBody: {key: string}}}
+ * @return {e is {responseBody: { context: {key: string}}}}
  */
 function isKeyNotFound(e) {
-  const status = getErrorStatusCode(e);
-  return status === 404 && e.responseBody.code === 'keyNotFound';
+  return getErrorCode(e) === 'clever.redis-http.key-not-found';
 }
 
 /**

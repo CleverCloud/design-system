@@ -1,5 +1,7 @@
 import { TemplateResult } from 'lit';
 
+export type ValueOrArray<T> = T | Array<ValueOrArray<T>>;
+
 export interface App {
   name: string; // Name of the application
   commit?: string; // Head commit on remote repo if app is not brand new (full SHA-1)

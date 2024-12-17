@@ -164,7 +164,7 @@ export class KvListElementsScanner extends KvScanner {
           };
         } catch (e) {
           const err = /** @type {any} */ (e);
-          if (err?.responseBody?.statusCode === 404 && err?.responseBody?.code === 'listElementNotFound') {
+          if (err?.responseBody?.code === 'clever.redis-http.list-element-not-found') {
             return emptyScanResult();
           }
           throw e;
