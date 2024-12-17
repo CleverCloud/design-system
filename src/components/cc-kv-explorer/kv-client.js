@@ -373,10 +373,9 @@ export class KvClient {
  * @param {object} _
  * @param {{url: string, backendUrl: string}} _.apiConfig
  * @param {AbortSignal} [_.signal]
- * @param {number} [_.timeout]
  * @return {(requestParams: any) => Promise<any>}
  */
-function sendToKvProxy({ apiConfig, signal, timeout }) {
+function sendToKvProxy({ apiConfig, signal }) {
   return (requestParams) => {
     const { url, backendUrl } = apiConfig;
     return Promise.resolve(requestParams)
@@ -387,7 +386,7 @@ function sendToKvProxy({ apiConfig, signal, timeout }) {
           body: { ...omitNulls(requestParams.body), backendUrl },
         };
       })
-      .then(withOptions({ signal, timeout }))
+      .then(withOptions({ signal }))
       .then(request);
   };
 }
