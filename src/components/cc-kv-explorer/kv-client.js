@@ -3,8 +3,6 @@ import { prefixUrl } from '@clevercloud/client/esm/prefix-url.js';
 // @ts-expect-error FIXME: remove when clever-client exports types
 import { request } from '@clevercloud/client/esm/request.fetch.js';
 // @ts-expect-error FIXME: remove when clever-client exports types
-import { withCache } from '@clevercloud/client/esm/with-cache.js';
-// @ts-expect-error FIXME: remove when clever-client exports types
 import { withOptions } from '@clevercloud/client/esm/with-options.js';
 
 /**
@@ -375,26 +373,22 @@ export class KvClient {
  * @param {object} _
  * @param {{url: string, backendUrl: string}} _.apiConfig
  * @param {AbortSignal} [_.signal]
- * @param {number} [_.cacheDelay]
  * @param {number} [_.timeout]
  * @return {(requestParams: any) => Promise<any>}
  */
-function sendToKvProxy({ apiConfig, signal, cacheDelay, timeout }) {
+function sendToKvProxy({ apiConfig, signal, timeout }) {
   return (requestParams) => {
-    const cacheParams = { ...apiConfig, ...requestParams };
-    return withCache(cacheParams, cacheDelay, () => {
-      const { url, backendUrl } = apiConfig;
-      return Promise.resolve(requestParams)
-        .then(prefixUrl(url))
-        .then((requestParams) => {
-          return {
-            ...requestParams,
-            body: { ...omitNulls(requestParams.body), backendUrl },
-          };
-        })
-        .then(withOptions({ signal, timeout }))
-        .then(request);
-    });
+    const { url, backendUrl } = apiConfig;
+    return Promise.resolve(requestParams)
+      .then(prefixUrl(url))
+      .then((requestParams) => {
+        return {
+          ...requestParams,
+          body: { ...omitNulls(requestParams.body), backendUrl },
+        };
+      })
+      .then(withOptions({ signal, timeout }))
+      .then(request);
   };
 }
 
