@@ -128,15 +128,13 @@ export class KvHashKeyController {
 export class KvHashElementsScanner extends KvScanner {
   /**
    * @param {KvClient} kvClient
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    */
-  constructor(kvClient, { signal }) {
+  constructor(kvClient) {
     super(
       (it) => it.field,
       (it) => isStringEmpty(this._filter?.pattern) || matchKvPattern(this._filter.pattern, it.field),
       async (cursor, count, filter) => {
-        const r = await kvClient.scanHash(this._filter.keyName, { cursor, count, match: filter?.pattern }, { signal });
+        const r = await kvClient.scanHash(this._filter.keyName, { cursor, count, match: filter?.pattern });
         return {
           cursor: r.cursor,
           total: r.total,

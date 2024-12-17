@@ -43,20 +43,20 @@ defineSmartComponent({
   // @ts-expect-error FIXME: remove once `onContextUpdate` is typed with generics
   async onContextUpdate({ component, context, onEvent, updateComponent, signal }) {
     const { kvApiConfig } = context;
-    const kvClient = new KvClient(kvApiConfig);
+    const kvClient = new KvClient(kvApiConfig, signal);
 
-    const kvKeysScanner = new KvKeysScanner(kvClient, { signal });
+    const kvKeysScanner = new KvKeysScanner(kvClient);
     const keysCtrl = new KeysController(component, updateComponent, kvKeysScanner);
 
     const stringKeyCtrl = new StringKeyController(updateComponent);
 
-    const hashScanner = new KvHashElementsScanner(kvClient, { signal });
+    const hashScanner = new KvHashElementsScanner(kvClient);
     const hashKeyCtrl = new KvHashKeyController(component, updateComponent, hashScanner);
 
-    const listScanner = new KvListElementsScanner(kvClient, { signal });
+    const listScanner = new KvListElementsScanner(kvClient);
     const listKeyCtrl = new KvListKeyController(component, updateComponent, listScanner);
 
-    const setScanner = new KvSetElementsScanner(kvClient, { signal });
+    const setScanner = new KvSetElementsScanner(kvClient);
     const setKeyCtrl = new KvSetKeyController(component, updateComponent, setScanner);
 
     // -- keys ---
@@ -107,7 +107,7 @@ defineSmartComponent({
           switch (key.type) {
             case 'string': {
               stringKeyCtrl.setLoading(key);
-              const { value } = await kvClient.getStringKey(key.name, { signal });
+              const { value } = await kvClient.getStringKey(key.name);
               stringKeyCtrl.setLoaded(key, value);
 
               break;
@@ -154,7 +154,7 @@ defineSmartComponent({
         keysCtrl.updateKeyState(key, 'deleting');
 
         try {
-          await kvClient.deleteKey(key, { signal });
+          await kvClient.deleteKey(key);
           const deletedKeyIndex = kvKeysScanner.delete(key);
 
           updateComponent(
@@ -197,26 +197,26 @@ defineSmartComponent({
         try {
           switch (keyValue.type) {
             case 'string':
-              await kvClient.createStringKey(keyValue.name, keyValue.value, { signal });
+              await kvClient.createStringKey(keyValue.name, keyValue.value);
 
               stringKeyCtrl.setLoaded({ type: 'string', name: keyValue.name }, keyValue.value);
               break;
             case 'hash':
-              await kvClient.createHashKey(keyValue.name, keyValue.elements, { signal });
+              await kvClient.createHashKey(keyValue.name, keyValue.elements);
 
               hashScanner.setFilter({ keyName: keyValue.name });
               hashScanner.update(keyValue.elements.map((e) => ({ ...e, type: 'idle' })));
               hashKeyCtrl.setLoaded({ type: 'hash', name: keyValue.name });
               break;
             case 'list':
-              await kvClient.createListKey(keyValue.name, keyValue.elements, { signal });
+              await kvClient.createListKey(keyValue.name, keyValue.elements);
 
               listScanner.setFilter({ keyName: keyValue.name });
               listScanner.update(keyValue.elements.map((e, i) => ({ index: i, value: e, type: 'idle' })));
               listKeyCtrl.setLoaded({ type: 'list', name: keyValue.name });
               break;
             case 'set':
-              await kvClient.createSetKey(keyValue.name, keyValue.elements, { signal });
+              await kvClient.createSetKey(keyValue.name, keyValue.elements);
 
               setScanner.setFilter({ keyName: keyValue.name });
               setScanner.update(keyValue.elements.map((e) => ({ value: e, type: 'idle' })));
@@ -281,7 +281,7 @@ defineSmartComponent({
         stringKeyCtrl.setEditorType('saving');
 
         try {
-          await kvClient.updateStringKey(component.detailState.key.name, value, { signal });
+          await kvClient.updateStringKey(component.detailState.key.name, value);
           stringKeyCtrl.setEditorType('idle');
 
           notifySuccess(i18n('cc-kv-string-editor.success.update-value'));
@@ -351,7 +351,7 @@ defineSmartComponent({
         hashKeyCtrl.updateEditorElementState(field, 'deleting');
 
         try {
-          await kvClient.deleteHashElement(component.detailState.key.name, field, { signal });
+          await kvClient.deleteHashElement(component.detailState.key.name, field);
           hashScanner.delete(field);
           hashKeyCtrl.updateEditorElements(hashScanner.elements);
 
@@ -376,7 +376,7 @@ defineSmartComponent({
         hashKeyCtrl.updateEditorElementState(field, 'updating');
 
         try {
-          await kvClient.setHashElement(component.detailState.key.name, field, value, { signal });
+          await kvClient.setHashElement(component.detailState.key.name, field, value);
           hashScanner.update([{ type: 'idle', field, value }]);
           hashKeyCtrl.updateEditorElements(hashScanner.elements);
 
@@ -401,9 +401,7 @@ defineSmartComponent({
         hashKeyCtrl.updateAddForm({ type: 'adding' });
 
         try {
-          const result = await kvClient.setHashElement(component.detailState.key.name, field, value, {
-            signal,
-          });
+          const result = await kvClient.setHashElement(component.detailState.key.name, field, value);
 
           component.resetEditorForm();
 
@@ -489,7 +487,7 @@ defineSmartComponent({
         listKeyCtrl.updateEditorElementState(index, 'updating');
 
         try {
-          await kvClient.updateListElement(component.detailState.key.name, index, value, { signal });
+          await kvClient.updateListElement(component.detailState.key.name, index, value);
           listScanner.update([{ type: 'idle', index, value }]);
           listKeyCtrl.updateEditorElements(listScanner.elements);
 
@@ -518,7 +516,6 @@ defineSmartComponent({
             component.detailState.key.name,
             element.position,
             element.value,
-            { signal },
           );
 
           component.resetEditorForm();
@@ -597,7 +594,7 @@ defineSmartComponent({
         setKeyCtrl.updateEditorElementState(element, 'deleting');
 
         try {
-          await kvClient.deleteSetElement(component.detailState.key.name, element, { signal });
+          await kvClient.deleteSetElement(component.detailState.key.name, element);
           setScanner.delete(element);
           setKeyCtrl.updateEditorElements(setScanner.elements);
 
@@ -622,7 +619,7 @@ defineSmartComponent({
         setKeyCtrl.updateAddForm({ type: 'adding' });
 
         try {
-          const result = await kvClient.addSetElement(component.detailState.key.name, element, { signal });
+          const result = await kvClient.addSetElement(component.detailState.key.name, element);
 
           component.resetEditorForm();
 
@@ -660,7 +657,7 @@ defineSmartComponent({
         });
 
         try {
-          const { success, result } = await kvClient.sendCommandLine(commandLine, { signal });
+          const { success, result } = await kvClient.sendCommandLine(commandLine);
 
           updateComponent('terminalState', {
             type: 'idle',
@@ -696,7 +693,7 @@ defineSmartComponent({
     component.resetAddForm();
 
     try {
-      const pong = await kvClient.ping({ signal });
+      const pong = await kvClient.ping();
       if (pong) {
         await fetchKeys({ keys: [], total: 0 });
       } else {

@@ -64,10 +64,8 @@ export class KeysController {
 export class KvKeysScanner extends KvScanner {
   /**
    * @param {KvClient} kvClient
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    */
-  constructor(kvClient, { signal }) {
+  constructor(kvClient) {
     super(
       (it) => it.key.name,
       (it) => {
@@ -77,7 +75,7 @@ export class KvKeysScanner extends KvScanner {
         );
       },
       async (cursor, count, filter) => {
-        const r = await kvClient.scanKeys({ cursor, count, type: filter?.type, match: filter?.pattern }, { signal });
+        const r = await kvClient.scanKeys({ cursor, count, type: filter?.type, match: filter?.pattern });
         return {
           cursor: r.cursor,
           total: r.total,

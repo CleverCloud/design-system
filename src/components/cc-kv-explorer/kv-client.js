@@ -16,18 +16,18 @@ import { withOptions } from '@clevercloud/client/esm/with-options.js';
 export class KvClient {
   /**
    * @param {{url: string, backendUrl: string}} apiConfig
+   * @param {AbortSignal} signal
    */
-  constructor(apiConfig) {
+  constructor(apiConfig, signal) {
     this._apiConfig = apiConfig;
+    this._signal = signal;
   }
 
   /**
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<boolean>}
    */
-  async ping({ signal }) {
-    const result = await this.sendCommand('PING', [], { signal });
+  async ping() {
+    const result = await this.sendCommand('PING', []);
     return result.result === 'PONG';
   }
 
@@ -37,95 +37,83 @@ export class KvClient {
    * @param {number} [options.count]
    * @param {CcKvKeyType} [options.type]
    * @param {string} [options.match]
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{cursor: number, total: number, keys: Array<{name: string, type: CcKvKeyType}>}>}
    */
-  async scanKeys({ cursor, count, type, match } = {}, { signal } = {}) {
+  async scanKeys({ cursor, count, type, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/keys/_scan`,
       body: { cursor, count, type, match },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, deleted: boolean}>}
    */
-  async deleteKey(keyName, { signal } = {}) {
+  async deleteKey(keyName) {
     return Promise.resolve({
       method: 'post',
       url: `/key/_delete`,
       body: { key: keyName },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, value: string}>}
    */
-  async getStringKey(keyName, { signal } = {}) {
+  async getStringKey(keyName) {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_get`,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {string} value
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, value: string}>}
    */
-  async createStringKey(keyName, value, { signal } = {}) {
+  async createStringKey(keyName, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_create`,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, value },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {string} value
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, value: string}>}
    */
-  async updateStringKey(keyName, value, { signal } = {}) {
+  async updateStringKey(keyName, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_update`,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, value },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {Array<{field: string, value: string}>} elements
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, elements: Array<{field: string, value: string}>}>}
    */
-  async createHashKey(keyName, elements, { signal } = {}) {
+  async createHashKey(keyName, elements) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_create`,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, elements },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
@@ -134,66 +122,58 @@ export class KvClient {
    * @param {number} [options.cursor]
    * @param {number} [options.count]
    * @param {string} [options.match]
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{cursor: number, total: number, elements: Array<{field: string, value: string}>}>}
    */
-  async scanHash(keyName, { cursor, count, match } = {}, { signal } = {}) {
+  async scanHash(keyName, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_scan`,
       body: { key: keyName, cursor, count, match },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {string} field
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, field: string, deleted: boolean}>}
    */
-  async deleteHashElement(keyName, field, { signal } = {}) {
+  async deleteHashElement(keyName, field) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_delete`,
       body: { key: keyName, field },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {string} field
    * @param {string} value
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, field: string, value: string, added: boolean}>}
    */
-  async setHashElement(keyName, field, value, { signal } = {}) {
+  async setHashElement(keyName, field, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_set`,
       body: { key: keyName, field, value },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {Array<string>} elements
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, elements: Array<{index: number, value: string}>}>}
    */
-  async createListKey(keyName, elements, { signal } = {}) {
+  async createListKey(keyName, elements) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_create`,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, elements },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
@@ -202,83 +182,73 @@ export class KvClient {
    * @param {number} [options.cursor]
    * @param {number} [options.count]
    * @param {number} [options.match]
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{cursor: number, total: number, elements: Array<{index: number, value: string}>}>}
    */
-  async scanList(keyName, { cursor, count, match } = {}, { signal } = {}) {
+  async scanList(keyName, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_scan`,
       body: { key: keyName, cursor, count, match },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {number} index
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, index: number, value: string}>}
    */
-  async getListElementAt(keyName, index, { signal } = {}) {
+  async getListElementAt(keyName, index) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_get`,
       body: { key: keyName, index },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {number} index
    * @param {string} value
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, index: number, value: string}>}
    */
-  async updateListElement(keyName, index, value, { signal } = {}) {
+  async updateListElement(keyName, index, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_update`,
       body: { key: keyName, index, value },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {'tail'|'head'} position
    * @param {string} value
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, index: number, value: string}>}
    */
-  async pushListElement(keyName, position, value, { signal } = {}) {
+  async pushListElement(keyName, position, value) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_push`,
       body: { key: keyName, position, value },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {Array<string>} elements
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, elements: Array<string>}>}
    */
-  async createSetKey(keyName, elements, { signal } = {}) {
+  async createSetKey(keyName, elements) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_create`,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, elements },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
@@ -287,108 +257,94 @@ export class KvClient {
    * @param {number} [options.cursor]
    * @param {number} [options.count]
    * @param {string} [options.match]
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{cursor: number, total: number, elements: Array<string>}>}
    */
-  async scanSet(keyName, { cursor, count, match } = {}, { signal } = {}) {
+  async scanSet(keyName, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_scan`,
       body: { key: keyName, cursor, count, match },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {string} element
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, element: string, deleted: boolean}>}
    */
-  async deleteSetElement(keyName, element, { signal } = {}) {
+  async deleteSetElement(keyName, element) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_delete`,
       body: { key: keyName, element },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} keyName
    * @param {string} element
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{key: string, element: string, added: boolean}>}
    */
-  async addSetElement(keyName, element, { signal } = {}) {
+  async addSetElement(keyName, element) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_set`,
       body: { key: keyName, element },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} commandLine
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{success: boolean, result: Array<string>}>}
    */
-  async sendCommandLine(commandLine, { signal } = {}) {
+  async sendCommandLine(commandLine) {
     return Promise.resolve({
       method: 'post',
       url: `/command/cli`,
       body: { commandLine },
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    }).then(sendToKvProxy({ apiConfig: this._apiConfig, signal }));
+    }).then(this.sendToKvProxy());
   }
 
   /**
    * @param {string} command
    * @param {Array<string>} args
-   * @param {object} [_]
-   * @param {AbortSignal} [_.signal]
    * @return {Promise<{result: CommandResult}>}
    */
-  async sendCommand(command, args, { signal } = {}) {
+  async sendCommand(command, args) {
     return Promise.resolve({
       method: 'post',
       url: `/command`,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { command, args },
     })
-      .then(sendToKvProxy({ apiConfig: this._apiConfig, signal }))
+      .then(this.sendToKvProxy())
       .then((result) => {
         return result;
       });
   }
-}
 
-/**
- *
- * @param {object} _
- * @param {{url: string, backendUrl: string}} _.apiConfig
- * @param {AbortSignal} [_.signal]
- * @return {(requestParams: any) => Promise<any>}
- */
-function sendToKvProxy({ apiConfig, signal }) {
-  return (requestParams) => {
-    const { url, backendUrl } = apiConfig;
-    return Promise.resolve(requestParams)
-      .then(prefixUrl(url))
-      .then((requestParams) => {
-        return {
-          ...requestParams,
-          body: { ...omitNulls(requestParams.body), backendUrl },
-        };
-      })
-      .then(withOptions({ signal }))
-      .then(request);
-  };
+  /**
+   * @return {(requestParams: any) => Promise<any>}
+   */
+  sendToKvProxy() {
+    return (requestParams) => {
+      const { url, backendUrl } = this._apiConfig;
+      return Promise.resolve(requestParams)
+        .then(prefixUrl(url))
+        .then((requestParams) => {
+          return {
+            ...requestParams,
+            body: { ...omitNulls(requestParams.body), backendUrl },
+          };
+        })
+        .then(withOptions({ signal: this._signal }))
+        .then(request);
+    };
+  }
 }
 
 /**

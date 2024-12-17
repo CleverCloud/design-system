@@ -131,12 +131,12 @@ export class KvSetElementsScanner extends KvScanner {
    * @param {object} _
    * @param {AbortSignal} [_.signal]
    */
-  constructor(kvClient, { signal }) {
+  constructor(kvClient) {
     super(
       (it) => it.value,
       (it) => isStringEmpty(this._filter?.pattern) || matchKvPattern(this._filter.pattern, it.value),
       async (cursor, count, filter) => {
-        const r = await kvClient.scanSet(this._filter.keyName, { cursor, count, match: filter?.pattern }, { signal });
+        const r = await kvClient.scanSet(this._filter.keyName, { cursor, count, match: filter?.pattern });
         return {
           cursor: r.cursor,
           total: r.total,

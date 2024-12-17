@@ -126,17 +126,15 @@ export class KvListKeyController {
 export class KvListElementsScanner extends KvScanner {
   /**
    * @param {KvClient} kvClient
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    */
-  constructor(kvClient, { signal }) {
+  constructor(kvClient) {
     super(
       (it) => String(it.index),
       (it) => this._filter?.index == null || it.index === this._filter.index,
       async (cursor, count, filter) => {
         // no filtering
         if (filter.index == null) {
-          const r = await kvClient.scanList(this._filter.keyName, { cursor, count, match: null }, { signal });
+          const r = await kvClient.scanList(this._filter.keyName, { cursor, count, match: null });
           return {
             cursor: r.cursor,
             total: r.total,
