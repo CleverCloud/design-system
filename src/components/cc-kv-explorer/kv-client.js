@@ -44,7 +44,6 @@ export class KvClient {
       method: 'post',
       url: `/keys/_scan`,
       body: { cursor, count, type, match },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -57,7 +56,6 @@ export class KvClient {
       method: 'post',
       url: `/key/_delete`,
       body: { key: keyName },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -69,7 +67,6 @@ export class KvClient {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_get`,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName },
     }).then(this.sendToKvProxy());
   }
@@ -83,7 +80,6 @@ export class KvClient {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_create`,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, value },
     }).then(this.sendToKvProxy());
   }
@@ -97,7 +93,6 @@ export class KvClient {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_update`,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, value },
     }).then(this.sendToKvProxy());
   }
@@ -111,7 +106,6 @@ export class KvClient {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_create`,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, elements },
     }).then(this.sendToKvProxy());
   }
@@ -129,7 +123,6 @@ export class KvClient {
       method: 'post',
       url: `/key/hash/_scan`,
       body: { key: keyName, cursor, count, match },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -143,7 +136,6 @@ export class KvClient {
       method: 'post',
       url: `/key/hash/_delete`,
       body: { key: keyName, field },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -158,7 +150,6 @@ export class KvClient {
       method: 'post',
       url: `/key/hash/_set`,
       body: { key: keyName, field, value },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -171,7 +162,6 @@ export class KvClient {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_create`,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, elements },
     }).then(this.sendToKvProxy());
   }
@@ -189,7 +179,6 @@ export class KvClient {
       method: 'post',
       url: `/key/list/_scan`,
       body: { key: keyName, cursor, count, match },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -203,7 +192,6 @@ export class KvClient {
       method: 'post',
       url: `/key/list/_get`,
       body: { key: keyName, index },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -218,7 +206,6 @@ export class KvClient {
       method: 'post',
       url: `/key/list/_update`,
       body: { key: keyName, index, value },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -233,7 +220,6 @@ export class KvClient {
       method: 'post',
       url: `/key/list/_push`,
       body: { key: keyName, position, value },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -246,7 +232,6 @@ export class KvClient {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_create`,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { key: keyName, elements },
     }).then(this.sendToKvProxy());
   }
@@ -264,7 +249,6 @@ export class KvClient {
       method: 'post',
       url: `/key/set/_scan`,
       body: { key: keyName, cursor, count, match },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -278,7 +262,6 @@ export class KvClient {
       method: 'post',
       url: `/key/set/_delete`,
       body: { key: keyName, element },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -292,7 +275,6 @@ export class KvClient {
       method: 'post',
       url: `/key/set/_set`,
       body: { key: keyName, element },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -305,7 +287,6 @@ export class KvClient {
       method: 'post',
       url: `/command/cli`,
       body: { commandLine },
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     }).then(this.sendToKvProxy());
   }
 
@@ -318,7 +299,6 @@ export class KvClient {
     return Promise.resolve({
       method: 'post',
       url: `/command`,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: { command, args },
     })
       .then(this.sendToKvProxy())
@@ -339,6 +319,7 @@ export class KvClient {
           return {
             ...requestParams,
             body: { ...omitNulls(requestParams.body), backendUrl },
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
           };
         })
         .then(withOptions({ signal: this._signal }))
