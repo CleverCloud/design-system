@@ -78,6 +78,7 @@ export class KvScanner {
         }
         return currentId !== id;
       });
+      this._total--;
     }
     return index;
   }
@@ -117,6 +118,9 @@ export class KvScanner {
           return toUpdate.has(id) ? { ...toUpdate.get(id) } : it;
         }),
       ];
+
+      this._total += toAdd.length;
+
       return true;
     }
     return false;

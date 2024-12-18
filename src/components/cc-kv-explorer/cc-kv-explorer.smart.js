@@ -172,7 +172,7 @@ defineSmartComponent({
             /** @param {CcKvExplorerStateLoaded} state */
             (state) => {
               state.keys = kvKeysScanner.elements;
-              state.total -= 1;
+              state.total = kvKeysScanner.total;
             },
           );
 
@@ -241,8 +241,8 @@ defineSmartComponent({
               'state',
               /** @param {CcKvExplorerStateLoaded} state */
               (state) => {
-                state.keys = [keyState, ...state.keys];
-                state.total += 1;
+                state.keys = kvKeysScanner.elements;
+                state.total = kvKeysScanner.total;
               },
             );
           }
