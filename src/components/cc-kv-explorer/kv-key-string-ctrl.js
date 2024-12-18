@@ -15,19 +15,6 @@ export class KvKeyStringCtrl {
   }
 
   /**
-   * @param {'loading'|'idle'|'saving'} type
-   */
-  setEditorType(type) {
-    this.updateComponent(
-      'detailState',
-      /** @param {CcKvExplorerDetailStateEditString} state*/
-      (state) => {
-        state.editor.type = type;
-      },
-    );
-  }
-
-  /**
    * @param {CcKvKey} key
    */
   setLoading(key) {
@@ -40,5 +27,31 @@ export class KvKeyStringCtrl {
    */
   setLoaded(key, value) {
     this.updateComponent('detailState', { type: 'edit-string', key, editor: { type: 'idle', value } });
+  }
+
+  /**
+   * @param {string} value
+   */
+  setSaving(value) {
+    this.updateComponent(
+      'detailState',
+      /** @param {CcKvExplorerDetailStateEditString} state*/
+      (state) => {
+        state.editor = { type: 'saving', value };
+      },
+    );
+  }
+
+  /**
+   * @param {string} value
+   */
+  setIdle(value) {
+    this.updateComponent(
+      'detailState',
+      /** @param {CcKvExplorerDetailStateEditString} state*/
+      (state) => {
+        state.editor = { type: 'idle', value };
+      },
+    );
   }
 }

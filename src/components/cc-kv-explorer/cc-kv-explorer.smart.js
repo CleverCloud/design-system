@@ -288,17 +288,17 @@ defineSmartComponent({
           return;
         }
 
-        stringKeyCtrl.setEditorType('saving');
+        stringKeyCtrl.setSaving(value);
 
         try {
           await kvClient.updateStringKey(component.detailState.key.name, value);
-          stringKeyCtrl.setEditorType('idle');
+          stringKeyCtrl.setIdle(value);
 
           notifySuccess(i18n('cc-kv-string-editor.success.update-value'));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-string-editor.error.update-value'));
-            stringKeyCtrl.setEditorType('idle');
+            stringKeyCtrl.setIdle(value);
           });
         }
       },

@@ -8,6 +8,7 @@ import '../cc-input-text/cc-input-text.js';
 /**
  * @typedef {import('./cc-kv-string-editor.types.js').CcKvKeyStringEditorState} CcKvKeyStringEditorState
  * @typedef {import('../../lib/form/form.types.js').FormDataMap} FormDataMap
+ * @typedef {import('lit').PropertyValues<CcKvStringEditor>} PropertyValues
  */
 
 /**
@@ -28,6 +29,7 @@ export class CcKvStringEditor extends LitElement {
     return {
       disabled: { type: Boolean },
       state: { type: Object },
+      _value: { type: String, state: true },
     };
   }
 
@@ -40,8 +42,18 @@ export class CcKvStringEditor extends LitElement {
     /** @type {CcKvKeyStringEditorState} - The state of the component */
     this.state = { type: 'loading' };
 
+    /** @type {string} */
+    this._value = '';
+
     // this is for add form submit
     this._onFormSubmit = this._onFormSubmit.bind(this);
+  }
+
+  /**
+   * @param {CustomEvent<string>} event
+   */
+  _onValueInput(event) {
+    this._value = event.detail;
   }
 
   /**
@@ -55,10 +67,18 @@ export class CcKvStringEditor extends LitElement {
     dispatchCustomEvent(this, 'update-value', formData.value);
   }
 
+  /**
+   * @param {PropertyValues} changedProperties
+   */
+  willUpdate(changedProperties) {
+    if (changedProperties.has('state')) {
+      this._value = this.state.type === 'loading' ? '' : this.state.value;
+    }
+  }
+
   render() {
     const isLoading = this.state.type === 'loading';
     const isSaving = this.state.type === 'saving';
-    const value = this.state.type === 'loading' ? '' : this.state.value;
     const isDisabled = this.disabled;
 
     return html`<form ${formSubmit(this._onFormSubmit)}>
@@ -70,8 +90,9 @@ export class CcKvStringEditor extends LitElement {
         ?readonly=${isSaving}
         clipboard
         multi
-        .resetValue=${value}
-        .value=${value}
+        .resetValue=${this._value}
+        .value=${this._value}
+        @cc-input-text:input=${this._onValueInput}
       ></cc-input-text>
       <div class="buttons">
         <cc-button type="reset" .skeleton=${isLoading} .disabled=${isDisabled || isSaving}>
