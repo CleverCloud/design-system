@@ -141,7 +141,9 @@ export class CcKvTerminal extends LitElement {
   _onShellPromptKeyDown(e) {
     e.stopPropagation();
 
-    if (e.key === 'Enter') {
+    const isCommandRunning = this.state.type === 'running';
+
+    if (e.key === 'Enter' && !isCommandRunning) {
       e.preventDefault();
       this._cmdHistoryIndex = null;
       const commandLine = e.target.value.trim();
