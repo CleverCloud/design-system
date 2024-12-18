@@ -123,7 +123,7 @@ defineSmartComponent({
             case 'hash': {
               hashKeyCtrl.setLoading(key);
               hashScanner.setFilter({ keyName: key.name });
-              await hashScanner.next(abortCtrl.signal);
+              await hashScanner.loadMore(abortCtrl.signal);
               hashKeyCtrl.setLoaded(key);
 
               break;
@@ -131,7 +131,7 @@ defineSmartComponent({
             case 'list': {
               listKeyCtrl.setLoading(key);
               listScanner.setFilter({ keyName: key.name });
-              await listScanner.next(abortCtrl.signal);
+              await listScanner.loadMore(abortCtrl.signal);
               listKeyCtrl.setLoaded(key);
 
               break;
@@ -139,7 +139,7 @@ defineSmartComponent({
             case 'set': {
               setKeyCtrl.setLoading(key);
               setScanner.setFilter({ keyName: key.name });
-              await setScanner.next(abortCtrl.signal);
+              await setScanner.loadMore(abortCtrl.signal);
               setKeyCtrl.setLoaded(key);
 
               break;
@@ -320,7 +320,7 @@ defineSmartComponent({
 
         try {
           hashScanner.setFilter({ keyName: component.detailState.key.name, pattern });
-          await hashScanner.next();
+          await hashScanner.loadMore();
           hashKeyCtrl.updateEditor({ type: 'loaded', elements: hashScanner.elements, addForm });
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
@@ -339,7 +339,7 @@ defineSmartComponent({
       hashKeyCtrl.updateEditor((editor) => (editor.type = 'loading-more'));
 
       try {
-        await hashScanner.next();
+        await hashScanner.loadMore();
         hashKeyCtrl.updateEditorElements(hashScanner.elements);
         hashKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
       } catch (e) {
@@ -418,7 +418,7 @@ defineSmartComponent({
           // refetch all elements
           hashKeyCtrl.setLoading(component.detailState.key);
           hashScanner.reset();
-          await hashScanner.next();
+          await hashScanner.loadMore();
           hashKeyCtrl.setLoaded(component.detailState.key);
           hashKeyCtrl.updateAddForm({ type: 'idle' });
 
@@ -446,7 +446,7 @@ defineSmartComponent({
       listKeyCtrl.updateEditor((editor) => (editor.type = 'loading-more'));
 
       try {
-        await listScanner.next();
+        await listScanner.loadMore();
         listKeyCtrl.updateEditorElements(listScanner.elements);
         listKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
       } catch (e) {
@@ -471,7 +471,7 @@ defineSmartComponent({
 
         try {
           listScanner.setFilter({ keyName: component.detailState.key.name, index });
-          await listScanner.next();
+          await listScanner.loadMore();
           listKeyCtrl.updateEditor({ type: 'loaded', elements: listScanner.elements, addForm });
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
@@ -533,7 +533,7 @@ defineSmartComponent({
           // refetch all elements
           listKeyCtrl.setLoading(component.detailState.key);
           listScanner.reset();
-          await listScanner.next();
+          await listScanner.loadMore();
           listKeyCtrl.setLoaded(component.detailState.key);
           listKeyCtrl.updateAddForm({ type: 'idle' });
 
@@ -563,7 +563,7 @@ defineSmartComponent({
 
         try {
           setScanner.setFilter({ keyName: component.detailState.key.name, pattern });
-          await setScanner.next();
+          await setScanner.loadMore();
           setKeyCtrl.updateEditor({ type: 'loaded', elements: setScanner.elements, addForm });
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
@@ -582,7 +582,7 @@ defineSmartComponent({
       setKeyCtrl.updateEditor((editor) => (editor.type = 'loading-more'));
 
       try {
-        await setScanner.next();
+        await setScanner.loadMore();
         setKeyCtrl.updateEditorElements(setScanner.elements);
         setKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
       } catch (e) {
@@ -637,7 +637,7 @@ defineSmartComponent({
             // refetch all elements
             setKeyCtrl.setLoading(component.detailState.key);
             setScanner.reset();
-            await setScanner.next();
+            await setScanner.loadMore();
             setKeyCtrl.setLoaded(component.detailState.key);
 
             notifySuccess(i18n('cc-kv-set-explorer.success.element-add'));
@@ -732,7 +732,7 @@ defineSmartComponent({
 
       try {
         if (kvKeysScanner.hasMore()) {
-          await kvKeysScanner.next();
+          await kvKeysScanner.loadMore();
           keys = kvKeysScanner.elements;
           total = kvKeysScanner.total;
         }

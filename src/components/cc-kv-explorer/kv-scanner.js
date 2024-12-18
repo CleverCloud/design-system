@@ -152,7 +152,7 @@ export class KvScanner {
    * @param {number} [count]
    * @return {Promise<void>}
    */
-  async next(signal, count = 1000) {
+  async loadMore(signal, count = 1000) {
     if (this.hasMore()) {
       const f = await this.fetch(this._cursor, count, this._filter, signal);
       f.elements.forEach((it) => {
