@@ -128,47 +128,69 @@ export class KvListElementsScanner extends KvScanner {
    * @param {KvClient} kvClient
    */
   constructor(kvClient) {
-    super(
-      (it) => String(it.index),
-      (it) => this._filter?.index == null || it.index === this._filter.index,
-      async (cursor, count, filter, signal) => {
-        // no filtering
-        if (filter.index == null) {
-          const r = await kvClient.scanList(this._filter.keyName, signal, { cursor, count, match: null });
-          return {
-            cursor: r.cursor,
-            total: r.total,
-            elements: r.elements.map((e) => ({ ...e, type: 'idle' })),
-          };
-        }
+    super();
+    this._kvClient = kvClient;
+  }
 
-        // bad filter
-        if (isNaN(filter.index)) {
-          return emptyScanResult();
-        }
+  /**
+   * @param {CcKvListElementState} item
+   * @returns {string}
+   */
+  getId(item) {
+    return String(item.index);
+  }
 
-        // filtering by index is like getting item at the given index
-        try {
-          const element = await kvClient.getListElementAt(this._filter.keyName, filter.index);
+  /**
+   * @param {CcKvListElementState} item
+   * @returns {boolean}
+   */
+  matchFilter(item) {
+    return this._filter?.index == null || item.index === this._filter.index;
+  }
 
-          if (element.value == null) {
-            return emptyScanResult();
-          }
+  /**
+   * @param {number} cursor
+   * @param {number} count
+   * @param {{keyName: string, index?: number}} filter
+   * @param {AbortSignal} [signal]
+   * @return {Promise<{cursor: number, total: number, elements: Array<CcKvListElementState>}>}
+   */
+  async fetch(cursor, count, filter, signal) {
+    // no filtering
+    if (filter.index == null) {
+      const r = await this._kvClient.scanList(this._filter.keyName, signal, { cursor, count, match: null });
+      return {
+        cursor: r.cursor,
+        total: r.total,
+        elements: r.elements.map((e) => ({ ...e, type: 'idle' })),
+      };
+    }
 
-          return {
-            cursor: 0,
-            total: 0,
-            elements: [{ type: 'idle', index: element.index, value: element.value }],
-          };
-        } catch (e) {
-          const err = /** @type {any} */ (e);
-          if (err?.responseBody?.code === 'clever.redis-http.list-element-not-found') {
-            return emptyScanResult();
-          }
-          throw e;
-        }
-      },
-    );
+    // bad filter
+    if (isNaN(filter.index)) {
+      return emptyScanResult();
+    }
+
+    // filtering by index is like getting item at the given index
+    try {
+      const element = await this._kvClient.getListElementAt(this._filter.keyName, filter.index);
+
+      if (element.value == null) {
+        return emptyScanResult();
+      }
+
+      return {
+        cursor: 0,
+        total: 0,
+        elements: [{ type: 'idle', index: element.index, value: element.value }],
+      };
+    } catch (e) {
+      const err = /** @type {any} */ (e);
+      if (err?.responseBody?.code === 'clever.redis-http.list-element-not-found') {
+        return emptyScanResult();
+      }
+      throw e;
+    }
   }
 }
 

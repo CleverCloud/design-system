@@ -128,21 +128,41 @@ export class KvSetKeyController {
 export class KvSetElementsScanner extends KvScanner {
   /**
    * @param {KvClient} kvClient
-   * @param {object} _
-   * @param {AbortSignal} [_.signal]
    */
   constructor(kvClient) {
-    super(
-      (it) => it.value,
-      (it) => isStringEmpty(this._filter?.pattern) || matchKvPattern(this._filter.pattern, it.value),
-      async (cursor, count, filter, signal) => {
-        const r = await kvClient.scanSet(this._filter.keyName, signal, { cursor, count, match: filter?.pattern });
-        return {
-          cursor: r.cursor,
-          total: r.total,
-          elements: r.elements.map((e) => ({ value: e, type: 'idle' })),
-        };
-      },
-    );
+    super();
+    this._kvClient = kvClient;
+  }
+
+  /**
+   * @param {CcKvSetElementState} item
+   * @returns {string}
+   */
+  getId(item) {
+    return item.value;
+  }
+
+  /**
+   * @param {CcKvSetElementState} item
+   * @returns {boolean}
+   */
+  matchFilter(item) {
+    return isStringEmpty(this._filter?.pattern) || matchKvPattern(this._filter.pattern, item.value);
+  }
+
+  /**
+   * @param {number} cursor
+   * @param {number} count
+   * @param {{keyName: string, pattern?: string}} filter
+   * @param {AbortSignal} [signal]
+   * @return {Promise<{cursor: number, total: number, elements: Array<CcKvSetElementState>}>}
+   */
+  async fetch(cursor, count, filter, signal) {
+    const r = await this._kvClient.scanSet(this._filter.keyName, signal, { cursor, count, match: filter?.pattern });
+    return {
+      cursor: r.cursor,
+      total: r.total,
+      elements: r.elements.map((e) => ({ value: e, type: 'idle' })),
+    };
   }
 }
