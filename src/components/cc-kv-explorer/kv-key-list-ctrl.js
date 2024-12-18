@@ -131,10 +131,10 @@ export class KvListElementsScanner extends KvScanner {
     super(
       (it) => String(it.index),
       (it) => this._filter?.index == null || it.index === this._filter.index,
-      async (cursor, count, filter) => {
+      async (cursor, count, filter, signal) => {
         // no filtering
         if (filter.index == null) {
-          const r = await kvClient.scanList(this._filter.keyName, { cursor, count, match: null });
+          const r = await kvClient.scanList(this._filter.keyName, signal, { cursor, count, match: null });
           return {
             cursor: r.cursor,
             total: r.total,

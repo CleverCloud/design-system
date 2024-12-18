@@ -133,8 +133,8 @@ export class KvHashElementsScanner extends KvScanner {
     super(
       (it) => it.field,
       (it) => isStringEmpty(this._filter?.pattern) || matchKvPattern(this._filter.pattern, it.field),
-      async (cursor, count, filter) => {
-        const r = await kvClient.scanHash(this._filter.keyName, { cursor, count, match: filter?.pattern });
+      async (cursor, count, filter, signal) => {
+        const r = await kvClient.scanHash(this._filter.keyName, signal, { cursor, count, match: filter?.pattern });
         return {
           cursor: r.cursor,
           total: r.total,

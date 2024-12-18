@@ -61,14 +61,15 @@ export class KvClient {
 
   /**
    * @param {string} keyName
+   * @param {AbortSignal} signal
    * @return {Promise<{key: string, value: string}>}
    */
-  getStringKey(keyName) {
+  getStringKey(keyName, signal) {
     return Promise.resolve({
       method: 'post',
       url: `/key/string/_get`,
       body: { key: keyName },
-    }).then(this.sendToKvProxy());
+    }).then(this.sendToKvProxy(signal));
   }
 
   /**
@@ -112,18 +113,19 @@ export class KvClient {
 
   /**
    * @param {string} keyName
+   * @param {AbortSignal} signal
    * @param {object} [options]
    * @param {number} [options.cursor]
    * @param {number} [options.count]
    * @param {string} [options.match]
    * @return {Promise<{cursor: number, total: number, elements: Array<{field: string, value: string}>}>}
    */
-  scanHash(keyName, { cursor, count, match } = {}) {
+  scanHash(keyName, signal, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/hash/_scan`,
       body: { key: keyName, cursor, count, match },
-    }).then(this.sendToKvProxy());
+    }).then(this.sendToKvProxy(signal));
   }
 
   /**
@@ -168,18 +170,19 @@ export class KvClient {
 
   /**
    * @param {string} keyName
+   * @param {AbortSignal} signal
    * @param {object} [options]
    * @param {number} [options.cursor]
    * @param {number} [options.count]
    * @param {number} [options.match]
    * @return {Promise<{cursor: number, total: number, elements: Array<{index: number, value: string}>}>}
    */
-  scanList(keyName, { cursor, count, match } = {}) {
+  scanList(keyName, signal, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/list/_scan`,
       body: { key: keyName, cursor, count, match },
-    }).then(this.sendToKvProxy());
+    }).then(this.sendToKvProxy(signal));
   }
 
   /**
@@ -238,18 +241,19 @@ export class KvClient {
 
   /**
    * @param {string} keyName
+   * @param {AbortSignal} signal
    * @param {object} [options]
    * @param {number} [options.cursor]
    * @param {number} [options.count]
    * @param {string} [options.match]
    * @return {Promise<{cursor: number, total: number, elements: Array<string>}>}
    */
-  scanSet(keyName, { cursor, count, match } = {}) {
+  scanSet(keyName, signal, { cursor, count, match } = {}) {
     return Promise.resolve({
       method: 'post',
       url: `/key/set/_scan`,
       body: { key: keyName, cursor, count, match },
-    }).then(this.sendToKvProxy());
+    }).then(this.sendToKvProxy(signal));
   }
 
   /**
@@ -304,9 +308,10 @@ export class KvClient {
   }
 
   /**
+   * @param {AbortSignal} [signal]
    * @return {(requestParams: any) => Promise<any>}
    */
-  sendToKvProxy() {
+  sendToKvProxy(signal) {
     return (requestParams) => {
       const { url, backendUrl } = this._apiConfig;
       return Promise.resolve(requestParams)
@@ -318,7 +323,7 @@ export class KvClient {
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
           };
         })
-        .then(withOptions({ signal: this._signal }))
+        .then(withOptions({ signal: signal ?? this._signal }))
         .then(request);
     };
   }

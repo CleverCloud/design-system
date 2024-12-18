@@ -87,6 +87,9 @@ defineSmartComponent({
       await fetchKeys();
     });
 
+    /** @type {AbortController} */
+    let abortCtrl;
+
     onEvent(
       'cc-kv-explorer:selected-key-change',
       /** @param {CcKvKey} key */
@@ -104,10 +107,15 @@ defineSmartComponent({
         try {
           keysCtrl.updateKeyState(key.name, 'selected');
 
+          if (abortCtrl != null) {
+            abortCtrl.abort();
+          }
+          abortCtrl = new AbortController();
+
           switch (key.type) {
             case 'string': {
               stringKeyCtrl.setLoading(key);
-              const { value } = await kvClient.getStringKey(key.name);
+              const { value } = await kvClient.getStringKey(key.name, abortCtrl.signal);
               stringKeyCtrl.setLoaded(key, value);
 
               break;
@@ -115,7 +123,7 @@ defineSmartComponent({
             case 'hash': {
               hashKeyCtrl.setLoading(key);
               hashScanner.setFilter({ keyName: key.name });
-              await hashScanner.next();
+              await hashScanner.next(abortCtrl.signal);
               hashKeyCtrl.setLoaded(key);
 
               break;
@@ -123,7 +131,7 @@ defineSmartComponent({
             case 'list': {
               listKeyCtrl.setLoading(key);
               listScanner.setFilter({ keyName: key.name });
-              await listScanner.next();
+              await listScanner.next(abortCtrl.signal);
               listKeyCtrl.setLoaded(key);
 
               break;
@@ -131,18 +139,20 @@ defineSmartComponent({
             case 'set': {
               setKeyCtrl.setLoading(key);
               setScanner.setFilter({ keyName: key.name });
-              await setScanner.next();
+              await setScanner.next(abortCtrl.signal);
               setKeyCtrl.setLoaded(key);
 
               break;
             }
           }
         } catch (e) {
-          checkIfKeyNotFoundOrElse(e, () => {
-            notifyError(i18n('cc-kv-explorer.error.get-key'));
-            keysCtrl.updateKeyState(key.name, 'idle');
-            updateComponent('detailState', { type: 'hidden' });
-          });
+          if (!(e instanceof DOMException && e.name === 'AbortError')) {
+            checkIfKeyNotFoundOrElse(e, () => {
+              notifyError(i18n('cc-kv-explorer.error.get-key'));
+              keysCtrl.updateKeyState(key.name, 'idle');
+              updateComponent('detailState', { type: 'hidden' });
+            });
+          }
         }
       },
     );

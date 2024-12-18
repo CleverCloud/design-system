@@ -11,7 +11,7 @@ export class KvScanner {
   /**
    * @param {(item:T) => string} getId
    * @param {(item:T) => boolean} matchFilter
-   * @param {(cursor: number, count: number, filter: F) => Promise<{cursor: number, total: number, elements: Array<T>}>} fetch
+   * @param {(cursor: number, count: number, filter: F, signal?: AbortSignal) => Promise<{cursor: number, total: number, elements: Array<T>}>} fetch
    */
   constructor(getId, matchFilter, fetch) {
     this._getId = getId;
@@ -122,12 +122,13 @@ export class KvScanner {
   }
 
   /**
+   * @param {AbortSignal} [signal]
    * @param {number} [count]
    * @return {Promise<void>}
    */
-  async next(count = 1000) {
+  async next(signal, count = 1000) {
     if (this.hasMore()) {
-      const f = await this._fetch(this._cursor, count, this._filter);
+      const f = await this._fetch(this._cursor, count, this._filter, signal);
       f.elements.forEach((it) => {
         this._map.set(this._getId(it), it);
       });

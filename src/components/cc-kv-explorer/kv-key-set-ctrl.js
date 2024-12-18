@@ -135,8 +135,8 @@ export class KvSetElementsScanner extends KvScanner {
     super(
       (it) => it.value,
       (it) => isStringEmpty(this._filter?.pattern) || matchKvPattern(this._filter.pattern, it.value),
-      async (cursor, count, filter) => {
-        const r = await kvClient.scanSet(this._filter.keyName, { cursor, count, match: filter?.pattern });
+      async (cursor, count, filter, signal) => {
+        const r = await kvClient.scanSet(this._filter.keyName, signal, { cursor, count, match: filter?.pattern });
         return {
           cursor: r.cursor,
           total: r.total,
