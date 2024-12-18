@@ -952,6 +952,10 @@ export const translations = {
   'cc-notice.icon-alt.success': `Success`,
   'cc-notice.icon-alt.warning': `Warning`,
   //#endregion
+  //#region cc-order-summary
+  'cc-order-summary.create': `Create`,
+  'cc-order-summary.title': `Order summary`,
+  //#endregion
   //#region cc-orga-member-card
   'cc-orga-member-card.btn.cancel.accessible-name': /** @param {{memberIdentity: string}} _ */ ({ memberIdentity }) =>
     `Cancel editing member - ${memberIdentity}`,
