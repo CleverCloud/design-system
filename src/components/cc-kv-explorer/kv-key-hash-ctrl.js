@@ -16,7 +16,7 @@ import { matchKvPattern } from './kv-utils.js';
 /**
  * Controller for `hash` data type
  */
-export class KvHashKeyController {
+export class KvKeyHashCtrl {
   /**
    * @param {CcKvExplorer} component
    * @param {function} updateComponent

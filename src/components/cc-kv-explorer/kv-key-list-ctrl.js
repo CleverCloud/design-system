@@ -14,7 +14,7 @@ import { KvScanner } from './kv-scanner.js';
 /**
  * Controller for `list` data type
  */
-export class KvListKeyController {
+export class KvKeyListCtrl {
   /**
    * @param {CcKvExplorer} component
    * @param {function} updateComponent

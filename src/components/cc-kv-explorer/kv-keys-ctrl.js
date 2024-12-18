@@ -14,7 +14,7 @@ import { matchKvPattern } from './kv-utils.js';
 /**
  * Controller for keys
  */
-export class KeysController {
+export class KvKeysCtrl {
   /**
    * @param {CcKvExplorer} component
    * @param {function} updateComponent

@@ -6,7 +6,7 @@
 /**
  * Controller for `string` data type
  */
-export class StringKeyController {
+export class KvKeyStringCtrl {
   /**
    * @param {function} updateComponent
    */

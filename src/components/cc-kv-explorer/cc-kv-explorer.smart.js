@@ -5,11 +5,11 @@ import { i18n } from '../../translations/translation.js';
 import '../cc-smart-container/cc-smart-container.js';
 import './cc-kv-explorer.js';
 import { KvClient } from './kv-client.js';
-import { KvHashElementsScanner, KvHashKeyController } from './kv-key-hash-ctrl.js';
-import { KvListElementsScanner, KvListKeyController } from './kv-key-list-ctrl.js';
-import { KvSetElementsScanner, KvSetKeyController } from './kv-key-set-ctrl.js';
-import { StringKeyController } from './kv-key-string-ctrl.js';
-import { KeysController, KvKeysScanner } from './kv-keys-ctrl.js';
+import { KvHashElementsScanner, KvKeyHashCtrl } from './kv-key-hash-ctrl.js';
+import { KvKeyListCtrl, KvListElementsScanner } from './kv-key-list-ctrl.js';
+import { KvKeySetCtrl, KvSetElementsScanner } from './kv-key-set-ctrl.js';
+import { KvKeyStringCtrl } from './kv-key-string-ctrl.js';
+import { KvKeysCtrl, KvKeysScanner } from './kv-keys-ctrl.js';
 
 /**
  * @typedef {import('./cc-kv-explorer.js').CcKvExplorer} CcKvExplorer
@@ -46,18 +46,18 @@ defineSmartComponent({
     const kvClient = new KvClient(kvApiConfig, signal);
 
     const kvKeysScanner = new KvKeysScanner(kvClient);
-    const keysCtrl = new KeysController(component, updateComponent, kvKeysScanner);
+    const keysCtrl = new KvKeysCtrl(component, updateComponent, kvKeysScanner);
 
-    const stringKeyCtrl = new StringKeyController(updateComponent);
+    const stringKeyCtrl = new KvKeyStringCtrl(updateComponent);
 
     const hashScanner = new KvHashElementsScanner(kvClient);
-    const hashKeyCtrl = new KvHashKeyController(component, updateComponent, hashScanner);
+    const hashKeyCtrl = new KvKeyHashCtrl(component, updateComponent, hashScanner);
 
     const listScanner = new KvListElementsScanner(kvClient);
-    const listKeyCtrl = new KvListKeyController(component, updateComponent, listScanner);
+    const listKeyCtrl = new KvKeyListCtrl(component, updateComponent, listScanner);
 
     const setScanner = new KvSetElementsScanner(kvClient);
-    const setKeyCtrl = new KvSetKeyController(component, updateComponent, setScanner);
+    const setKeyCtrl = new KvKeySetCtrl(component, updateComponent, setScanner);
 
     // -- keys ---
 
