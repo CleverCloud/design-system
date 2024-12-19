@@ -53,7 +53,7 @@ export type CcKvKeyFilter = {
 //-- key state ---
 
 export interface CcKvKeyState {
-  type: 'idle' | 'loading' | 'selected' | 'deleting';
+  type: 'idle' | 'selected' | 'deleting';
   key: CcKvKey;
 }
 

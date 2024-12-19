@@ -1,6 +1,5 @@
 import { defineSmartComponent } from '../../lib/define-smart-component.js';
 import { notifyError, notifySuccess } from '../../lib/notifications.js';
-import { isStringEmpty } from '../../lib/utils.js';
 import { i18n } from '../../translations/translation.js';
 import '../cc-smart-container/cc-smart-container.js';
 import './cc-kv-explorer.js';
@@ -9,7 +8,7 @@ import { KvHashElementsScanner, KvKeyHashCtrl } from './kv-key-hash-ctrl.js';
 import { KvKeyListCtrl, KvListElementsScanner } from './kv-key-list-ctrl.js';
 import { KvKeySetCtrl, KvSetElementsScanner } from './kv-key-set-ctrl.js';
 import { KvKeyStringCtrl } from './kv-key-string-ctrl.js';
-import { KvKeysCtrl, KvKeysScanner } from './kv-keys-ctrl.js';
+import { KvKeysCtrl } from './kv-keys-ctrl.js';
 
 /**
  * @typedef {import('./cc-kv-explorer.js').CcKvExplorer} CcKvExplorer
@@ -45,8 +44,12 @@ defineSmartComponent({
     const { kvApiConfig } = context;
     const kvClient = new KvClient(kvApiConfig, signal);
 
-    const kvKeysScanner = new KvKeysScanner(kvClient);
-    const keysCtrl = new KvKeysCtrl(component, updateComponent, kvKeysScanner);
+    const view = {
+      component,
+      update: updateComponent,
+    };
+
+    const keysCtrl = new KvKeysCtrl(view, kvClient);
 
     const stringKeyCtrl = new KvKeyStringCtrl(updateComponent);
 
@@ -65,26 +68,31 @@ defineSmartComponent({
       'cc-kv-explorer:filter-change',
       /** @param { CcKvKeyFilter } filter */
       async ({ type, pattern }) => {
-        const filter = {
-          type: type === 'all' ? null : type,
-          pattern: isStringEmpty(pattern) ? null : pattern,
-        };
-
-        kvKeysScanner.setFilter(filter);
-        await fetchKeys({ type: 'filtering', keys: [] });
+        try {
+          await keysCtrl.filter(type, pattern);
+        } catch (e) {
+          console.error(e);
+          notifyError(i18n('cc-kv-explorer.error.fetch-keys'));
+        }
       },
     );
 
     onEvent('cc-kv-explorer:refresh-keys', async () => {
-      kvKeysScanner.reset();
-      await fetchKeys({ type: 'refreshing', keys: [] });
+      try {
+        await keysCtrl.refresh();
+      } catch (e) {
+        console.error(e);
+        notifyError(i18n('cc-kv-explorer.error.fetch-keys'));
+      }
     });
 
     onEvent('cc-kv-explorer:load-more-keys', async () => {
-      if (component.state.type !== 'loaded') {
-        return;
+      try {
+        await keysCtrl.loadMore();
+      } catch (e) {
+        console.error(e);
+        notifyError(i18n('cc-kv-explorer.error.fetch-keys'));
       }
-      await fetchKeys();
     });
 
     /** @type {AbortController} */
@@ -94,64 +102,54 @@ defineSmartComponent({
       'cc-kv-explorer:selected-key-change',
       /** @param {CcKvKey} key */
       async (key) => {
-        if (component.state.type !== 'loaded') {
-          return;
-        }
-
-        const previousSelectedKeyName = component.state.keys.find((keyState) => keyState.type === 'selected')?.key.name;
-        keysCtrl.updateKeyState(key.name, 'loading');
-        if (previousSelectedKeyName != null) {
-          keysCtrl.updateKeyState(previousSelectedKeyName, 'idle');
-        }
-
-        try {
-          keysCtrl.updateKeyState(key.name, 'selected');
-
-          if (abortCtrl != null) {
-            abortCtrl.abort();
-          }
-          abortCtrl = new AbortController();
-
-          switch (key.type) {
-            case 'string': {
-              stringKeyCtrl.setLoading(key);
-              const { value } = await kvClient.getStringKey(key.name, abortCtrl.signal);
-              stringKeyCtrl.setLoaded(key, value);
-
-              break;
+        if (keysCtrl.select(key)) {
+          try {
+            if (abortCtrl != null) {
+              abortCtrl.abort();
             }
-            case 'hash': {
-              hashKeyCtrl.setLoading(key);
-              hashScanner.setFilter({ keyName: key.name });
-              await hashScanner.loadMore(abortCtrl.signal);
-              hashKeyCtrl.setLoaded(key);
+            abortCtrl = new AbortController();
 
-              break;
-            }
-            case 'list': {
-              listKeyCtrl.setLoading(key);
-              listScanner.setFilter({ keyName: key.name });
-              await listScanner.loadMore(abortCtrl.signal);
-              listKeyCtrl.setLoaded(key);
+            switch (key.type) {
+              case 'string': {
+                stringKeyCtrl.setLoading(key);
+                const { value } = await kvClient.getStringKey(key.name, abortCtrl.signal);
+                stringKeyCtrl.setLoaded(key, value);
 
-              break;
-            }
-            case 'set': {
-              setKeyCtrl.setLoading(key);
-              setScanner.setFilter({ keyName: key.name });
-              await setScanner.loadMore(abortCtrl.signal);
-              setKeyCtrl.setLoaded(key);
+                break;
+              }
+              case 'hash': {
+                hashKeyCtrl.setLoading(key);
+                hashScanner.setFilter({ keyName: key.name });
+                await hashScanner.loadMore(abortCtrl.signal);
+                hashKeyCtrl.setLoaded(key);
 
-              break;
+                break;
+              }
+              case 'list': {
+                listKeyCtrl.setLoading(key);
+                listScanner.setFilter({ keyName: key.name });
+                await listScanner.loadMore(abortCtrl.signal);
+                listKeyCtrl.setLoaded(key);
+
+                break;
+              }
+              case 'set': {
+                setKeyCtrl.setLoading(key);
+                setScanner.setFilter({ keyName: key.name });
+                await setScanner.loadMore(abortCtrl.signal);
+                setKeyCtrl.setLoaded(key);
+
+                break;
+              }
             }
-          }
-        } catch (e) {
-          if (!(e instanceof DOMException && e.name === 'AbortError')) {
-            checkIfKeyNotFoundOrElse(e, () => {
-              notifyError(i18n('cc-kv-explorer.error.get-key'));
-              keysCtrl.updateKeyState(key.name, 'idle');
-              updateComponent('detailState', { type: 'hidden' });
-            });
+          } catch (e) {
+            if (!(e instanceof DOMException && e.name === 'AbortError')) {
+              checkIfKeyNotFoundOrElse(e, () => {
+                notifyError(i18n('cc-kv-explorer.error.get-key'));
+                keysCtrl.clearSelection();
+                updateComponent('detailState', { type: 'hidden' });
+              });
+            }
           }
         }
       },
@@ -161,32 +159,16 @@ defineSmartComponent({
       'cc-kv-explorer:delete-key',
       /** @param {string} key */
       async (key) => {
-        keysCtrl.updateKeyState(key, 'deleting');
-
         try {
-          await kvClient.deleteKey(key);
-          const deletedKeyIndex = kvKeysScanner.delete(key);
-
-          updateComponent(
-            'state',
-            /** @param {CcKvExplorerStateLoaded} state */
-            (state) => {
-              state.keys = kvKeysScanner.elements;
-              state.total = kvKeysScanner.total;
-            },
-          );
+          await keysCtrl.delete(key);
+          notifySuccess(i18n('cc-kv-explorer.success.delete-key'));
 
           if (isEditState(component.detailState) && component.detailState.key.name === key) {
             updateComponent('detailState', { type: 'hidden' });
           }
-
-          component.focusAfterDeleteKeyAt(deletedKeyIndex);
-
-          notifySuccess(i18n('cc-kv-explorer.success.delete-key'));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-explorer.error.delete-key'));
-            keysCtrl.updateKeyState(key, 'idle');
           });
         }
       },
@@ -234,18 +216,7 @@ defineSmartComponent({
               break;
           }
 
-          /** @type {CcKvKeyState} */
-          const keyState = { type: 'selected', key: { name: keyValue.name, type: keyValue.type } };
-          if (kvKeysScanner.update([keyState])) {
-            updateComponent(
-              'state',
-              /** @param {CcKvExplorerStateLoaded} state */
-              (state) => {
-                state.keys = kvKeysScanner.elements;
-                state.total = kvKeysScanner.total;
-              },
-            );
-          }
+          keysCtrl.add({ name: keyValue.name, type: keyValue.type });
 
           component.focusAddKeyButton();
 
@@ -702,53 +673,20 @@ defineSmartComponent({
     updateComponent('detailState', { type: 'hidden' });
     component.resetAddForm();
 
+    let ready = false;
     try {
-      const pong = await kvClient.ping();
-      if (pong) {
-        await fetchKeys({ keys: [], total: 0 });
-      } else {
-        updateComponent('state', { type: 'error' });
-      }
+      ready = await kvClient.ping();
     } catch (e) {
       console.error(e);
       updateComponent('state', { type: 'error' });
     }
-
-    /**
-     * @param {{type?: 'loading-keys'|'filtering'|'refreshing', keys?: Array<CcKvKeyState>, total?: number}} [init]
-     */
-    async function fetchKeys(init = {}) {
-      /** @type {Array<CcKvKeyState>} */
-      let keys;
-      /** @type {number} */
-      let total;
-
-      if (component.state.type === 'loaded' || component.state.type === 'loading-keys') {
-        keys = init.keys ?? component.state.keys;
-        total = init.total ?? component.state.total;
+    try {
+      if (ready) {
+        await keysCtrl.fetchKeys({ keys: [], total: 0 });
       }
-
-      keysCtrl.updateState({ type: init.type ?? 'loading-keys', keys: keys ?? [], total: total ?? 0 });
-
-      try {
-        if (kvKeysScanner.hasMore()) {
-          await kvKeysScanner.loadMore();
-          keys = kvKeysScanner.elements;
-          total = kvKeysScanner.total;
-        }
-      } catch (e) {
-        console.error(e);
-
-        notifyError(i18n('cc-kv-explorer.error.fetch-keys'));
-      } finally {
-        // try to restore the selected key (the one that is currently in the form state)
-        if (isEditState(component.detailState)) {
-          const keyInEdition = component.detailState.key.name;
-          keysCtrl.updateKeyState(keyInEdition, 'selected');
-        }
-
-        updateComponent('state', { type: 'loaded', keys, total });
-      }
+    } catch (e) {
+      console.error(e);
+      notifyError(i18n('cc-kv-explorer.error.fetch-keys'));
     }
 
     /**
@@ -758,7 +696,7 @@ defineSmartComponent({
     function checkIfKeyNotFoundOrElse(e, orElse) {
       if (isKeyNotFound(e)) {
         notifyError(i18n('cc-kv-explorer.error.key-doesnt-exist'));
-        keysCtrl.updateKeyState(e.responseBody.context.key, 'idle');
+        keysCtrl.onKeyNotFound(e.responseBody.context.key);
         updateComponent('detailState', { type: 'hidden' });
       } else {
         console.error(e);

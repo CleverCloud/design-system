@@ -249,6 +249,16 @@ export class CcKvExplorer extends LitElement {
     return null;
   }
 
+  _isLoadingSelectedKey() {
+    return (
+      this.detailState != null &&
+      this.detailState.type !== 'hidden' &&
+      this.detailState.type !== 'unsupported' &&
+      this.detailState.type !== 'add' &&
+      this.detailState.editor.type === 'loading'
+    );
+  }
+
   /**
    * @param {CcKvKeyType} type
    * @return {string}
@@ -660,10 +670,10 @@ export class CcKvExplorer extends LitElement {
    */
   _renderKey({ keyState, skeleton }, index) {
     const isSelected = keyState.type === 'selected';
-    const isLoading = keyState.type === 'loading';
+    const isLoading = isSelected && this._isLoadingSelectedKey();
     const isDeleting = keyState.type === 'deleting';
     const id = `key-${keyState.key.name}`;
-    const buttonTabindex = isSelected || isLoading ? undefined : -1;
+    const buttonTabindex = isLoading ? undefined : -1;
 
     return html`<div class="key">
       <input
@@ -672,7 +682,7 @@ export class CcKvExplorer extends LitElement {
         id=${id}
         name="selectedKey"
         .value=${keyState.key.name}
-        .checked=${isSelected || isLoading}
+        .checked=${isSelected}
         .disabled=${skeleton}
       />
       <label for=${id}>
@@ -815,7 +825,7 @@ export class CcKvExplorer extends LitElement {
   _renderDetailEdit(key) {
     const keyState = this._getKeyState(key.name);
     const isDeleting = keyState === 'deleting';
-    const isLoading = keyState === 'loading';
+    const isLoading = this._isLoadingSelectedKey();
 
     return html`<div class="detail-edit">
       <div class="edit-header">

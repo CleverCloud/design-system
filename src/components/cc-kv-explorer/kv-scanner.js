@@ -8,7 +8,11 @@
  * @template F
  */
 export class KvScanner {
-  constructor() {
+  /**
+   *
+   * @param {function} [onChange]
+   */
+  constructor(onChange) {
     /** @type {Map<string, T>} */
     this._map = new Map();
     /** @type {Array<T>} */
@@ -17,6 +21,8 @@ export class KvScanner {
     this._cursor = null;
     /** @type {F} */
     this._filter = null;
+
+    this._onChange = onChange;
   }
 
   /**
@@ -53,6 +59,7 @@ export class KvScanner {
     this._cursor = null;
     this._map.clear();
     this._elements = [];
+    this._onChange?.();
   }
 
   /**
@@ -79,6 +86,8 @@ export class KvScanner {
         return currentId !== id;
       });
       this._total--;
+
+      this._onChange?.();
     }
     return index;
   }
@@ -121,9 +130,19 @@ export class KvScanner {
 
       this._total += toAdd.length;
 
+      this._onChange?.();
+
       return true;
     }
     return false;
+  }
+
+  /**
+   * @param {string} id
+   * @returns {T}
+   */
+  getElement(id) {
+    return this._map.get(id);
   }
 
   /**
@@ -161,6 +180,8 @@ export class KvScanner {
       this._elements = Array.from(this._map.values());
       this._cursor = f.cursor;
       this._total = f.total;
+
+      this._onChange?.();
     }
   }
 }
