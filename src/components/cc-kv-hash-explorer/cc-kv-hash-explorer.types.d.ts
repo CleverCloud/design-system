@@ -1,7 +1,8 @@
 export type CcKvHashExplorerState =
   | CcKvHashExplorerStateLoading
   | CcKvHashExplorerStateLoaded
-  | CcKvHashExplorerStateLoadingMore;
+  | CcKvHashExplorerStateLoadingMore
+  | CcKvHashExplorerStateFiltering;
 
 export interface CcKvHashExplorerStateLoading {
   type: 'loading';
@@ -15,6 +16,12 @@ export interface CcKvHashExplorerStateLoaded {
 
 export interface CcKvHashExplorerStateLoadingMore {
   type: 'loading-more';
+  elements: Array<CcKvHashElementState>;
+  addForm: CcKvHashExplorerAddFormState;
+}
+
+export interface CcKvHashExplorerStateFiltering {
+  type: 'filtering';
   elements: Array<CcKvHashElementState>;
   addForm: CcKvHashExplorerAddFormState;
 }

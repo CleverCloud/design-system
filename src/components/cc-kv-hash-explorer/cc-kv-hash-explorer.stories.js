@@ -9,6 +9,7 @@ export default {
 
 /**
  * @typedef {import('./cc-kv-hash-explorer.js').CcKvHashExplorer} CcKvHashExplorer
+ * @typedef {import('../cc-input-text/cc-input-text.js').CcInputText} CcInputText
  */
 
 const conf = {
@@ -60,6 +61,24 @@ export const loadingMore = makeStory(conf, {
       },
     },
   ],
+});
+
+export const filtering = makeStory(conf, {
+  /** @type {Array<Partial<CcKvHashExplorer>>} */
+  items: [
+    {
+      state: {
+        type: 'filtering',
+        elements: [],
+        addForm: { type: 'idle' },
+      },
+    },
+  ],
+  onUpdateComplete: /** @param {CcKvHashExplorer} component */ (component) => {
+    /** @type {CcInputText} */
+    const patternInput = component.shadowRoot.querySelector('cc-input-text[name="pattern"]');
+    patternInput.value = '*abc*';
+  },
 });
 
 export const disabled = makeStory(conf, {

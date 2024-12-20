@@ -254,6 +254,7 @@ export class CcKvHashExplorer extends LitElement {
 
   render() {
     const isLoading = this.state.type === 'loading';
+    const isFiltering = this.state.type === 'filtering';
     const hasNoElements = this.state.type === 'loaded' && this.state.elements.length === 0;
     const elements = this._getElements();
 
@@ -265,9 +266,16 @@ export class CcKvHashExplorer extends LitElement {
             inline
             label=${i18n('cc-kv-hash-explorer.filter')}
             ?disabled=${this.disabled}
-            ?readonly=${isLoading}
+            ?readonly=${isLoading || isFiltering}
           ></cc-input-text>
-          <cc-button type="submit" .icon=${iconFilter} hide-text outlined ?disabled=${this.disabled || isLoading}>
+          <cc-button
+            type="submit"
+            .icon=${iconFilter}
+            hide-text
+            outlined
+            ?disabled=${this.disabled || isLoading}
+            ?waiting=${isFiltering}
+          >
             ${i18n('cc-kv-hash-explorer.filter.apply')}
           </cc-button>
         </form>
@@ -438,8 +446,9 @@ export class CcKvHashExplorer extends LitElement {
 
   _renderAddForm() {
     const isLoading = this.state.type === 'loading';
+    const isFiltering = this.state.type === 'filtering';
     const isAdding = this.state.type !== 'loading' && this.state.addForm.type === 'adding';
-    const isReadonly = isLoading || isAdding;
+    const isReadonly = isLoading || isFiltering || isAdding;
 
     return html`
       <form class="add-form" ${ref(this._addFormRef)} ${formSubmit(this._onAddFormSubmit)}>
@@ -463,7 +472,7 @@ export class CcKvHashExplorer extends LitElement {
           a11y-name=${i18n('cc-kv-hash-explorer.add-form.submit.a11y')}
           .icon=${iconAdd}
           ?waiting=${isAdding}
-          ?disabled=${isLoading || this.disabled}
+          ?disabled=${isLoading || isFiltering || this.disabled}
           >${i18n('cc-kv-hash-explorer.add-form.submit')}</cc-button
         >
       </form>
@@ -476,6 +485,7 @@ export class CcKvHashExplorer extends LitElement {
   _getElements() {
     switch (this.state.type) {
       case 'loading':
+      case 'filtering':
         return SKELETON_ELEMENTS;
       case 'loaded':
         return this.state.elements.map((state) => ({ state, skeleton: false }));
