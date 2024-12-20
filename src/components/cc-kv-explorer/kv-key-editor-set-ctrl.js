@@ -35,12 +35,9 @@ export class KvKeyEditorSetCtrl extends KvKeyEditorCtrl {
     return 'set';
   }
 
-  /**
-   * @param {AbortSignal} [signal]
-   */
-  async load(signal) {
+  async load() {
     this._updateEditorState({ type: 'loading' });
-    await this._scanner.loadMore(signal);
+    await this._scanner.loadMore();
     this._updateEditorState({
       type: 'loaded',
       elements: this._scanner.elements,

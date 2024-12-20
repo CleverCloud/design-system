@@ -41,10 +41,7 @@ export class KvKeyEditorCtrl {
     throw new Error('Abstract method: please implement me');
   }
 
-  /**
-   * @param {AbortSignal} _signal
-   */
-  async load(_signal) {
+  async load() {
     throw new Error('Abstract method: please implement me');
   }
 

@@ -1,3 +1,5 @@
+import { kvSharedSemaphore } from './kv-utils.js';
+
 /**
  * A generic class that helps in scanning kv entities.
  *
@@ -9,7 +11,6 @@
  */
 export class KvScanner {
   /**
-   *
    * @param {function} [onChange]
    */
   constructor(onChange) {
@@ -165,13 +166,12 @@ export class KvScanner {
   }
 
   /**
-   * @param {AbortSignal} [signal]
    * @param {number} [count]
    * @return {Promise<void>}
    */
-  async loadMore(signal, count = 1000) {
+  async loadMore(count = 1000) {
     if (this.hasMore()) {
-      const f = await this.fetch(count, signal);
+      const f = await kvSharedSemaphore.run((signal) => this.fetch(count, signal));
       f.elements.forEach((it) => {
         this._map.set(this.getId(it), it);
       });

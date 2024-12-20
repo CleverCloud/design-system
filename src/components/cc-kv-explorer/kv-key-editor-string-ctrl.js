@@ -1,4 +1,5 @@
 import { KvKeyEditorCtrl } from './kv-key-editor-ctrl.js';
+import { kvSharedSemaphore } from './kv-utils.js';
 
 /**
  * @typedef {import('./cc-kv-explorer.js').CcKvExplorer} CcKvExplorer
@@ -27,12 +28,9 @@ export class KvKeyEditorStringCtrl extends KvKeyEditorCtrl {
     return 'string';
   }
 
-  /**
-   * @param {AbortSignal} signal
-   */
-  async load(signal) {
+  async load() {
     this._updateEditorState({ type: 'loading' });
-    const { value } = await this._kvClient.getStringKey(this.keyName, signal);
+    const { value } = await kvSharedSemaphore.run((signal) => this._kvClient.getStringKey(this.keyName, signal));
     this._updateEditorState({ type: 'idle', value });
   }
 

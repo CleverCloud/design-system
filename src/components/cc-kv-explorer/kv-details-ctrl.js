@@ -30,9 +30,6 @@ export class KvDetailsCtrl {
     this._view = view;
     this._kvClient = kvClient;
 
-    /** @type {AbortController} */
-    this.abortCtrl = null;
-
     /** @type {KvKeyEditorCtrl} */
     this._currentEditorCtrl = null;
   }
@@ -61,13 +58,10 @@ export class KvDetailsCtrl {
    * @param {CcKvKey} key
    */
   async load(key) {
-    this.abortCtrl?.abort();
-    this.abortCtrl = new AbortController();
-
     this._currentEditorCtrl = this._createKeyEditorCtrl(key.name, key.type);
 
     try {
-      await this._currentEditorCtrl.load(this.abortCtrl.signal);
+      await this._currentEditorCtrl.load();
     } catch (e) {
       if (!(e instanceof DOMException && e.name === 'AbortError')) {
         throw e;
@@ -113,6 +107,7 @@ export class KvDetailsCtrl {
   /**
    * @param {string} keyName
    * @param {CcKvKeyType} type
+   * @return {KvKeyEditorCtrl}
    */
   _createKeyEditorCtrl(keyName, type) {
     switch (type) {
