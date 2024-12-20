@@ -53,25 +53,28 @@ export class KvKeyEditorListCtrl extends KvKeyEditorCtrl {
     await this._kvClient.createListKey(keyValue.name, keyValue.elements);
 
     this._scanner.update(keyValue.elements.map((value, index) => ({ index, value, type: 'idle' })));
-    this._setLoaded();
+    this._updateEditorState({
+      type: 'loaded',
+      elements: this._scanner.elements,
+      addForm: { type: 'idle' },
+    });
   }
 
   /**
    * @param {number} index
    */
   async filter(index) {
-    const addForm = this._view.component.detailState.editor.addForm;
-
-    // todo: we should have a 'filtering' state (a bit like 'loading-more' state)
-    //       this will avoid the necessity to restore the `addForm` state.
-    this._updateEditorState({ type: 'loading' });
+    this._updateEditorState((editor) => (editor.type = 'filtering'));
 
     try {
       this._scanner.setFilter({ index });
       await this._scanner.loadMore();
-      this._setLoaded(addForm);
+      this._updateEditor((editor) => {
+        editor.type = 'loaded';
+        editor.elements = this._scanner.elements;
+      });
     } catch (e) {
-      this._setLoaded(addForm);
+      this._updateEditorState((editor) => (editor.type = 'loaded'));
       throw e;
     }
   }
@@ -132,17 +135,6 @@ export class KvKeyEditorListCtrl extends KvKeyEditorCtrl {
       this._updateAddForm({ type: 'idle' });
       throw e;
     }
-  }
-
-  /**
-   * @param {CcKvListExplorerAddFormState} addFormState
-   */
-  _setLoaded(addFormState = { type: 'idle' }) {
-    this._updateEditorState({
-      type: 'loaded',
-      elements: this._scanner.elements,
-      addForm: addFormState,
-    });
   }
 
   /**
