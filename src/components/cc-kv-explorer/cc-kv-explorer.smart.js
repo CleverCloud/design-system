@@ -4,10 +4,7 @@ import { i18n } from '../../translations/translation.js';
 import '../cc-smart-container/cc-smart-container.js';
 import './cc-kv-explorer.js';
 import { KvClient } from './kv-client.js';
-import { KvHashElementsScanner, KvKeyHashCtrl } from './kv-key-hash-ctrl.js';
-import { KvKeyListCtrl, KvListElementsScanner } from './kv-key-list-ctrl.js';
-import { KvKeySetCtrl, KvSetElementsScanner } from './kv-key-set-ctrl.js';
-import { KvKeyStringCtrl } from './kv-key-string-ctrl.js';
+import { KvDetailsCtrl } from './kv-details-ctrl.js';
 import { KvKeysCtrl } from './kv-keys-ctrl.js';
 
 /**
@@ -23,6 +20,10 @@ import { KvKeysCtrl } from './kv-keys-ctrl.js';
  * @typedef {import('./cc-kv-explorer.types.js').CcKvKeyType} CcKvKeyType
  * @typedef {import('./cc-kv-explorer.types.js').CcKvKeyValue} CcKvKeyValue
  * @typedef {import('./cc-kv-explorer.types.js').CcKvKeyFilter} CcKvKeyFilter
+ * @typedef {import('./kv-key-editor-hash-ctrl.js').KvKeyEditorHashCtrl} KvKeyEditorHashCtrl
+ * @typedef {import('./kv-key-editor-list-ctrl.js').KvKeyEditorListCtrl} KvKeyEditorListCtrl
+ * @typedef {import('./kv-key-editor-set-ctrl.js').KvKeyEditorSetCtrl} KvKeyEditorSetCtrl
+ * @typedef {import('./kv-key-editor-string-ctrl.js').KvKeyEditorStringCtrl} KvKeyEditorStringCtrl
  */
 
 defineSmartComponent({
@@ -50,17 +51,7 @@ defineSmartComponent({
     };
 
     const keysCtrl = new KvKeysCtrl(view, kvClient);
-
-    const stringKeyCtrl = new KvKeyStringCtrl(updateComponent);
-
-    const hashScanner = new KvHashElementsScanner(kvClient);
-    const hashKeyCtrl = new KvKeyHashCtrl(component, updateComponent, hashScanner);
-
-    const listScanner = new KvListElementsScanner(kvClient);
-    const listKeyCtrl = new KvKeyListCtrl(component, updateComponent, listScanner);
-
-    const setScanner = new KvSetElementsScanner(kvClient);
-    const setKeyCtrl = new KvKeySetCtrl(component, updateComponent, setScanner);
+    const detailsCtrl = new KvDetailsCtrl(view, kvClient);
 
     // -- keys ---
 
@@ -95,61 +86,19 @@ defineSmartComponent({
       }
     });
 
-    /** @type {AbortController} */
-    let abortCtrl;
-
     onEvent(
       'cc-kv-explorer:selected-key-change',
       /** @param {CcKvKey} key */
       async (key) => {
         if (keysCtrl.select(key)) {
           try {
-            if (abortCtrl != null) {
-              abortCtrl.abort();
-            }
-            abortCtrl = new AbortController();
-
-            switch (key.type) {
-              case 'string': {
-                stringKeyCtrl.setLoading(key);
-                const { value } = await kvClient.getStringKey(key.name, abortCtrl.signal);
-                stringKeyCtrl.setLoaded(key, value);
-
-                break;
-              }
-              case 'hash': {
-                hashKeyCtrl.setLoading(key);
-                hashScanner.setFilter({ keyName: key.name });
-                await hashScanner.loadMore(abortCtrl.signal);
-                hashKeyCtrl.setLoaded(key);
-
-                break;
-              }
-              case 'list': {
-                listKeyCtrl.setLoading(key);
-                listScanner.setFilter({ keyName: key.name });
-                await listScanner.loadMore(abortCtrl.signal);
-                listKeyCtrl.setLoaded(key);
-
-                break;
-              }
-              case 'set': {
-                setKeyCtrl.setLoading(key);
-                setScanner.setFilter({ keyName: key.name });
-                await setScanner.loadMore(abortCtrl.signal);
-                setKeyCtrl.setLoaded(key);
-
-                break;
-              }
-            }
+            await detailsCtrl.load(key);
           } catch (e) {
-            if (!(e instanceof DOMException && e.name === 'AbortError')) {
-              checkIfKeyNotFoundOrElse(e, () => {
-                notifyError(i18n('cc-kv-explorer.error.get-key'));
-                keysCtrl.clearSelection();
-                updateComponent('detailState', { type: 'hidden' });
-              });
-            }
+            checkIfKeyNotFoundOrElse(e, () => {
+              notifyError(i18n('cc-kv-explorer.error.get-key'));
+              keysCtrl.clearSelection();
+              detailsCtrl.hide();
+            });
           }
         }
       },
@@ -163,8 +112,8 @@ defineSmartComponent({
           await keysCtrl.delete(key);
           notifySuccess(i18n('cc-kv-explorer.success.delete-key'));
 
-          if (isEditState(component.detailState) && component.detailState.key.name === key) {
-            updateComponent('detailState', { type: 'hidden' });
+          if (detailsCtrl.keyName === key) {
+            detailsCtrl.hide();
           }
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
@@ -178,73 +127,15 @@ defineSmartComponent({
       'cc-kv-explorer:add-key',
       /** @param {CcKvKeyValue} keyValue */
       async (keyValue) => {
-        updateComponent(
-          'detailState',
-          /** @param {CcKvExplorerDetailStateAdd} state */
-          (state) => {
-            state.formState.type = 'adding';
-          },
-        );
-
         try {
-          switch (keyValue.type) {
-            case 'string':
-              await kvClient.createStringKey(keyValue.name, keyValue.value);
-
-              stringKeyCtrl.setLoaded({ type: 'string', name: keyValue.name }, keyValue.value);
-              break;
-            case 'hash':
-              await kvClient.createHashKey(keyValue.name, keyValue.elements);
-
-              hashScanner.setFilter({ keyName: keyValue.name });
-              hashScanner.update(keyValue.elements.map((e) => ({ ...e, type: 'idle' })));
-              hashKeyCtrl.setLoaded({ type: 'hash', name: keyValue.name });
-              break;
-            case 'list':
-              await kvClient.createListKey(keyValue.name, keyValue.elements);
-
-              listScanner.setFilter({ keyName: keyValue.name });
-              listScanner.update(keyValue.elements.map((e, i) => ({ index: i, value: e, type: 'idle' })));
-              listKeyCtrl.setLoaded({ type: 'list', name: keyValue.name });
-              break;
-            case 'set':
-              await kvClient.createSetKey(keyValue.name, keyValue.elements);
-
-              setScanner.setFilter({ keyName: keyValue.name });
-              setScanner.update(keyValue.elements.map((e) => ({ value: e, type: 'idle' })));
-              setKeyCtrl.setLoaded({ type: 'set', name: keyValue.name });
-              break;
-          }
+          await detailsCtrl.add(keyValue);
 
           keysCtrl.add({ name: keyValue.name, type: keyValue.type });
-
-          component.focusAddKeyButton();
 
           notifySuccess(i18n('cc-kv-explorer.success.add-key'));
         } catch (e) {
           console.error(e);
-
-          const errorCode = getErrorCode(e);
-          if (errorCode === 'clever.redis-http.key-already-exists') {
-            updateComponent(
-              'detailState',
-              /** @param {CcKvExplorerDetailStateAdd} state */
-              (state) => {
-                state.formState.type = 'idle';
-                state.formState.errors = { keyName: 'already-used' };
-              },
-            );
-          } else {
-            notifyError(i18n('cc-kv-explorer.error.add-key'));
-
-            updateComponent(
-              'detailState',
-              /** @param {CcKvExplorerDetailStateAdd} state */
-              (state) => {
-                state.formState.type = 'idle';
-              },
-            );
-          }
+          notifyError(i18n('cc-kv-explorer.error.add-key'));
         }
       },
     );
@@ -255,21 +146,15 @@ defineSmartComponent({
       'cc-kv-string-editor:update-value',
       /** @param {string} value */
       async (value) => {
-        if (component.detailState.type !== 'edit-string' || component.detailState.editor.type === 'loading') {
-          return;
-        }
-
-        stringKeyCtrl.setSaving(value);
+        const editorCtrl = /** @type {KvKeyEditorStringCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          await kvClient.updateStringKey(component.detailState.key.name, value);
-          stringKeyCtrl.setIdle(value);
+          await editorCtrl.save(value);
 
           notifySuccess(i18n('cc-kv-string-editor.success.update-value'));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-string-editor.error.update-value'));
-            stringKeyCtrl.setIdle(value);
           });
         }
       },
@@ -281,42 +166,26 @@ defineSmartComponent({
       'cc-kv-hash-explorer:filter-change',
       /** @param {string} pattern */
       async (pattern) => {
-        if (component.detailState.type !== 'edit-hash' || component.detailState.editor.type === 'loading') {
-          return;
-        }
-
-        const addForm = component.detailState.editor.addForm;
-
-        hashKeyCtrl.updateEditor({ type: 'loading' });
+        const editorCtrl = /** @type {KvKeyEditorHashCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          hashScanner.setFilter({ keyName: component.detailState.key.name, pattern });
-          await hashScanner.loadMore();
-          hashKeyCtrl.updateEditor({ type: 'loaded', elements: hashScanner.elements, addForm });
+          await editorCtrl.filter(pattern);
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-hash-explorer.error.apply-filter'));
-            hashKeyCtrl.updateEditor({ type: 'loaded', elements: hashScanner.elements, addForm });
           });
         }
       },
     );
 
     onEvent('cc-kv-hash-explorer:load-more-elements', async () => {
-      if (component.state.type !== 'loaded') {
-        return;
-      }
-
-      hashKeyCtrl.updateEditor((editor) => (editor.type = 'loading-more'));
+      const editorCtrl = /** @type {KvKeyEditorHashCtrl} */ (detailsCtrl.editorCtrl);
 
       try {
-        await hashScanner.loadMore();
-        hashKeyCtrl.updateEditorElements(hashScanner.elements);
-        hashKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
+        await editorCtrl.loadMore();
       } catch (e) {
         checkIfKeyNotFoundOrElse(e, () => {
           notifyError(i18n('cc-kv-hash-explorer.error.fetch-elements'));
-          hashKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
         });
       }
     });
@@ -325,22 +194,14 @@ defineSmartComponent({
       'cc-kv-hash-explorer:delete-element',
       /** @param {string} field */
       async (field) => {
-        if (component.detailState.type !== 'edit-hash') {
-          return;
-        }
-
-        hashKeyCtrl.updateEditorElementState(field, 'deleting');
+        const editorCtrl = /** @type {KvKeyEditorHashCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          await kvClient.deleteHashElement(component.detailState.key.name, field);
-          hashScanner.delete(field);
-          hashKeyCtrl.updateEditorElements(hashScanner.elements);
-
+          await editorCtrl.deleteElement(field);
           notifySuccess(i18n('cc-kv-hash-explorer.success.element-delete'));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-hash-explorer.error.element-delete'));
-            hashKeyCtrl.updateEditorElementState(field, 'idle');
           });
         }
       },
@@ -350,22 +211,14 @@ defineSmartComponent({
       'cc-kv-hash-explorer:update-element',
       /** @param {{field: string, value: string}} element */
       async ({ field, value }) => {
-        if (component.detailState.type !== 'edit-hash') {
-          return;
-        }
-
-        hashKeyCtrl.updateEditorElementState(field, 'updating');
+        const editorCtrl = /** @type {KvKeyEditorHashCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          await kvClient.setHashElement(component.detailState.key.name, field, value);
-          hashScanner.update([{ type: 'idle', field, value }]);
-          hashKeyCtrl.updateEditorElements(hashScanner.elements);
-
+          await editorCtrl.updateElement(field, value);
           notifySuccess(i18n('cc-kv-hash-explorer.success.element-update'));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-hash-explorer.error.element-update'));
-            hashKeyCtrl.updateEditorElementState(field, 'editing');
           });
         }
       },
@@ -375,25 +228,12 @@ defineSmartComponent({
       'cc-kv-hash-explorer:add-element',
       /** @param {{field: string, value: string}} element */
       async ({ field, value }) => {
-        if (component.detailState.type !== 'edit-hash') {
-          return;
-        }
-
-        hashKeyCtrl.updateAddForm({ type: 'adding' });
+        const editorCtrl = /** @type {KvKeyEditorHashCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          const result = await kvClient.setHashElement(component.detailState.key.name, field, value);
+          const added = await editorCtrl.addElement(field, value);
 
-          component.resetEditorForm();
-
-          // refetch all elements
-          hashKeyCtrl.setLoading(component.detailState.key);
-          hashScanner.reset();
-          await hashScanner.loadMore();
-          hashKeyCtrl.setLoaded(component.detailState.key);
-          hashKeyCtrl.updateAddForm({ type: 'idle' });
-
-          if (result.added) {
+          if (added) {
             notifySuccess(i18n('cc-kv-hash-explorer.success.element-add'));
           } else {
             notifySuccess(i18n('cc-kv-hash-explorer.success.element-update'));
@@ -401,7 +241,6 @@ defineSmartComponent({
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-hash-explorer.error.element-add'));
-            hashKeyCtrl.updateAddForm({ type: 'idle' });
           });
         }
       },
@@ -409,74 +248,48 @@ defineSmartComponent({
 
     // -- list
 
-    onEvent('cc-kv-list-explorer:load-more-elements', async () => {
-      if (component.state.type !== 'loaded') {
-        return;
-      }
-
-      listKeyCtrl.updateEditor((editor) => (editor.type = 'loading-more'));
-
-      try {
-        await listScanner.loadMore();
-        listKeyCtrl.updateEditorElements(listScanner.elements);
-        listKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
-      } catch (e) {
-        checkIfKeyNotFoundOrElse(e, () => {
-          notifyError(i18n('cc-kv-list-explorer.error.fetch-elements'));
-          listKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
-        });
-      }
-    });
-
     onEvent(
       'cc-kv-list-explorer:filter-change',
       /** @param {number} index */
       async (index) => {
-        if (component.detailState.type !== 'edit-list' || component.detailState.editor.type === 'loading') {
-          return;
-        }
-
-        const addForm = component.detailState.editor.addForm;
-
-        listKeyCtrl.updateEditor({ type: 'loading' });
+        const editorCtrl = /** @type {KvKeyEditorListCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          listScanner.setFilter({ keyName: component.detailState.key.name, index });
-          await listScanner.loadMore();
-          listKeyCtrl.updateEditor({ type: 'loaded', elements: listScanner.elements, addForm });
+          await editorCtrl.filter(index);
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-list-explorer.error.apply-filter'));
-            listKeyCtrl.updateEditor({ type: 'loaded', elements: listScanner.elements, addForm });
           });
         }
       },
     );
 
+    onEvent('cc-kv-list-explorer:load-more-elements', async () => {
+      const editorCtrl = /** @type {KvKeyEditorListCtrl} */ (detailsCtrl.editorCtrl);
+
+      try {
+        await editorCtrl.loadMore();
+      } catch (e) {
+        checkIfKeyNotFoundOrElse(e, () => {
+          notifyError(i18n('cc-kv-list-explorer.error.fetch-elements'));
+        });
+      }
+    });
+
     onEvent(
       'cc-kv-list-explorer:update-element',
       /**
-       * @param {object} _
-       * @param {number} _.index
-       * @param {string} _.value
+       * @param {{index: number, value: string}} element
        */
       async ({ index, value }) => {
-        if (component.detailState.type !== 'edit-list') {
-          return;
-        }
-
-        listKeyCtrl.updateEditorElementState(index, 'updating');
+        const editorCtrl = /** @type {KvKeyEditorListCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          await kvClient.updateListElement(component.detailState.key.name, index, value);
-          listScanner.update([{ type: 'idle', index, value }]);
-          listKeyCtrl.updateEditorElements(listScanner.elements);
-
+          await editorCtrl.updateElement(index, value);
           notifySuccess(i18n('cc-kv-list-explorer.success.element-update'));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-list-explorer.error.element-update'));
-            listKeyCtrl.updateEditorElementState(index, 'editing');
           });
         }
       },
@@ -485,34 +298,16 @@ defineSmartComponent({
     onEvent(
       'cc-kv-list-explorer:add-element',
       /** @param {{position: 'tail'|'head', value: string }} element */
-      async (element) => {
-        if (component.detailState.type !== 'edit-list') {
-          return;
-        }
-
-        listKeyCtrl.updateAddForm({ type: 'adding' });
+      async ({ position, value }) => {
+        const editorCtrl = /** @type {KvKeyEditorListCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          const result = await kvClient.pushListElement(
-            component.detailState.key.name,
-            element.position,
-            element.value,
-          );
+          const index = await editorCtrl.addElement(position, value);
 
-          component.resetEditorForm();
-
-          // refetch all elements
-          listKeyCtrl.setLoading(component.detailState.key);
-          listScanner.reset();
-          await listScanner.loadMore();
-          listKeyCtrl.setLoaded(component.detailState.key);
-          listKeyCtrl.updateAddForm({ type: 'idle' });
-
-          notifySuccess(i18n('cc-kv-list-explorer.success.element-add', { index: result.index }));
+          notifySuccess(i18n('cc-kv-list-explorer.success.element-add', { index }));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-list-explorer.error.element-add'));
-            listKeyCtrl.updateAddForm({ type: 'idle' });
           });
         }
       },
@@ -524,42 +319,26 @@ defineSmartComponent({
       'cc-kv-set-explorer:filter-change',
       /** @param {string} pattern */
       async (pattern) => {
-        if (component.detailState.type !== 'edit-set' || component.detailState.editor.type === 'loading') {
-          return;
-        }
-
-        const addForm = component.detailState.editor.addForm;
-
-        setKeyCtrl.updateEditor({ type: 'loading' });
+        const editorCtrl = /** @type {KvKeyEditorSetCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          setScanner.setFilter({ keyName: component.detailState.key.name, pattern });
-          await setScanner.loadMore();
-          setKeyCtrl.updateEditor({ type: 'loaded', elements: setScanner.elements, addForm });
+          await editorCtrl.filter(pattern);
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-set-explorer.error.apply-filter'));
-            setKeyCtrl.updateEditor({ type: 'loaded', elements: setScanner.elements, addForm });
           });
         }
       },
     );
 
     onEvent('cc-kv-set-explorer:load-more-elements', async () => {
-      if (component.state.type !== 'loaded') {
-        return;
-      }
-
-      setKeyCtrl.updateEditor((editor) => (editor.type = 'loading-more'));
+      const editorCtrl = /** @type {KvKeyEditorSetCtrl} */ (detailsCtrl.editorCtrl);
 
       try {
-        await setScanner.loadMore();
-        setKeyCtrl.updateEditorElements(setScanner.elements);
-        setKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
+        await editorCtrl.loadMore();
       } catch (e) {
         checkIfKeyNotFoundOrElse(e, () => {
           notifyError(i18n('cc-kv-set-explorer.error.fetch-elements'));
-          setKeyCtrl.updateEditor((editor) => (editor.type = 'loaded'));
         });
       }
     });
@@ -568,22 +347,14 @@ defineSmartComponent({
       'cc-kv-set-explorer:delete-element',
       /** @param {string} element */
       async (element) => {
-        if (component.detailState.type !== 'edit-set') {
-          return;
-        }
-
-        setKeyCtrl.updateEditorElementState(element, 'deleting');
+        const editorCtrl = /** @type {KvKeyEditorSetCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          await kvClient.deleteSetElement(component.detailState.key.name, element);
-          setScanner.delete(element);
-          setKeyCtrl.updateEditorElements(setScanner.elements);
-
+          await editorCtrl.deleteElement(element);
           notifySuccess(i18n('cc-kv-set-explorer.success.element-delete'));
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-set-explorer.error.element-delete'));
-            setKeyCtrl.updateEditorElementState(element, 'idle');
           });
         }
       },
@@ -593,33 +364,19 @@ defineSmartComponent({
       'cc-kv-set-explorer:add-element',
       /** @param {string} element */
       async (element) => {
-        if (component.detailState.type !== 'edit-set') {
-          return;
-        }
-
-        setKeyCtrl.updateAddForm({ type: 'adding' });
+        const editorCtrl = /** @type {KvKeyEditorSetCtrl} */ (detailsCtrl.editorCtrl);
 
         try {
-          const result = await kvClient.addSetElement(component.detailState.key.name, element);
+          const added = await editorCtrl.addElement(element);
 
-          component.resetEditorForm();
-
-          if (result.added) {
-            // refetch all elements
-            setKeyCtrl.setLoading(component.detailState.key);
-            setScanner.reset();
-            await setScanner.loadMore();
-            setKeyCtrl.setLoaded(component.detailState.key);
-
+          if (added) {
             notifySuccess(i18n('cc-kv-set-explorer.success.element-add'));
           } else {
             notifySuccess(i18n('cc-kv-set-explorer.success.element-already-exist'));
           }
-          setKeyCtrl.updateAddForm({ type: 'idle' });
         } catch (e) {
           checkIfKeyNotFoundOrElse(e, () => {
             notifyError(i18n('cc-kv-set-explorer.error.element-add'));
-            setKeyCtrl.updateAddForm({ type: 'idle' });
           });
         }
       },
@@ -670,7 +427,7 @@ defineSmartComponent({
     // -- init ---
 
     updateComponent('state', { type: 'loading' });
-    updateComponent('detailState', { type: 'hidden' });
+    detailsCtrl.hide();
     component.resetAddForm();
 
     let ready = false;
@@ -697,7 +454,7 @@ defineSmartComponent({
       if (isKeyNotFound(e)) {
         notifyError(i18n('cc-kv-explorer.error.key-doesnt-exist'));
         keysCtrl.onKeyNotFound(e.responseBody.context.key);
-        updateComponent('detailState', { type: 'hidden' });
+        detailsCtrl.hide();
       } else {
         console.error(e);
         orElse();
@@ -720,12 +477,4 @@ function getErrorCode(e) {
  */
 function isKeyNotFound(e) {
   return getErrorCode(e) === 'clever.redis-http.key-not-found';
-}
-
-/**
- * @param {CcKvExplorerDetailState} state
- * @return {state is CcKvExplorerDetailStateEdit}
- */
-function isEditState(state) {
-  return state.type.startsWith('edit-');
 }
