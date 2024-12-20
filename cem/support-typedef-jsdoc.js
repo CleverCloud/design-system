@@ -114,12 +114,12 @@ export default function supportTypedefJsdoc() {
       moduleTypeCache.clear();
 
       const componentName = node.name.escapedText;
-      console.log(`\n⌛ Generating docs for ${componentName}`);
+      // console.log(`\n⌛ Generating docs for ${componentName}`);
 
       const types = getTypesFromClass(node, ts);
 
       if (types.length === 0) {
-        console.info('✅ Successfully generated documentation.');
+        // console.info('✅ Successfully generated documentation.');
         return;
       }
 
@@ -163,7 +163,7 @@ export default function supportTypedefJsdoc() {
 
       declaration.description = declaration.description + '\n\n' + displayText;
 
-      console.info('✅ Successfully generated documentation.');
+      // console.info('✅ Successfully generated documentation.');
     },
   };
 }

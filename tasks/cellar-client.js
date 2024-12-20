@@ -33,6 +33,10 @@ export class CellarClient {
       .then((response) => streamToObject(response.Body));
   }
 
+  getImage({ key }) {
+    return this._client.send(new AWS.GetObjectCommand({ Bucket: this._bucket, Key: key }));
+  }
+
   async listKeys({ prefix }) {
     const listObjectsResponse = await this._client.send(
       new AWS.ListObjectsV2Command({

@@ -39,6 +39,9 @@ export const defaultStory = makeStory(conf, {
 });
 
 export const loading = makeStory(conf, {
+  tests: {
+    visualRegressions: false,
+  },
   items: [
     {
       /** @type {AddonAdminStateLoading} */
@@ -50,6 +53,9 @@ export const loading = makeStory(conf, {
 });
 
 export const waitingWithUpdatingName = makeStory(conf, {
+  tests: {
+    visualRegressions: false,
+  },
   items: [
     {
       /** @type {AddonAdminStateUpdatingName}*/
@@ -62,6 +68,9 @@ export const waitingWithUpdatingName = makeStory(conf, {
 });
 
 export const waitingWithUpdatingTags = makeStory(conf, {
+  tests: {
+    visualRegressions: false,
+  },
   items: [
     {
       /** @type {AddonAdminStateUpdatingTags}*/
@@ -74,6 +83,9 @@ export const waitingWithUpdatingTags = makeStory(conf, {
 });
 
 export const waitingWithDeleting = makeStory(conf, {
+  tests: {
+    visualRegressions: false,
+  },
   items: [
     {
       /** @type {AddonAdminStateDeleting}*/
@@ -149,6 +161,10 @@ export const errorWithLoading = makeStory(conf, {
 });
 
 export const simulations = makeStory(conf, {
+  tests: {
+    visualRegressions: false,
+    accessibility: false,
+  },
   items: [{}, {}],
   simulations: [
     storyWait(

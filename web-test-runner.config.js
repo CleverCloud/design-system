@@ -1,16 +1,26 @@
 import json from '@rollup/plugin-json';
 import { rollupAdapter } from '@web/dev-server-rollup';
 import { defaultReporter, summaryReporter } from '@web/test-runner';
-import { chromeLauncher } from '@web/test-runner-chrome';
+import { playwrightLauncher } from '@web/test-runner-playwright';
+import { visualRegressionPlugin } from '@web/test-runner-visual-regression/plugin';
+import { Buffer } from 'buffer';
+import { CellarClient } from './tasks/cellar-client.js';
 import { cemAnalyzerPlugin } from './wds/cem-analyzer-plugin.js';
+import { testStoryPlugin } from './wds/test-story-plugin.js';
 import { commonjsPluginWithConfig, esbuildBundlePluginWithConfig } from './wds/wds-common.js';
 
 // sets the language used by the headless browser
 // normally we'd set it through the `chromeLauncher` options but it makes the debug mode crash
 process.env.LANGUAGE = 'en';
 
+const cellar = new CellarClient({
+  bucket: 'clever-test-flo-visual-regressions',
+  accessKeyId: process.env.VISUAL_REGRESSIONS_CELLAR_KEY_ID,
+  secretAccessKey: process.env.VISUAL_REGRESSIONS_CELLAR_SECRET_KEY,
+});
+
 export default {
-  files: ['test/**/*.test.*', 'src/components/**/*.test.*'],
+  files: ['test/**/*.test.*', 'src/components/**/*.test.*', 'src/components/**/*.stories.js'],
   filterBrowserLogs: ({ args }) => {
     const logsToExclude = [
       'Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.',
@@ -21,14 +31,32 @@ export default {
     return logMessage != null && !logsToExclude.includes(logMessage);
   },
   browsers: [
-    chromeLauncher({
+    playwrightLauncher({
       // Fixes random timeouts with Chrome > 127, see https://github.com/CleverCloud/clever-components/issues/1146 for more info
-      concurrency: 1,
-      async createPage({ context }) {
-        const page = await context.newPage();
-        // We need that for unit tests working with dates and timezones
-        await page.emulateTimezone('Europe/Paris');
-        return page;
+      // concurrency: 1,
+      // async createPage({ context }) {
+      //   const page = await context.newPage();
+      //   // We need that for unit tests working with dates and timezones
+      //   await page.emulateTimezone('Europe/Paris');
+      //   return page;
+      // },
+      product: 'chromium',
+      createBrowserContext({ browser }) {
+        return browser.newContext({ timezoneId: 'Europe/Paris' });
+      },
+    }),
+    playwrightLauncher({
+      // Fixes random timeouts with Chrome > 127, see https://github.com/CleverCloud/clever-components/issues/1146 for more info
+      // concurrency: 1,
+      // async createPage({ context }) {
+      //   const page = await context.newPage();
+      //   // We need that for unit tests working with dates and timezones
+      //   await page.emulateTimezone('Europe/Paris');
+      //   return page;
+      // },
+      product: 'firefox',
+      createBrowserContext({ browser }) {
+        return browser.newContext({ timezoneId: 'Europe/Paris' });
       },
     }),
   ],
@@ -57,5 +85,57 @@ export default {
       </head>
     </html>
   `,
-  plugins: [cemAnalyzerPlugin, rollupAdapter(json()), esbuildBundlePluginWithConfig, commonjsPluginWithConfig],
+  plugins: [
+    cemAnalyzerPlugin,
+    rollupAdapter(json()),
+    esbuildBundlePluginWithConfig,
+    commonjsPluginWithConfig,
+    visualRegressionPlugin({
+      update: process.argv.includes('--update-visual-baseline'),
+      async getBaseline({ name }) {
+        const fileBuffer = await cellar
+          .getImage({ key: name + '.png' })
+          .then((response) => {
+            return new Promise((resolve, reject) => {
+              const data = [];
+              response.Body.on('data', (chunk) => data.push(chunk));
+              response.Body.on('end', () => resolve(Buffer.concat(data)));
+              response.Body.on('error', reject);
+            });
+          })
+          .catch((err) => {
+            console.log('error', name, err);
+          });
+
+        return fileBuffer;
+      },
+      async saveBaseline({ content, name }) {
+        await cellar
+          .putObject({
+            key: name + '.png',
+            body: content,
+          })
+          .catch((err) => {
+            console.log('failed to save', err);
+          });
+      },
+      async saveDiff({ content, name }) {
+        await cellar
+          .putObject({
+            key: name + '.png',
+            body: content,
+          })
+          .then((response) => {
+            console.log('saved diff');
+          })
+          .catch((err) => {
+            console.log('failed to DIFF', err);
+          });
+      },
+      saveFailed({ filePath, content, baseDir, name }) {
+        console.log('SAVING FAILED', name);
+      },
+    }),
+    testStoryPlugin,
+  ],
 };
