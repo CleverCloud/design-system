@@ -6,6 +6,7 @@ import './cc-kv-explorer.js';
 import { KvClient } from './kv-client.js';
 import { KvDetailsCtrl } from './kv-details-ctrl.js';
 import { KvKeysCtrl } from './kv-keys-ctrl.js';
+import { KvTerminalCtrl } from './kv-terminal-ctrl.js';
 
 /**
  * @typedef {import('./cc-kv-explorer.js').CcKvExplorer} CcKvExplorer
@@ -52,6 +53,7 @@ defineSmartComponent({
 
     const keysCtrl = new KvKeysCtrl(view, kvClient);
     const detailsCtrl = new KvDetailsCtrl(view, kvClient);
+    const terminalCtrl = new KvTerminalCtrl(view, kvClient);
 
     // -- keys ---
 
@@ -388,39 +390,7 @@ defineSmartComponent({
       'cc-kv-terminal:send-command',
       /** @param {string} commandLine */
       async (commandLine) => {
-        updateComponent('terminalState', {
-          type: 'running',
-          commandLine,
-          history: component.terminalState.history,
-        });
-
-        try {
-          const { success, result } = await kvClient.sendCommandLine(commandLine);
-
-          updateComponent('terminalState', {
-            type: 'idle',
-            history: component.terminalState.history.concat({ commandLine, result, success }),
-          });
-        } catch (e) {
-          console.error(e);
-
-          const err = /** @type {{responseBody: {code: string, message: string}}} */ (e);
-          if (
-            err.responseBody.code !== 'clever.redis-http.unknown-command' &&
-            err.responseBody.code !== 'clever.redis-http.bad-command-format'
-          ) {
-            console.error(e);
-          }
-
-          updateComponent('terminalState', {
-            type: 'idle',
-            history: component.terminalState.history.concat({
-              commandLine,
-              result: [err.responseBody.message],
-              success: false,
-            }),
-          });
-        }
+        await terminalCtrl.runCommandLine(commandLine);
       },
     );
 
@@ -428,6 +398,7 @@ defineSmartComponent({
 
     updateComponent('state', { type: 'loading' });
     detailsCtrl.hide();
+    terminalCtrl.clear();
     component.resetAddForm();
 
     let ready = false;
