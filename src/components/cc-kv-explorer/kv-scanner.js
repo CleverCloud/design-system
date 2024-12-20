@@ -44,14 +44,12 @@ export class KvScanner {
   }
 
   /**
-   * @param {number} _cursor
    * @param {number} _count
-   * @param {F} _filter
    * @param {AbortSignal} [_signal]
    * @return {Promise<{cursor: number, total: number, elements: Array<T>}>}
    * @protected
    */
-  fetch(_cursor, _count, _filter, _signal) {
+  fetch(_count, _signal) {
     throw new Error('Abstract method: please implement me');
   }
 
@@ -173,7 +171,7 @@ export class KvScanner {
    */
   async loadMore(signal, count = 1000) {
     if (this.hasMore()) {
-      const f = await this.fetch(this._cursor, count, this._filter, signal);
+      const f = await this.fetch(count, signal);
       f.elements.forEach((it) => {
         this._map.set(this.getId(it), it);
       });

@@ -275,14 +275,17 @@ class KvKeysScanner extends KvScanner {
   }
 
   /**
-   * @param {number} cursor
    * @param {number} count
-   * @param {{type: CcKvKeyType, pattern: string}} filter
    * @param {AbortSignal} [_signal]
    * @return {Promise<{cursor: number, total: number, elements: Array<CcKvKeyState>}>}
    */
-  async fetch(cursor, count, filter, _signal) {
-    const r = await this._kvClient.scanKeys({ cursor, count, type: filter?.type, match: filter?.pattern });
+  async fetch(count, _signal) {
+    const r = await this._kvClient.scanKeys({
+      cursor: this._cursor,
+      count,
+      type: this._filter?.type,
+      match: this._filter?.pattern,
+    });
     return {
       cursor: r.cursor,
       total: r.total,

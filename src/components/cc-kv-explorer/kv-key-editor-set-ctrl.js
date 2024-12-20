@@ -205,14 +205,16 @@ export class KvSetElementsScanner extends KvScanner {
   }
 
   /**
-   * @param {number} cursor
    * @param {number} count
-   * @param {{pattern?: string}} filter
    * @param {AbortSignal} [signal]
    * @return {Promise<{cursor: number, total: number, elements: Array<CcKvSetElementState>}>}
    */
-  async fetch(cursor, count, filter, signal) {
-    const r = await this._kvClient.scanSet(this._keyName, signal, { cursor, count, match: filter?.pattern });
+  async fetch(count, signal) {
+    const r = await this._kvClient.scanSet(this._keyName, signal, {
+      cursor: this._cursor,
+      count,
+      match: this._filter?.pattern,
+    });
     return {
       cursor: r.cursor,
       total: r.total,

@@ -200,16 +200,14 @@ export class KvListElementsScanner extends KvScanner {
   }
 
   /**
-   * @param {number} cursor
    * @param {number} count
-   * @param {{index?: number}} filter
    * @param {AbortSignal} [signal]
    * @return {Promise<{cursor: number, total: number, elements: Array<CcKvListElementState>}>}
    */
-  async fetch(cursor, count, filter, signal) {
+  async fetch(count, signal) {
     // no filtering
-    if (filter?.index == null) {
-      const r = await this._kvClient.scanList(this._keyName, signal, { cursor, count, match: null });
+    if (this._filter?.index == null) {
+      const r = await this._kvClient.scanList(this._keyName, signal, { cursor: this._cursor, count, match: null });
       return {
         cursor: r.cursor,
         total: r.total,
@@ -218,13 +216,13 @@ export class KvListElementsScanner extends KvScanner {
     }
 
     // bad filter
-    if (isNaN(filter.index)) {
+    if (isNaN(this._filter.index)) {
       return emptyScanResult();
     }
 
     // filtering by index is like getting item at the given index
     try {
-      const element = await this._kvClient.getListElementAt(this._keyName, filter.index);
+      const element = await this._kvClient.getListElementAt(this._keyName, this._filter.index);
 
       if (element.value == null) {
         return emptyScanResult();
