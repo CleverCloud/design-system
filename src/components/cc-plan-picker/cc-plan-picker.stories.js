@@ -16,7 +16,6 @@ export default {
 };
 
 /**
- * @typedef {import('./cc-plan-picker.types.js').PickerPlan} PickerPlan
  * @typedef {import('./cc-plan-picker.js').CcPlanPicker} CcPlanPicker
  */
 
@@ -25,41 +24,40 @@ const conf = {
 };
 
 export const defaultStory = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanPicker>>}  **/
+  /** @type {Array<Partial<CcPlanPicker>>} */
   items: [
     {
-      plans: DEFAULT_PLANS.map((plan) => ({
-        id: plan.id,
-        badge: plan?.badge,
-        name: plan.name,
-        details: plan.details,
-      })),
-      value: 'xxs',
+      plans: DEFAULT_PLANS,
+      value: 'plan_12',
     },
   ],
 });
 
 export const readonly = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanPicker>>}  **/
+  /** @type {Array<Partial<CcPlanPicker>>} */
   items: [
     {
-      plans: DEFAULT_PLANS.map((plan) => ({
-        id: plan.id,
-        badge: plan?.badge,
-        name: plan.name,
-        details: plan.details,
-      })),
-      value: 'xxs',
+      plans: DEFAULT_PLANS,
       readonly: true,
+      value: 'plan_12',
+    },
+  ],
+});
+
+export const noCustomizationPlans = makeStory(conf, {
+  /** @type {Array<Partial<CcPlanPicker>>} */
+  items: [
+    {
+      plans: THIRD_PARTY,
+      value: 'third_party_1',
     },
   ],
 });
 
 export const sampleDatabase = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanPicker>>}  **/
+  /** @type {Array<Partial<CcPlanPicker>>} **/
   items: [
     {
-      /** @type {PickerPlan[]}  **/
       plans: [
         {
           name: 'S',
@@ -75,7 +73,7 @@ export const sampleDatabase = makeStory(conf, {
             },
             {
               icon: iconConnectionLimit,
-              value: '100 connection limit',
+              value: '100 connections limit',
             },
             {
               icon: iconDatabase,
@@ -97,7 +95,7 @@ export const sampleDatabase = makeStory(conf, {
             },
             {
               icon: iconConnectionLimit,
-              value: '250 connection limit',
+              value: '250 connections limit',
             },
             {
               icon: iconDatabase,
@@ -120,7 +118,7 @@ export const sampleDatabase = makeStory(conf, {
             },
             {
               icon: iconConnectionLimit,
-              value: '500 connection limit',
+              value: '500 connections limit',
             },
             {
               icon: iconDatabase,
@@ -142,7 +140,7 @@ export const sampleDatabase = makeStory(conf, {
             },
             {
               icon: iconConnectionLimit,
-              value: '500 connection limit',
+              value: '500 connections limit',
             },
             {
               icon: iconDatabase,
@@ -164,7 +162,7 @@ export const sampleDatabase = makeStory(conf, {
             },
             {
               icon: iconConnectionLimit,
-              value: '750 connection limit',
+              value: '750 connections limit',
             },
             {
               icon: iconDatabase,
@@ -186,7 +184,7 @@ export const sampleDatabase = makeStory(conf, {
             },
             {
               icon: iconConnectionLimit,
-              value: '1000 connection limit',
+              value: '1000 connections limit',
             },
             {
               icon: iconDatabase,
@@ -208,7 +206,7 @@ export const sampleDatabase = makeStory(conf, {
             },
             {
               icon: iconConnectionLimit,
-              value: '1500 connection limit',
+              value: '1500 connections limit',
             },
             {
               icon: iconDatabase,
@@ -217,12 +215,13 @@ export const sampleDatabase = makeStory(conf, {
           ],
         },
       ],
+      value: 's',
     },
   ],
 });
 
 export const thirdParty = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanPicker>>}  **/
+  /** @type {Array<Partial<CcPlanPicker>>} */
   items: [
     {
       plans: THIRD_PARTY,
@@ -232,7 +231,7 @@ export const thirdParty = makeStory(conf, {
 });
 
 export const thirdPartyReadonly = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanPicker>>}  **/
+  /** @type {Array<Partial<CcPlanPicker>>} */
   items: [
     {
       plans: THIRD_PARTY,

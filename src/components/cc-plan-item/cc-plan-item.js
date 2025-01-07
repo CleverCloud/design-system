@@ -1,5 +1,4 @@
 import { css, html, LitElement } from 'lit';
-import { ifDefined } from 'lit/directives/if-defined.js';
 import { iconRemixCheckboxCircleFill as selectedIcon } from '../../assets/cc-remix.icons.js';
 import '../cc-badge/cc-badge.js';
 import '../cc-icon/cc-icon.js';
@@ -31,19 +30,19 @@ export class CcPlanItem extends LitElement {
   constructor() {
     super();
 
-    /** @type {PlanBadge} Badge to display next to the plan name  **/
+    /** @type {PlanBadge} Badge to display next to the plan name */
     this.badge = null;
 
-    /** @type {PlanDetails[]} The details of the plan **/
+    /** @type {PlanDetails[]} The details of the plan */
     this.details = [];
 
-    /** @type {boolean} Whether the component should be disabled  **/
+    /** @type {boolean} Whether the component should be disabled */
     this.disabled = false;
 
-    /** @type {string} The plan name **/
+    /** @type {string} The plan name */
     this.name = null;
 
-    /** @type {boolean} Whether the component should be selected **/
+    /** @type {boolean} Whether the component should be selected */
     this.selected = false;
   }
 
@@ -51,9 +50,7 @@ export class CcPlanItem extends LitElement {
     return html`
       <div class="title">
         <div class="name">${this.name}</div>
-        ${this.badge != null
-          ? html` <cc-badge intent="${ifDefined(this.badge?.intent)}"> ${this.badge.content} </cc-badge> `
-          : ''}
+        ${this.badge != null ? html` <cc-badge .intent="${this.badge.intent}">${this.badge.content}</cc-badge> ` : ''}
       </div>
       <cc-icon class="icon-selected" .icon="${selectedIcon}" size="lg"></cc-icon>
       ${this.details?.length > 0

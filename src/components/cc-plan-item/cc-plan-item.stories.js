@@ -24,7 +24,7 @@ const conf = {
   component: 'cc-plan-item',
 };
 
-/** @type {Partial<PlanItem>}  **/
+/** @type {Partial<PlanItem>} */
 const DEFAULT_ITEM = {
   name: 'Base Plan',
   details: [
@@ -40,12 +40,12 @@ const DEFAULT_ITEM = {
 };
 
 export const defaultStory = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanItem>>}  **/
+  /** @type {Array<Partial<CcPlanItem>>} */
   items: [DEFAULT_ITEM],
 });
 
 export const withBadge = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanItem>>}  **/
+  /** @type {Array<Partial<CcPlanItem>>} */
   items: [
     { ...DEFAULT_ITEM, badge: { content: 'Hello' } },
     { ...DEFAULT_ITEM, selected: true, badge: { content: 'There!' } },
@@ -54,17 +54,17 @@ export const withBadge = makeStory(conf, {
 });
 
 export const selected = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanItem>>}  **/
+  /** @type {Array<Partial<CcPlanItem>>} */
   items: [{ ...DEFAULT_ITEM, selected: true }],
 });
 
 export const disabled = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanItem>>}  **/
+  /** @type {Array<Partial<CcPlanItem>>} */
   items: [{ ...DEFAULT_ITEM, disabled: true }],
 });
 
 export const simpleDatabase = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanItem>>}  **/
+  /** @type {Array<Partial<CcPlanItem>>} */
   items: [
     {
       id: 'sample',
@@ -92,7 +92,7 @@ export const simpleDatabase = makeStory(conf, {
 });
 
 export const thirdParty = makeStory(conf, {
-  /** @type {Array<Partial<CcPlanItem>>}  **/
+  /** @type {Array<Partial<CcPlanItem>>} */
   items: [
     {
       id: 'third_party',

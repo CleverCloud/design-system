@@ -1,4 +1,5 @@
 import { BadgeIntent } from '../cc-badge/cc-badge.types.js';
+import { IconModel } from '../common.types.js';
 
 export interface PlanBadge {
   content: string;
@@ -6,6 +7,6 @@ export interface PlanBadge {
 }
 
 export interface PlanDetails {
-  icon: object;
+  icon: IconModel;
   value: string;
 }
