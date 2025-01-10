@@ -9,8 +9,8 @@ import '../cc-icon/cc-icon.js';
 
 /** @type {Scalability} */
 const SKELETON_SCALABILITY = {
-  minFlavor: { name: '??', cpus: 0, gpus: 0, mem: 0, microservice: false, monthlyCost: 0 },
-  maxFlavor: { name: '?', cpus: 0, gpus: 0, mem: 0, microservice: false, monthlyCost: 0 },
+  minFlavor: { name: '??', cpus: 0, gpus: 0, mem: 0, microservice: false },
+  maxFlavor: { name: '?', cpus: 0, gpus: 0, mem: 0, microservice: false },
   minInstances: 0,
   maxInstances: 0,
 };
