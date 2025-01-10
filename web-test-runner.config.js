@@ -91,8 +91,12 @@ export default {
     esbuildBundlePluginWithConfig,
     commonjsPluginWithConfig,
     visualRegressionPlugin({
-      update: process.argv.includes('--update-visual-baseline'),
+      update: process.argv.includes('--update-visual-baseline'), // should we force to target some component or all? need to test what happens when you update baseline and it's already ok?
       async getBaseline({ name }) {
+        // search for baseline same branch
+        // if we get it from baseline same branch, it means we have added new visuals
+        // we can probably set some env var so that CI lists impacted components in a comment for review?
+        // if not found => search for baseline master
         const fileBuffer = await cellar
           .getImage({ key: name + '.png' })
           .then((response) => {
@@ -110,6 +114,8 @@ export default {
         return fileBuffer;
       },
       async saveBaseline({ content, name }) {
+        console.log('saving new baseline', name);
+        // should save in current branch
         await cellar
           .putObject({
             key: name + '.png',
@@ -120,6 +126,8 @@ export default {
           });
       },
       async saveDiff({ content, name }) {
+        // should save to cellar + locally but only if failed?
+        // if name split `/` [1] === 'failed' then we should also save locally for review?
         await cellar
           .putObject({
             key: name + '.png',
