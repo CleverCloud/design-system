@@ -1,7 +1,8 @@
 export type CcKvListExplorerState =
   | CcKvListExplorerStateLoading
   | CcKvListExplorerStateLoaded
-  | CcKvListExplorerStateLoadingMore;
+  | CcKvListExplorerStateLoadingMore
+  | CcKvListExplorerStateFiltering;
 
 export interface CcKvListExplorerStateLoading {
   type: 'loading';
@@ -15,6 +16,12 @@ export interface CcKvListExplorerStateLoaded {
 
 export interface CcKvListExplorerStateLoadingMore {
   type: 'loading-more';
+  elements: Array<CcKvListElementState>;
+  addForm: CcKvListExplorerAddFormState;
+}
+
+export interface CcKvListExplorerStateFiltering {
+  type: 'filtering';
   elements: Array<CcKvListElementState>;
   addForm: CcKvListExplorerAddFormState;
 }
