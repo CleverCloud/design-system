@@ -34,32 +34,33 @@ export interface Flavor {
   gpus: number;
   mem: number;
   microservice: boolean;
-  monthlyCost?: number | null;
 }
 
-export interface EncryptionAddonOption {
-  name: 'encryption';
-  enabled: boolean;
-}
-
-export interface ElasticAddonOption {
-  name: 'kibana' | 'apm';
-  enabled: boolean;
-  flavor?: Flavor;
-}
-
-export type AddonOption = EncryptionAddonOption | ElasticAddonOption;
+export type AddonOption = EncryptionAddonOption | ElasticAddonOption<Flavor | FlavorWithMonthlyCost | null>;
 
 export type AddonOptionWithMetadata = {
   icon?: IconModel;
-  title?: string | DocumentFragment;
+  title?: string | Node;
   logo?: string;
-  description: string | DocumentFragment | TemplateResult<1>;
-} & AddonOption;
+  description: string | Node | TemplateResult<1>;
+} & Pick<AddonOption, 'name' | 'enabled'>;
 
 export interface EncryptionAddonOption {
   name: 'encryption';
   enabled: boolean;
+}
+
+export interface ElasticAddonOption<FlavorType> {
+  name: 'kibana' | 'apm';
+  enabled: boolean;
+  flavor?: FlavorType;
+}
+
+export interface FlavorWithMonthlyCost extends Flavor {
+  monthlyCost: {
+    amount: number;
+    currency: string;
+  };
 }
 
 export type AddonOptionStates = { [optionName: string]: boolean };
