@@ -90,7 +90,7 @@ export class CcAddonElasticsearchOptions extends LitElement {
    *
    * @param {boolean} skeleton - Whether the component is in loading state
    * @param {boolean} hasMonthlyCost - Whether monthly cost should be included
-   * @param {Flavor|FlavorWithMonthlyCost} [flavor] - The flavor object to return if not in skeleton state
+   * @param {Flavor|FlavorWithMonthlyCost} flavor - The flavor object to return if not in skeleton state
    * @returns {Flavor|FlavorWithMonthlyCost} The appropriate flavor object
    */
   _getElasticsearchOptionFlavor(skeleton, hasMonthlyCost, flavor) {

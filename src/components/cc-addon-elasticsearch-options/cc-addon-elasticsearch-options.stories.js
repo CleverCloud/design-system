@@ -83,6 +83,32 @@ export const loading = makeStory(conf, {
   ],
 });
 
+export const loadingWithNoMonthlyCost = makeStory(conf, {
+  /** @type {Partial<CcAddonElasticsearchOptions>[]} */
+  items: [
+    {
+      state: {
+        type: 'loading',
+        hasMonthlyCost: false,
+        options: [
+          {
+            name: 'kibana',
+            enabled: false,
+          },
+          {
+            name: 'apm',
+            enabled: false,
+          },
+          {
+            name: 'encryption',
+            enabled: false,
+          },
+        ],
+      },
+    },
+  ],
+});
+
 export const dataLoadedWithPreselectedKibana = makeStory(conf, {
   /** @type {Partial<CcAddonElasticsearchOptions>[]} */
   items: [
