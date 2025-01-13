@@ -7,5 +7,5 @@ export interface PlanItem {
   details?: PlanDetails[];
   disabled?: boolean;
   selected?: boolean;
-  relatedPlans?: Array<Omit<PlanItem, 'relatedPlans'>>; // ???
+  relatedPlans?: Array<Omit<PlanItem, 'relatedPlans'>>;
 }

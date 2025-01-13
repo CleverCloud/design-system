@@ -12,8 +12,6 @@ import '../cc-icon/cc-icon.js';
 /**
  * A component displaying a card with relative plan information and details
  *
- * @slot decorator - A decorator next to the plan name
- *
  * @cssdisplay flex
  */
 export class CcPlanItem extends LitElement {
