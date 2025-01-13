@@ -18,6 +18,7 @@ import { preparePlural } from '../lib/i18n/i18n-string.js';
 
 /**
  * @typedef {import('../components/common.types.js').Flavor} Flavor
+ * @typedef {import('../components/common.types.js').FlavorWithMonthlyCost} FlavorWithMonthlyCost
  */
 
 export const lang = 'en';
@@ -155,20 +156,24 @@ export const translations = {
   'cc-addon-credentials.title': /** @param {{name: string}} _ */ ({ name }) => `${name} credentials`,
   //#endregion
   //#region cc-addon-elasticsearch-options
-  'cc-addon-elasticsearch-options.description': () =>
-    sanitize`This add-on is part of the Elastic Stack offer which includes two options. Both these options will be deployed as applications, managed and updated by Clever Cloud on your behalf. They will appear as regular applications that you can stop, scale up or down automatically like one of your own applications. As such, <strong>enabling these options will result in an increase in credits consumption</strong> as well.`,
-  'cc-addon-elasticsearch-options.description.apm': () =>
+  'cc-addon-elasticsearch-options.additional-cost': () =>
+    sanitize`As such, <strong>enabling these options will result in an increase in credits consumption</strong> as well.`,
+  'cc-addon-elasticsearch-options.description': `This add-on is part of the Elastic Stack offer which includes two options. Both these options will be deployed as applications, managed and updated by Clever Cloud on your behalf. They will appear as regular applications that you can stop, scale up or down automatically like one of your own applications.`,
+  'cc-addon-elasticsearch-options.details.apm': () =>
     sanitize`Elastic APM server is an application performance monitoring system built on the Elastic Stack. Deploying this will allow you to automatically send APM metrics from any applications linked to the Elasticsearch add-on instance, providing you add the Elastic APM agent to the application code. Learn more in the <a href="https://www.elastic.co/guide/en/apm/get-started/current/overview.html">official APM server documentation</a>.`,
-  'cc-addon-elasticsearch-options.description.kibana': () =>
+  'cc-addon-elasticsearch-options.details.kibana': () =>
     sanitize`Kibana is the admin UI for the Elastic Stack. It lets you visualize your Elasticsearch data and navigate the stack so you can do anything from tracking query load to understanding the way requests flow through your apps. Learn more in the <a href="https://www.elastic.co/guide/en/kibana/master/index.html">official Kibana documentation</a>.`,
   'cc-addon-elasticsearch-options.error.icon-a11y-name': `Warning`,
   'cc-addon-elasticsearch-options.title': `Options for the Elastic Stack`,
-  'cc-addon-elasticsearch-options.warning.apm': `If you enable this option, we'll deploy and manage an Elastic APM server application for you, this will lead to additional costs.`,
-  'cc-addon-elasticsearch-options.warning.apm.details': /** @param {Flavor} flavor */ (flavor) =>
-    sanitize`By default, the app will start on a <strong title="${formatFlavor(flavor)}">${flavor.name} instance</strong> which costs around <strong>${formatCurrency(lang, flavor.monthlyCost)} per month</strong>.`,
-  'cc-addon-elasticsearch-options.warning.kibana': `If you enable this option, we'll deploy and manage a Kibana application for you, this will lead to additional costs.`,
-  'cc-addon-elasticsearch-options.warning.kibana.details': /** @param {Flavor} flavor */ (flavor) =>
-    sanitize`By default, the app will start on a <strong title="${formatFlavor(flavor)}">${flavor.name} instance</strong> which costs around <strong>${formatCurrency(lang, flavor.monthlyCost)} per month</strong>.`,
+  'cc-addon-elasticsearch-options.warning.apm': `If you enable this option, we'll deploy and manage an Elastic APM server application for you.`,
+  'cc-addon-elasticsearch-options.warning.flavor': /** @param {Flavor} flavor */ (flavor) =>
+    sanitize`By default, the app will start on a <strong title="${formatFlavor(flavor)}">${flavor.name} instance</strong>.`,
+  'cc-addon-elasticsearch-options.warning.kibana': `If you enable this option, we'll deploy and manage a Kibana application for you.`,
+  'cc-addon-elasticsearch-options.warning.monthly-cost': /** @param {FlavorWithMonthlyCost['monthlyCost']} _ */ ({
+    amount,
+    currency,
+  }) => sanitize`
+      This should cost around <strong>${formatCurrency(lang, amount, { currency })}</strong> per month.`,
   //#endregion
   //#region cc-addon-encryption-at-rest-option
   'cc-addon-encryption-at-rest-option.description': () =>

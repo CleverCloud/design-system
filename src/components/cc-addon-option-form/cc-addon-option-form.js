@@ -1,5 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { dispatchCustomEvent } from '../../lib/events.js';
+import { skeletonStyles } from '../../styles/skeleton.js';
 import { linkStyles } from '../../templates/cc-link/cc-link.js';
 import { i18n } from '../../translations/translation.js';
 import '../cc-addon-option/cc-addon-option.js';
@@ -91,6 +92,7 @@ export class CcAddonOptionForm extends LitElement {
   static get styles() {
     return [
       linkStyles,
+      skeletonStyles,
       // language=CSS
       css`
         :host {
@@ -127,6 +129,17 @@ export class CcAddonOptionForm extends LitElement {
           color: var(--cc-color-text-warning);
 
           --cc-icon-size: 1.25em;
+        }
+
+        /* Temporary workaround for cc-addon-elasticsearch-options because the skeleton parts should only be the <strong> elements but they are nested inside i18n strings */
+        .option-warning .skeleton {
+          color: var(--cc-color-text-weak);
+        }
+
+        /* Temporary workaround for cc-addon-elasticsearch-options because the skeleton parts should only be the <strong> elements but they are nested inside i18n strings */
+        .skeleton strong {
+          background-color: #bbb;
+          color: transparent;
         }
       `,
     ];

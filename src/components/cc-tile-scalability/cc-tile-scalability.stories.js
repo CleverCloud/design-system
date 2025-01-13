@@ -20,9 +20,9 @@ const conf = {
 
 /**
  * @typedef {import('./cc-tile-scalability.js').CcTileScalability} CcTileScalability
- * @typedef {import('./cc-tile-scalability.type.js').TileScalabilityStateLoaded} TileScalabilityStateLoaded
- * @typedef {import('./cc-tile-scalability.type.js').TileScalabilityStateLoading} TileScalabilityStateLoading
- * @typedef {import('./cc-tile-scalability.type.js').TileScalabilityStateError} TileScalabilityStateError
+ * @typedef {import('./cc-tile-scalability.types.js').TileScalabilityStateLoaded} TileScalabilityStateLoaded
+ * @typedef {import('./cc-tile-scalability.types.js').TileScalabilityStateLoading} TileScalabilityStateLoading
+ * @typedef {import('./cc-tile-scalability.types.js').TileScalabilityStateError} TileScalabilityStateError
  * @typedef {import('../common.types.js').Flavor} Flavor
  * @typedef {import('../common.types.js').Scalability} Scalability
  */
