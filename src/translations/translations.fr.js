@@ -1064,6 +1064,10 @@ export const translations = {
   'cc-payment-warning.orga.no-payment-method': `Pour éviter tout risque de suspension de vos services et de suppression de vos données, merci d'ajouter un moyen de paiement valide et de le définir par défaut.`,
   'cc-payment-warning.orga.no-payment-method.title': `Attention ! Vous n'avez aucun moyen de paiement enregistré`,
   //#endregion
+  //#region cc-plan-picker
+  'cc-plan-picker.legend': `Sélectionnez votre plan`,
+  'cc-plan-picker.legend.customize': `Customisez votre plan`,
+  //#endregion
   //#region cc-pricing-estimation
   'cc-pricing-estimation.count.label': /** @param {{productCount: number}} _ */ ({ productCount }) =>
     plural(productCount, 'produit'),
