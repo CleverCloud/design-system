@@ -142,7 +142,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-button
             primary
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?disabled=${isFormDisabled && state.type !== 'updatingName'}
             ?waiting=${state.type === 'updatingName'}
             @cc-button:click=${this._onNameSubmit}
             >${i18n('cc-addon-admin.update')}</cc-button
@@ -166,7 +166,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-button
             primary
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?disabled=${isFormDisabled && state.type !== 'updatingTags'}
             ?waiting=${state.type === 'updatingTags'}
             @cc-button:click=${this._onTagsSubmit}
             >${i18n('cc-addon-admin.tags-update')}</cc-button
@@ -185,7 +185,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-button
             danger
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?disabled=${isFormDisabled && state.type !== 'deleting'}
             ?waiting=${state.type === 'deleting'}
             @cc-button:click=${this._onDeleteSubmit}
             >${i18n('cc-addon-admin.delete')}</cc-button

@@ -250,7 +250,7 @@ export class CcEmailList extends LitElement {
    */
   _renderSecondarySection(secondaryAddressStates) {
     const addresses = [...secondaryAddressStates].sort(sortBy('address'));
-    const markingAsPrimary = addresses.some((item) => item.state === 'marking-as-primary');
+    const isOneRowMarkingPrimary = addresses.some((item) => item.state === 'marking-as-primary');
 
     return html`
       <cc-block-section slot="content-body">
@@ -260,6 +260,7 @@ export class CcEmailList extends LitElement {
         <ul class="secondary-addresses">
           ${addresses.map((secondaryAddress) => {
             const isBusy = secondaryAddress.state === 'marking-as-primary' || secondaryAddress.state === 'deleting';
+            const isDisabled = (isOneRowMarkingPrimary || isBusy) && secondaryAddress.state !== 'marking-as-primary';
 
             return html`
               <li class="address-line secondary">
@@ -271,7 +272,7 @@ export class CcEmailList extends LitElement {
                   <cc-button
                     @cc-button:click=${() => this._onMarkAsPrimary(secondaryAddress.address)}
                     ?waiting="${secondaryAddress.state === 'marking-as-primary'}"
-                    ?disabled="${markingAsPrimary || isBusy}"
+                    ?disabled="${isDisabled}"
                     a11y-name="${i18n('cc-email-list.secondary.action.mark-as-primary.accessible-name', {
                       address: secondaryAddress.address,
                     })}"
@@ -285,7 +286,7 @@ export class CcEmailList extends LitElement {
                     .icon=${iconDelete}
                     @cc-button:click=${() => this._onDelete(secondaryAddress.address)}
                     ?waiting="${secondaryAddress.state === 'deleting'}"
-                    ?disabled="${isBusy}"
+                    ?disabled="${isBusy && secondaryAddress.state !== 'deleting'}"
                     a11y-name="${i18n('cc-email-list.secondary.action.delete.accessible-name', {
                       address: secondaryAddress.address,
                     })}"

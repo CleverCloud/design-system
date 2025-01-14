@@ -356,7 +356,7 @@ export class CcEnvVarForm extends LitElement {
 
                 <cc-button
                   success
-                  ?disabled=${isFormDisabled}
+                  ?disabled=${isFormDisabled && !isSaving}
                   ?waiting="${isSaving}"
                   @cc-button:click=${this._onUpdateForm}
                   >${i18n('cc-env-var-form.update')}</cc-button

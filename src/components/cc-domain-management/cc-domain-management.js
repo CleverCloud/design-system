@@ -570,7 +570,7 @@ export class CcDomainManagement extends LitElement {
                   class="mark-primary"
                   primary
                   outlined
-                  ?disabled=${isMarkingPrimaryDisabled}
+                  ?disabled=${isMarkingPrimaryDisabled && domainItemStateType !== 'marking-primary'}
                   ?waiting="${domainItemStateType === 'marking-primary'}"
                   a11y-name="${i18n('cc-domain-management.list.btn.primary.a11y-name', { domain: hostWithWildcard })}"
                   .icon=${iconPrimary}

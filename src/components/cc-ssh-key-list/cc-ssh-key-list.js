@@ -285,12 +285,12 @@ export class CcSshKeyList extends LitElement {
           (key) => key.name,
           (key) => {
             const name = key.name;
-            const isDisabled = !skeleton && key.state !== 'idle';
+            const isWaiting = !skeleton && key.state !== 'idle';
             const classes = {
               'key--personal': type === 'personal',
               'key--github': type === 'github',
               'key--skeleton': skeleton,
-              'is-disabled': isDisabled,
+              'is-waiting': isWaiting,
             };
 
             return html`
@@ -311,10 +311,9 @@ export class CcSshKeyList extends LitElement {
                           a11y-name="${i18n('cc-ssh-key-list.personal.delete.a11y', { name })}"
                           class="key__button key__button--personal"
                           .icon="${iconBin}"
-                          ?disabled=${isDisabled}
                           danger
                           outlined
-                          ?waiting=${isDisabled}
+                          ?waiting=${isWaiting}
                         >
                           ${i18n('cc-ssh-key-list.personal.delete')}
                         </cc-button>
@@ -327,8 +326,7 @@ export class CcSshKeyList extends LitElement {
                           a11y-name="${i18n('cc-ssh-key-list.github.import.a11y', { name })}"
                           class="key__button key__button--github"
                           .icon="${iconAdd}"
-                          ?disabled=${isDisabled}
-                          ?waiting=${isDisabled}
+                          ?waiting=${isWaiting}
                         >
                           ${i18n('cc-ssh-key-list.github.import')}
                         </cc-button>
@@ -401,7 +399,7 @@ export class CcSshKeyList extends LitElement {
           grid-template-columns: min-content 1fr;
         }
 
-        .key.is-disabled {
+        .key.is-waiting {
           cursor: default;
           opacity: var(--cc-opacity-when-disabled);
         }

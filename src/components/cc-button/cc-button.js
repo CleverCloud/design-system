@@ -240,6 +240,12 @@ export class CcButton extends LitElement {
         this._cancelClick();
       }
     }
+
+    if (this.waiting && this.disabled) {
+      throw new Error(
+        '`waiting` and `disabled` cannot be set to true at the same time, see https://github.com/CleverCloud/clever-components/issues/1124 for more info',
+      );
+    }
   }
 
   render() {
