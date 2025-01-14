@@ -407,7 +407,7 @@ export class CcDomainManagement extends LitElement {
    * @returns {TemplateResult}
    */
   _renderForm({ type, hostname: domain, pathPrefix }) {
-    const isDisabled = type === 'adding';
+    const isReadonly = type === 'adding';
 
     return html`
       <form novalidate @submit=${this._onDomainSubmit}>
@@ -417,7 +417,7 @@ export class CcDomainManagement extends LitElement {
             label="${i18n('cc-domain-management.form.domain.label')}"
             required
             .value="${domain.value}"
-            ?disabled="${isDisabled}"
+            ?readonly="${isReadonly}"
             .errorMessage=${this._getErrorMessage(domain.error)}
             ${ref(this._domainInputRef)}
             @cc-input-text:input=${this._onDomainInput}
@@ -429,7 +429,7 @@ export class CcDomainManagement extends LitElement {
             class="fieldgroup__path"
             label="${i18n('cc-domain-management.form.path.label')}"
             .value="${pathPrefix.value}"
-            ?disabled="${isDisabled}"
+            ?readonly="${isReadonly}"
             @cc-input-text:input=${this._onPathPrefixInput}
           >
             <p slot="help">${i18n('cc-domain-management.form.path.help')}</p>

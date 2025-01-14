@@ -122,7 +122,7 @@ export class CcAddonAdmin extends LitElement {
   _renderContent(state) {
     const isSkeleton = state.type === 'loading';
     const isSaving = state.type === 'updatingTags' || state.type === 'updatingName' || state.type === 'deleting';
-    const isFormDisabled = state.type === 'loading' || isSaving;
+    const isFormReadonly = state.type === 'loading' || isSaving;
     const shouldShowBackupsText = !this.noDangerZoneBackupText;
     const shouldShowVmText = !this.noDangerZoneVmText;
 
@@ -134,7 +134,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-input-text
             label="${i18n('cc-addon-admin.input.name')}"
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?readonly=${isFormReadonly}
             .value=${this._name}
             @cc-input-text:input=${this._onNameInput}
             @cc-input-text:requestimplicitsubmit=${this._onNameSubmit}
@@ -142,7 +142,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-button
             primary
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?disabled=${isFormReadonly}
             ?waiting=${state.type === 'updatingName'}
             @cc-button:click=${this._onNameSubmit}
             >${i18n('cc-addon-admin.update')}</cc-button
@@ -157,7 +157,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-input-text
             label="${i18n('cc-addon-admin.input.tags')}"
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?readonly=${isFormReadonly}
             .tags=${this._tags}
             placeholder="${i18n('cc-addon-admin.tags-empty')}"
             @cc-input-text:tags=${this._onTagsInput}
@@ -166,7 +166,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-button
             primary
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?disabled=${isFormReadonly}
             ?waiting=${state.type === 'updatingTags'}
             @cc-button:click=${this._onTagsSubmit}
             >${i18n('cc-addon-admin.tags-update')}</cc-button
@@ -185,7 +185,7 @@ export class CcAddonAdmin extends LitElement {
           <cc-button
             danger
             ?skeleton=${isSkeleton}
-            ?disabled=${isFormDisabled}
+            ?disabled=${isFormReadonly}
             ?waiting=${state.type === 'deleting'}
             @cc-button:click=${this._onDeleteSubmit}
             >${i18n('cc-addon-admin.delete')}</cc-button

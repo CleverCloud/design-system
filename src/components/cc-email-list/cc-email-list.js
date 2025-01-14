@@ -313,7 +313,7 @@ export class CcEmailList extends LitElement {
           name="address"
           type="email"
           required
-          ?disabled=${isAdding}
+          ?readonly=${isAdding}
           .errorMessage=${this._getErrorMessage(this.addEmailFormState.errors?.email)}
           ${ref(this._addressInputRef)}
         >
